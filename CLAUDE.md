@@ -53,15 +53,15 @@ catálogo primero**. Si el alimento no está, es candidato a agregarse (con el m
 `"nota"` si no hay dato exacto confirmado).
 
 El catálogo trae dos archivos gemelos:
-- `Json-outputs/catalogo-alimentos.json` — versión completa con notas de por qué se decidió cada
-  valor (útil para auditoría/histórico, NO para generación).
-- `Json-outputs-sin-notas/catalogo-alimentos.json` — mismos datos, sin los campos `nota`/`_nota*`.
-  **Usar esta versión como contexto de trabajo día a día** — es ~45% más chica y no tiene prosa
-  explicativa que no aporta a la generación.
+- `data/Json-outputs/catalogo-alimentos.json` — versión completa con notas de por qué se decidió
+  cada valor (útil para auditoría/histórico, NO para generación).
+- `data/Json-outputs-sin-notas/catalogo-alimentos.json` — mismos datos, sin los campos
+  `nota`/`_nota*`. **Usar esta versión como contexto de trabajo día a día** — es ~45% más chica y
+  no tiene prosa explicativa que no aporta a la generación.
 
 ## Generar menús nuevos: usar el banco de recetas, no inventar desde cero
 
-`recetas.json` (raíz del repo) trae 159 platillos reales, ya cocinados en algún menú anterior de
+`data/recetas.json` trae 159 platillos reales, ya cocinados en algún menú anterior de
 Dan o Pau, cada uno con su `vector_equivalentes` ya calculado (suma por grupo_smae). Generar un
 menú nuevo es un problema de encontrar combinaciones de recetas cuyo vector sume el objetivo del
 tiempo/día — resolver esto con un solver determinístico (Python), no pidiéndole a un modelo que
@@ -96,14 +96,14 @@ generar un platillo nuevo desde el catálogo — y ahí sí aplican las reglas d
 
 ## Dónde vive cada cosa
 
-- `Json-outputs/` — JSON final por persona/periodo, con notas de auditoría/decisiones. Nombre de
-  archivo: `{Persona}{Periodo}.json` o `{Periodo}-{Persona}.json` (la convención de nombre no es
+- `data/Json-outputs/` — JSON final por persona/periodo, con notas de auditoría/decisiones. Nombre
+  de archivo: `{Persona}{Periodo}.json` o `{Periodo}-{Persona}.json` (la convención de nombre no es
   100% uniforme entre archivos viejos y nuevos — no depender del nombre de archivo para saber la
   persona/periodo, siempre leer los campos `persona` y `periodo` del JSON).
-- `Json-outputs-sin-notas/` — mismos archivos sin campos de nota. Preferir esta carpeta como fuente
-  para poblar MongoDB y como contexto de trabajo — es la más liviana.
-- `recetas.json` — banco de 159 platillos reutilizables extraídos de los menús históricos, cada
-  uno con su vector de equivalentes ya calculado. Punto de partida para generar menús nuevos.
+- `data/Json-outputs-sin-notas/` — mismos archivos sin campos de nota. Preferir esta carpeta como
+  fuente para poblar MongoDB y como contexto de trabajo — es la más liviana.
+- `data/recetas.json` — banco de 159 platillos reutilizables extraídos de los menús históricos,
+  cada uno con su vector de equivalentes ya calculado. Punto de partida para generar menús nuevos.
 - `schema.md` — forma exacta de cada colección/documento. Leer antes de generar o validar un menú.
 
 ## Convenciones para la base de datos (MongoDB)
