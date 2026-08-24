@@ -64,6 +64,23 @@ mostrando lo mismo que se guardó (round-trip correcto).
 No empezar la Fase 5 sin haber usado la Fase 4 unos días en la vida real — puede cambiar qué vale
 la pena pulir primero.
 
+## Ideas para más adelante (no implementar todavía)
+
+Notas del usuario para no perderlas de vista, pero fuera de alcance de las Fases 0-5 de arriba —
+retomar solo después de que la Fase 4 (o 5) esté en uso real y se sienta bien.
+
+- **"EquiVale Chef"** — una herramienta (dentro de `app.py` o un modo separado) para construir y
+  actualizar `recetas` sin editar JSON a mano:
+  - Al armar un platillo, sugerir alimentos primero desde `catalogo_alimentos` (autocompletar por
+    nombre, mostrando su `grupo` y `cantidad_por_equivalente`).
+  - Si el alimento no está en el catálogo, permitir agregarlo buscándolo en `SMAE_CONSULTA.csv`
+    (la tabla oficial SMAE) y preguntar la unidad de medida a usar (ej. "taza", "g", "pieza") para
+    fijar su `cantidad_por_equivalente` — mismo criterio que la regla 5 de `CLAUDE.md` (si tampoco
+    está en `SMAE_CONSULTA.csv`, marcar `asuncion: true` y pedir confirmación antes de guardar).
+  - Esto permite crecer `catalogo_alimentos` y el banco de `recetas` poco a poco, en vez de
+    depender solo de lo ya extraído de los menús históricos — útil para cuando el banco no tiene
+    ninguna combinación que cuadre con un objetivo (ver "Generar menús nuevos" en `CLAUDE.md`).
+
 ## Checklist rápido
 
 - [ ] Fase 0 — Mongo corriendo, venv listo
