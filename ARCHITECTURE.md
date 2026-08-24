@@ -69,8 +69,13 @@ nutri-guia/
     __init__.py
     db.py                          # conexión a Mongo (lee MONGO_URI de .env)
     validation.py                  # ver VALIDATION.md — contrato exacto
+    colores.py                     # paleta fija por grupo SMAE (UI, no aritmética)
+    streamlit_data.py              # loaders cacheados compartidos entre páginas de Streamlit
     import_data.py                 # script: carga catalogo/recetas/menus/objetivos a Mongo
-  app.py                           # Streamlit — "build your menu" (ver UI-BUILD-YOUR-MENU.md)
+  app.py                           # entrypoint Streamlit: st.navigation entre las páginas de views/
+  views/                           # páginas de la app multipágina (NO llamarla "pages/" — Streamlit
+    build_your_menu.py             #   auto-detecta esa carpeta para su mecanismo viejo de MPA y
+    editor_recetas.py              #   choca con st.navigation/st.Page, ver ARCHITECTURE.md abajo)
   tests/
     test_validation.py             # corre validation.py contra los menús históricos
     test_import.py                 # smoke test: conteos esperados tras importar
@@ -91,3 +96,9 @@ nutri-guia/
    `catalogo_alimentos.cantidad_por_equivalente`.
 5. **La validación es de signo explícito**: `delta = objetivo - actual` por grupo. Positivo =
    falta (te quedaste corto), negativo = sobra (te pasaste), cero = exacto. Ver `VALIDATION.md`.
+6. **Las páginas multipágina de Streamlit viven en `views/`, nunca en una carpeta llamada
+   `pages/`.** Encontrado 2026-08-24: si existe una carpeta `pages/` junto a `app.py`, Streamlit la
+   auto-detecta con su mecanismo viejo de multipage (basado en archivos) además de/en conflicto con
+   `st.navigation`/`st.Page` usado en `app.py` — al entrar por una URL directa a una subpágina
+   (ej. refrescar o compartir el link de una página específica) se ve una barra lateral duplicada y
+   rota, sin los títulos/iconos configurados. Renombrar la carpeta evita el conflicto por completo.

@@ -9,8 +9,8 @@ st.set_page_config(page_title="EquiVale", page_icon="🥗", layout="wide")
 
 pagina = st.navigation(
     [
-        st.Page("pages/build_your_menu.py", title="Build your menu", icon="🥗"),
-        st.Page("pages/editor_recetas.py", title="Editor de recetas", icon="🧑‍🍳"),
+        st.Page("views/build_your_menu.py", title="Build your menu", icon="🥗"),
+        st.Page("views/editor_recetas.py", title="Editor de recetas", icon="🧑‍🍳"),
     ]
 )
 pagina.run()
