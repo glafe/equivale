@@ -145,28 +145,38 @@ haga la suma. El LLM entra para: elegir entre varias recetas que califican (vari
 repetido últimamente), redactar el resultado final legible, y proponer recetas nuevas cuando el
 banco no tiene ninguna combinación que cuadre con el objetivo.
 
-## Colección `objetivos` — objetivo diario/por tiempo vigente, por persona
+## Colección `objetivos` — objetivo diario vigente, por persona
 
-**No viene de un archivo fuente** — hay que construirla (Fase 1 de `BUILD-PLAN.md`) a partir de
-`equivalentes_diarios_indicados` de los tabs 2026 más recientes de cada persona, y confirmar con
-el usuario que siguen vigentes antes de que la UI dependa de ellos.
+**No viene de un archivo fuente** — se construyó en Fase 1 de `BUILD-PLAN.md`, confirmado con el
+usuario el 2026-08-24 para el periodo Agosto-Septiembre 2026 (Dan: `equivalentes_diarios_indicados`
+de `Junio26-Dany.json`; Pau: `equivalentes_diarios` del `menu_id 1` de `PauJunio26.json`, ya que
+Pau no trae `equivalentes_diarios_indicados` en ningún archivo 2026 — decisión explícita del
+usuario, ver historial de commits).
+
+**Decisión de diseño (confirmada con el usuario, 2026-08-24): el objetivo es diario, no por
+tiempo.** No importa cómo se reparta entre comidas (una persona puede comer todo en una sola
+comida o en seis) — lo único que se valida de forma dura es el total del día. `por_tiempo`, si se
+llega a poblar, NO es una meta prescriptiva por comida — sería un resumen derivado de cómo terminó
+repartiéndose un día ya armado, no un target contra el que se valide. Por ahora se deja
+ausente/vacío.
 
 ```
 {
   "persona": string,                // "Dan" | "Pau"
   "vigente_desde": string,          // fecha ISO, ej. "2026-08-24" — para poder tener historial de objetivos
   "equivalentes_diarios": [ EquivalenteGrupo, ... ],
-  "por_tiempo": {                   // objetivo de cada tiempo — deben sumar equivalentes_diarios
-    "al_despertar"?: [ EquivalenteGrupo, ... ],
-    "desayuno": [ EquivalenteGrupo, ... ],
-    "colacion"?: [ EquivalenteGrupo, ... ],
-    "comida": [ EquivalenteGrupo, ... ],
-    "cena": [ EquivalenteGrupo, ... ]
-  }
+  "por_tiempo"?: { ... }            // opcional, ver nota arriba — no es un target por comida, no poblado en Fase 1
 }
 ```
-Esto es lo que la UI (`UI-BUILD-YOUR-MENU.md`) muestra como referencia fija en cada tab de tiempo,
-y contra lo que `validar_tiempo()`/`validar_menu()` (`VALIDATION.md`) comparan lo construido.
+La UI (`UI-BUILD-YOUR-MENU.md`) usa `equivalentes_diarios` como presupuesto del día completo; a
+medida que se arma cada tiempo, el panel de estado muestra cuánto queda del presupuesto diario, no
+una comparación contra un objetivo fijo de esa comida en particular. `validar_tiempo()`/
+`validar_menu()` (`VALIDATION.md`) siguen usándose igual para validar los `menus` históricos
+(consistencia interna declarado-vs-real), que es un concepto distinto de este presupuesto diario.
+
+**Pendiente futuro** (ver `BUILD-PLAN.md` → "Ideas para más adelante"): que el objetivo de cada
+persona sea editable desde la propia UI, con perfiles por persona — hoy solo se puede cambiar
+insertando un nuevo documento con `vigente_desde` más reciente directamente en Mongo.
 
 ## Colección `menus_construidos` — lo que arma el usuario en la UI
 

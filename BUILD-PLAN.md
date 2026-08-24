@@ -21,11 +21,17 @@ Copiar `catalogo-alimentos.json`, `recetas.json` y los 17 archivos de menús his
 - `menus`: importar tal cual los 17 archivos (son de solo lectura/referencia histórica).
 - `personas`: crear 2 documentos simples, `{persona: "Dan", ...}` y `{persona: "Pau", ...}` — usar
   como punto de extensión futuro, no hace falta más que el nombre por ahora.
-- `objetivos`: **no hay un archivo fuente para esto** — construirlo a partir de
-  `equivalentes_diarios_indicados` de los tabs 2026 más recientes de cada persona
-  (`Marzo26-Dany.json`/`Junio26-Dany.json` para Dan, `Marzo26-Pau.json`/`PauJunio26.json` para Pau)
-  como default razonable, Y avisarle al usuario que confirme si esos son los objetivos vigentes
-  antes de que la UI dependa de ellos — no inventar números sin decirlo.
+- `objetivos`: **no hay un archivo fuente para esto** — confirmado con el usuario el 2026-08-24
+  para el periodo Agosto-Septiembre 2026:
+  - Dan: `equivalentes_diarios_indicados` de `Junio26-Dany.json` — AOA 15, Cereal 10, Verdura 5,
+    Fruta 4, Aceite s/p 3, Aceite c/p 1.
+  - Pau: no existe `equivalentes_diarios_indicados` en ningún archivo 2026 de Pau (ni siquiera los
+    dos `menu_id` de un mismo periodo coinciden entre sí) — por decisión explícita del usuario, se
+    usa `equivalentes_diarios` del `menu_id 1` de `PauJunio26.json` — AOA 13, Cereal 6,
+    Leguminosa 1, Verdura 5, Aceite c/p 1, Aceite s/p 3, Fruta 3.
+  - Ambos con `vigente_desde: "2026-08-24"`. No poblar `por_tiempo` — ver nota de diseño en
+    `schema.md` → `objetivos` (el objetivo es diario, no por comida; no importa cómo se reparta
+    entre tiempos).
 
 **Hecho cuando**: `import_data.py` corre sin error e imprime conteos por colección (17 menús, 159
 recetas, ~80 alimentos en catálogo, 2 personas, 2 objetivos).
@@ -43,7 +49,8 @@ Construir `app.py` cubriendo SOLO el flujo de un tiempo (ej. Comida) para una pe
 `UI-BUILD-YOUR-MENU.md` puntos 1-3. Sin guardar a Mongo todavía — validar que el picker + steppers
 + panel de estado en vivo funcionan correctamente en memoria (`st.session_state`).
 **Hecho cuando**: se puede elegir una receta del banco, ajustar un ingrediente con +/-, y ver el
-delta por grupo actualizarse correctamente contra el objetivo de ese tiempo.
+delta por grupo actualizarse correctamente contra el **presupuesto diario restante** (no contra un
+objetivo fijo de ese tiempo — ver nota de diseño en `schema.md` → `objetivos`).
 
 ## Fase 4 — Día completo + guardar
 
@@ -69,6 +76,12 @@ la pena pulir primero.
 Notas del usuario para no perderlas de vista, pero fuera de alcance de las Fases 0-5 de arriba —
 retomar solo después de que la Fase 4 (o 5) esté en uso real y se sienta bien.
 
+- **Objetivos editables por persona, con perfiles** — hoy `objetivos` se siembra una sola vez en
+  Fase 1 y solo se actualiza insertando un documento nuevo directamente en Mongo. El usuario quiere
+  poder editar el objetivo diario de cada persona (Dan/Pau) desde la propia UI, como parte de un
+  perfil por persona — no tener que tocar la base de datos a mano cada vez que cambie el objetivo
+  con el nutriólogo. Ver nota de diseño en `schema.md` → `objetivos` (el objetivo ya es solo
+  diario, no por tiempo, lo cual simplifica esta futura pantalla de edición).
 - **"EquiVale Chef"** — una herramienta (dentro de `app.py` o un modo separado) para construir y
   actualizar `recetas` sin editar JSON a mano:
   - Al armar un platillo, sugerir alimentos primero desde `catalogo_alimentos` (autocompletar por

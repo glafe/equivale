@@ -9,8 +9,11 @@ equivalente, nunca slider libre**, y la UI debe mostrar en vivo si falta o sobra
 2. **Selector de tiempo**: al_despertar | desayuno | colación | comida | cena (tabs de Streamlit,
    `st.tabs`, uno por tiempo — así se ve el día completo sin perder contexto).
 3. Dentro de cada tab de tiempo:
-   a. Mostrar el **objetivo de ese tiempo** para la persona seleccionada (de la colección
-      `objetivos`, ver `schema.md`) como una fila de referencia fija arriba.
+   a. Mostrar el **presupuesto diario restante** para la persona seleccionada (objetivo diario de
+      `objetivos`, ver `schema.md`, menos lo ya guardado en otros tiempos de ese mismo día) como
+      una fila de referencia fija arriba — no un objetivo fijo de este tiempo en particular. El
+      reparto entre comidas es libre: no importa si la persona come todo en un solo tiempo o en
+      seis, solo el total del día (decisión confirmada con el usuario, 2026-08-24).
    b. **Picker de receta**: `st.selectbox` filtrado por `tiempo_tipico` que incluya este tiempo Y
       (`personas_vistas` incluya la persona seleccionada, con opción de "ver todas" — un platillo
       probado para Dan puede servir de punto de partida para Pau). Mostrar nombre + su
@@ -23,8 +26,9 @@ equivalente, nunca slider libre**, y la UI debe mostrar en vivo si falta o sobra
       la cantidad real resultante (ej. "150 g (5 equivalentes)") recalculada con
       `cantidad_por_equivalente` del catálogo. Ingredientes no ajustables (placeholders, items
       compuestos) se muestran fijos con un botón "quitar".
-   e. **Panel de estado en vivo**, uno por grupo SMAE presente en el objetivo o en lo seleccionado:
-      barra o chip con objetivo / actual / delta. Color:
+   e. **Panel de estado en vivo**, uno por grupo SMAE presente en el presupuesto diario restante o
+      en lo seleccionado en este tiempo: barra o chip con presupuesto restante / actual de este
+      tiempo / delta. Color:
       - verde = `estado_por_grupo` da "exacto"
       - amarillo = "falta" (delta > 0)
       - rojo = "excedido" (delta < 0)
@@ -52,7 +56,7 @@ equivalente, nunca slider libre**, y la UI debe mostrar en vivo si falta o sobra
 ## Wireframe en texto (una pestaña de tiempo, ej. "Comida")
 
 ```
-┌─ Objetivo Comida (Dan) ──────────────────────────────┐
+┌─ Presupuesto restante del día (Dan) ──────────────────┐
 │ Verdura 2   Cereal 2   AOA 4   Aceite s/p 1           │
 └────────────────────────────────────────────────────────┘
 
