@@ -26,6 +26,10 @@ equivalente, nunca slider libre**, y la UI debe mostrar en vivo si falta o sobra
       la cantidad real resultante (ej. "150 g (5 equivalentes)") recalculada con
       `cantidad_por_equivalente` del catálogo. Ingredientes no ajustables (placeholders, items
       compuestos) se muestran fijos con un botón "quitar".
+   d.1. Ingredientes marcados `opcional` (ver `schema.md`) traen además un checkbox **Incluir**,
+      marcado por default (reproduce la versión más completa de la receta). Si se desmarca, ese
+      ingrediente no cuenta en la suma de equivalentes de ese tiempo — no hace falta "quitarlo" de
+      la receta ni que existan dos recetas casi iguales solo por ese extra.
    e. **Panel de estado en vivo**, uno por grupo SMAE presente en el presupuesto diario restante o
       en lo seleccionado en este tiempo: barra o chip con presupuesto restante / actual de este
       tiempo / delta. Color:

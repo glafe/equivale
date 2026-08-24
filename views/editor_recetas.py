@@ -53,6 +53,7 @@ def _fila_vacia() -> dict:
         "cantidad": "",
         "equivalentes": 1,
         "bloqueado": False,
+        "opcional": False,
     }
 
 
@@ -75,6 +76,7 @@ def _draft_desde_receta(receta: dict | None) -> dict:
             "cantidad": ing.get("cantidad", ""),
             "equivalentes": ing["equivalentes"],
             "bloqueado": ing.get("bloqueado", False),
+            "opcional": ing.get("opcional", False),
         }
         for ing in receta["ingredientes"]
     ]
@@ -135,7 +137,7 @@ def render() -> None:
 
     for fila in list(draft["ingredientes"]):
         with st.container(border=True):
-            c1, c2, c_cant, c3, c4, c5 = st.columns([3, 2, 2, 1, 1, 1])
+            c1, c2, c_cant, c3, c4, c_opc, c5 = st.columns([3, 2, 2, 1, 1, 1, 1])
 
             en_catalogo = fila["alimento"] in alimentos_catalogo
             sel = c1.selectbox(
@@ -184,6 +186,11 @@ def render() -> None:
                 "🔒", value=fila["bloqueado"], key=f"bloqueado_{fila['fila_id']}",
                 help="Bloquear: no ajustable con +/- en Build your menu",
             )
+            fila["opcional"] = c_opc.checkbox(
+                "Opc.", value=fila["opcional"], key=f"opcional_{fila['fila_id']}",
+                help="Opcional: en Build your menu se puede incluir o excluir con un checkbox, "
+                     "sin necesidad de quitarlo de la receta ni crear una receta aparte.",
+            )
             if c5.button("quitar", key=f"quitar_ing_{fila['fila_id']}"):
                 draft["ingredientes"].remove(fila)
                 st.rerun()
@@ -226,6 +233,7 @@ def render() -> None:
                         "grupo_smae": i["grupo_smae"],
                         "equivalentes": i["equivalentes"],
                         **({"bloqueado": True} if i["bloqueado"] else {}),
+                        **({"opcional": True} if i["opcional"] else {}),
                     }
                     for i in ingredientes_validos
                 ],

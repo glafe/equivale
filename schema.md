@@ -106,6 +106,7 @@ clave, NO usar un dict/objeto que sobreescriba duplicados (ver `sumar_por_grupo(
   "equivalentes": int,
   "asuncion"?: bool,
   "bloqueado"?: bool,                // ver nota abajo — solo aplica dentro de `recetas`, no en `menus`
+  "opcional"?: bool,                 // ver nota abajo — solo aplica dentro de `recetas`, no en `menus`
   "nota"?: string                   // presente solo en Json-outputs/ (no en -sin-notas/)
 }
 ```
@@ -117,6 +118,18 @@ stepper +/- en "Build your menu" (ver `paso_equivalente()` en `VALIDATION.md`). 
 fuerza a que NO sea ajustable aunque el catálogo sí resuelva un paso — para ingredientes que el
 usuario decide fijos en una receta concreta (ej. una guarnición base que no debería tocarse).
 Ausente o `false` = se comporta según el catálogo (default, sin cambios).
+
+**`opcional`** (agregado 2026-08-24, mismo alcance que `bloqueado` — solo `recetas`): marca un
+ingrediente que no siempre forma parte del platillo — ej. un extra de queso que algunas veces se
+agrega y otras no. En "Build your menu", un ingrediente `opcional: true` se agrega con un checkbox
+**Incluir** (default: incluido, para que la receta reproduzca su versión más completa salvo que el
+usuario decida quitarlo) — si se desmarca, no cuenta en la suma de equivalentes de ese tiempo, pero
+sigue siendo parte de la definición de la receta (no hay que borrarlo ni crear una receta aparte).
+Distinto de `bloqueado`: `opcional` decide si el ingrediente participa o no; `bloqueado` decide si,
+estando presente, su cantidad se puede ajustar con el stepper. Los dos son independientes entre sí.
+Se agregó específicamente para poder fusionar recetas casi idénticas que solo diferían en un
+ingrediente extra (ver limpieza del banco de "filete de pescado" en el historial de commits) en vez
+de mantenerlas como documentos separados.
 
 ## Colección `recetas` — banco de platillos reutilizables (para generación y para la UI)
 

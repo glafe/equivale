@@ -62,6 +62,10 @@ def _nueva_instancia(receta: dict) -> dict:
                 "grupo_smae": ing["grupo_smae"],
                 "equivalentes": ing["equivalentes"],
                 "bloqueado": ing.get("bloqueado", False),
+                "opcional": ing.get("opcional", False),
+                # opcional=True arranca incluido -> reproduce la versión más completa de la
+                # receta por default; el usuario lo desmarca si no quiere ese extra.
+                "incluido": True,
             }
             for ing in receta["ingredientes"]
         ],
@@ -128,10 +132,26 @@ def render() -> None:
                 st.rerun()
 
             for ing in instancia["ingredientes"]:
+                if ing.get("opcional"):
+                    c0, c1, c2, c3, c4 = st.columns([1, 2, 1, 3, 1])
+                    ing["incluido"] = c0.checkbox(
+                        "Incluir", value=ing.get("incluido", True),
+                        key=f"incluir_{instancia['instancia_id']}_{ing['alimento']}",
+                        label_visibility="collapsed",
+                        help="Ingrediente opcional de esta receta",
+                    )
+                else:
+                    c1, c2, c3, c4 = st.columns([3, 1, 3, 1])
+
+                etiqueta = ing["alimento"] + (" *(opcional)*" if ing.get("opcional") else "")
+                c1.markdown(etiqueta)
+
+                if ing.get("opcional") and not ing.get("incluido", True):
+                    c3.write("(no incluido)")
+                    continue
+
                 paso = paso_equivalente(ing["alimento"], catalogo)
                 ajustable = paso is not None and not ing.get("bloqueado", False)
-                c1, c2, c3, c4 = st.columns([3, 1, 3, 1])
-                c1.write(ing["alimento"])
                 if not ajustable:
                     motivo = "bloqueado" if ing.get("bloqueado") else "no ajustable"
                     c3.write(f"({motivo})")
@@ -151,7 +171,10 @@ def render() -> None:
     st.subheader("Estado del tiempo")
 
     ingredientes_actuales = [
-        ing for instancia in seleccion for ing in instancia["ingredientes"]
+        ing
+        for instancia in seleccion
+        for ing in instancia["ingredientes"]
+        if ing.get("incluido", True)
     ]
     actual = sumar_por_grupo(ingredientes_actuales, "grupo_smae", "equivalentes")
     delta = delta_objetivo(objetivo, actual)
