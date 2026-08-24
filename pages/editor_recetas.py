@@ -97,11 +97,15 @@ def render() -> None:
     catalogo_por_nombre = {d["alimento"]: d for d in db().catalogo_alimentos.find({}, {"_id": 0})}
 
     recetas_por_id = {r["receta_id"]: r for r in recetas}
+    if "_flash" in st.session_state:
+        st.success(st.session_state.pop("_flash"))
+
     opciones = [NUEVA_RECETA] + sorted(recetas_por_id, key=lambda rid: recetas_por_id[rid]["nombre"])
     elegido = st.selectbox(
         "Receta a editar",
         options=opciones,
         format_func=lambda rid: rid if rid == NUEVA_RECETA else recetas_por_id[rid]["nombre"],
+        key="editor_receta_selector",
     )
 
     if st.session_state.get("_editor_actual") != elegido:
@@ -216,9 +220,12 @@ def render() -> None:
             }
             db().recetas.replace_one({"receta_id": receta_id}, documento, upsert=True)
             invalidar_cache_recetas()
-            st.session_state["_editor_actual"] = None
-            st.success(f"Receta '{documento['nombre']}' guardada como `{receta_id}`.")
-            st.rerun()
+            st.session_state["_flash"] = f"Receta '{documento['nombre']}' guardada como `{receta_id}`."
+            if elegido == NUEVA_RECETA:
+                st.session_state["editor_receta_selector"] = receta_id
+                st.session_state["_editor_actual"] = receta_id
+                st.rerun()
+            draft["receta_id"] = receta_id
 
     with col_eliminar:
         if draft["receta_id"] is not None:
@@ -226,8 +233,9 @@ def render() -> None:
             if st.button("🗑️ Eliminar receta", disabled=not confirmar):
                 db().recetas.delete_one({"receta_id": draft["receta_id"]})
                 invalidar_cache_recetas()
-                st.session_state["_editor_actual"] = None
-                st.success("Receta eliminada.")
+                st.session_state["editor_receta_selector"] = NUEVA_RECETA
+                st.session_state["_editor_actual"] = NUEVA_RECETA
+                st.session_state["_flash"] = "Receta eliminada."
                 st.rerun()
 
 
