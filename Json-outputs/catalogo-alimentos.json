@@ -1,0 +1,108 @@
+{
+  "_nota": "cantidad_por_equivalente = porción de este alimento que cuenta como 1 equivalente SMAE. Derivado de los tabs ya validados (Junio26, Marzo26, Agosto26) y, desde 2026-08-24, de SMAE_CONSULTA.csv (tabla oficial de equivalentes) como fuente de referencia para alimentos sin dato propio. Actualizar conforme se validen más tabs.",
+  "fuente_referencia": "SMAE_CONSULTA.csv — tabla oficial de equivalentes SMAE. Consultar aquí ANTES de marcar un alimento como 'sin entrada en catálogo' / pedir confirmación a Dan.",
+  "_nota_personas": "Dan confirmó (2026-08-24, al procesar Septiembre25): 'Dan' y 'Dany' son la misma persona (él). NORMALIZADO 2026-08-24: el campo \"persona\" de TODOS los archivos (incluyendo Junio/Abril/Marzo/Febrero25-Dany.json, que originalmente decían \"Dany\") ahora usa el valor canónico \"Dan\" — los nombres de archivo se dejaron igual (con sufijo '-Dany') por ahora, pero el campo persona ya es consistente para poder usarse como persona_id en la base de datos. 'Pau' (Febrero/Marzo/Abril/Junio/Julio/Septiembre25-Pau.json, Marzo26-Pau.json, PauJunio26.json) SÍ es una persona distinta — no confundir con Dan/Dany.",
+  "_nota_correcciones_vs_smae": "Cuando Dan indique que SMAE_CONSULTA.csv está desactualizado para algún alimento, su corrección se usa como fuente real por encima de SMAE (queda documentado en la 'nota' de la entrada). Caso 2026-08-24: Avena en hojuelas — SMAE decía ½taza=1, corregido a ¼taza=1 (igual que 'Avena' genérica). Resuelto en los 3 archivos ya entregados que usaban ½taza=1 (Abril25-Dany.json Desayuno M2, Febrero25-Dany.json Colación M2, Diciembre25.json Desayuno M1): Dan pidió corregir la CANTIDAD documentada a ¼ tz en vez de subir el equivalente — como el declarado del Excel ya era 1 Cereal en los 3 casos, la cantidad real correcta es ¼ tz (no ½ tz), y así se dejó documentado.",
+  "_nota_grupo_leguminosa": "NORMALIZADO 2026-08-24: Junio26-Dany.json y PauJunio26.json usaban el nombre de grupo 'Legumin' (con un campo 'grupos_intercambiables': [['Legumin','Cereal']]) mientras el resto del catálogo y de los tabs usa 'Leguminosa'. Se unificó a 'Leguminosa' en ambos archivos (grupo declarado, grupo_smae de ingrediente, y grupos_intercambiables) para que sea un solo nombre de grupo consistente en toda la base — 'Leguminosa' es el nombre canónico, coincide con la sección 'grupos.Leguminosa' de este catálogo.",
+  "_nota_formato_2026_autodeclarado": "Desde 2026-08-24 (tab 'Marzo26PPau'): los tabs de la serie 2026 con formato de cuadrícula 'fila-alineada' (columnas Tiempo|qt|Equivalente|Cantidad1|Ingrediente1|Cantidad2|Ingrediente2, sin celdas combinadas) se tratan como auto-declarados/autoritativos del nutriólogo — NO se verifican contra SMAE/catálogo, porque las cantidades fraccionarias (¾, ⅓, ¼ tazas) son específicas del plan personalizado 2026 y no siempre coinciden con las proporciones SMAE históricas del catálogo (ej. 'Res molida 120g=3 AOA' en este plan vs. '30g=1' del catálogo general, que daría 4). Los tabs con el formato 'pooling' clásico (declarados y pares cantidad/alimento como listas independientes, con celdas combinadas) SÍ se siguen reconciliando contra catálogo/SMAE como siempre.",
+  "grupos": {
+    "AOA": [
+      { "alimento": "Jamón de Pavo", "cantidad_por_equivalente": "42 g" },
+      { "alimento": "Queso panela", "cantidad_por_equivalente": "40 g" },
+      { "alimento": "Leche", "cantidad_por_equivalente": "1 taza" },
+      { "alimento": "Leche semi", "cantidad_por_equivalente": "1 taza" },
+      { "alimento": "Proteína en polvo", "cantidad_por_equivalente": "1 scoop" },
+      { "alimento": "Res deshebrada", "cantidad_por_equivalente": "30 g" },
+      { "alimento": "Res molida", "cantidad_por_equivalente": "30 g" },
+      { "alimento": "Bistec de res", "cantidad_por_equivalente": "30 g", "nota": "confirmado por SMAE_CONSULTA.csv ('Bistec de res', 30g=1) — coincide exacto con la asunción usada en Agosto26." },
+      { "alimento": "Atún en agua", "cantidad_por_equivalente": "1/3 lata" },
+      { "alimento": "Pescado", "cantidad_por_equivalente": "40 g" },
+      { "alimento": "Pollo", "cantidad_por_equivalente": "30 g", "nota": "aplica a cualquier preparación (a la plancha, deshebrado, etc.)" },
+      { "alimento": "Huevo", "cantidad_por_equivalente": "1 pieza" },
+      { "alimento": "Yogurt / Yogur bajo en grasa", "cantidad_por_equivalente": "75 g" },
+      { "alimento": "Pechuga de pavo (rebanada/fiambre)", "cantidad_por_equivalente": "~21 g (equivalente a 1 rebanada)", "nota": "fuente: SMAE_CONSULTA.csv (1.5 rebanada=32g=1 → ~21g/rebanada). En Junio25-Dany, Dan pidió documentar por peso en vez de 'pza' porque se corta muy delgada; 3 rebanadas ≈ 64g ≈ 2 equivalentes." },
+      { "alimento": "Clara de huevo", "cantidad_por_equivalente": "2 piezas (66 g)", "nota": "fuente: SMAE_CONSULTA.csv. Para '½ taza' de claras (convención común ≈120g), equivale a ≈1.8-2 — usar 2 salvo mejor dato." }
+    ],
+    "Cereal": [
+      { "alimento": "Pan de caja", "cantidad_por_equivalente": "1 rebanada" },
+      { "alimento": "Pan integral", "cantidad_por_equivalente": "1 pieza" },
+      { "alimento": "Pan tostado", "cantidad_por_equivalente": "1 pieza" },
+      { "alimento": "Avena", "cantidad_por_equivalente": "1/4 taza" },
+      { "alimento": "Bolillo", "cantidad_por_equivalente": "1/3 pieza" },
+      { "alimento": "Salmas", "cantidad_por_equivalente": "3 piezas (1 paquetito)", "nota": "= 'Galleta Salma' (mismo producto, distinto nombre en algunos tabs). Confirmado exacto por SMAE_CONSULTA.csv: 'Galletas de maíz horneadas sin grasa (salmas)', 3 pza = 18g = 1." },
+      { "alimento": "Arroz", "cantidad_por_equivalente": "1/4 taza" },
+      { "alimento": "Tortilla de maíz", "cantidad_por_equivalente": "1 pieza" },
+      { "alimento": "Pasta cocida", "cantidad_por_equivalente": "60 g (½ taza)", "nota": "equivalencia por taza confirmada exacta por SMAE_CONSULTA.csv ('Pasta cocida', ½taza=60g=1). Validado en Dany Marzo (2tza=4)." },
+      { "alimento": "Quinoa cocida", "cantidad_por_equivalente": "⅔ taza", "asuncion": true, "nota": "SMAE_CONSULTA.csv solo tiene 'Quinoa' cruda (20g=1), no cocida por taza. En Dany Marzo, ⅔tza es el único candidato para Cereal=2 de ese tiempo (por eliminación) — se documenta así aunque no hay verificación independiente." },
+      { "alimento": "Granola", "cantidad_por_equivalente": "1/4 taza" },
+      { "alimento": "Papa cocida", "cantidad_por_equivalente": "68 g (1/2 pieza)", "nota": "fuente: SMAE_CONSULTA.csv. Validado en Junio25-Dany (210g ≈ 3 equivalentes, cuadra en 2 platillos distintos)." },
+      { "alimento": "Papa cocida (picada, por taza)", "cantidad_por_equivalente": "0.75 taza", "nota": "fuente: SMAE_CONSULTA.csv ('Papa picada', 0.75taza=128g=1). Usar esta cuando el tab documenta por taza en vez de piezas/gramos. Validado en Dany Abril (1.5tza=2)." },
+      { "alimento": "Avena en hojuelas", "cantidad_por_equivalente": "1/4 taza", "nota": "CORREGIDO 2026-08-24 por Dan: SMAE_CONSULTA.csv trae ½taza=1 pero es una versión antigua/desactualizada. La fuente vigente (empaque/tabla nutrimental actual) indica ¼ taza = 1 porción — igual que la 'Avena' genérica. Se usa esta cifra como fuente real, por encima de SMAE_CONSULTA.csv. Ver '_nota_correcciones_vs_smae' arriba para el impacto en tabs ya entregados (Dany Abril, Febrero25-Dany, Diciembre25) que usaban el valor viejo (½taza=1)." },
+      { "alimento": "Pan Pita / Pan árabe", "cantidad_por_equivalente": "20 g (1/3 pieza)", "nota": "fuente: SMAE_CONSULTA.csv ('Pan árabe'). 1 pza completa = 3 equivalentes. Validado en Junio25-Dany." },
+      { "alimento": "Pan de hamburguesa (chico)", "cantidad_por_equivalente": "26 g (1/2 pieza)", "nota": "fuente: SMAE_CONSULTA.csv ('Pan para hamburguesa chico', 0.5pza=26g=1) → 1 pza completa = 2 equivalentes. Distinto del 'Bollo de hamburguesa' genérico (⅓pza=1, más denso). Validado en Septiembre25 (Dan/Dany): 2pz=4 Cereal." },
+      { "alimento": "Rice Cakes", "cantidad_por_equivalente": "4 piezas (1 paquetito)", "nota": "sin dato en SMAE_CONSULTA.csv; confirmado por Dan en Dany Abril: 4pz (1 paquetito) = 1 equivalente." },
+      { "alimento": "Palomitas", "cantidad_por_equivalente": "2.5 taza (18 g)", "nota": "confirmado exacto por SMAE_CONSULTA.csv ('Palomitas', 2.5taza=18g=1). Validado en Pau Septiembre25 (5tza=2 Cereal)." }
+    ],
+    "Verdura": [
+      { "alimento": "Pico de gallo", "cantidad_por_equivalente": "1/2 taza" },
+      { "alimento": "Lechuga", "cantidad_por_equivalente": "3 taza" },
+      { "alimento": "Zanahoria/Jícama", "cantidad_por_equivalente": "1/2 taza" },
+      { "alimento": "Champiñón", "cantidad_por_equivalente": "1/2 taza" },
+      { "alimento": "Pimiento", "cantidad_por_equivalente": "1/2 taza" },
+      { "alimento": "Jitomate", "cantidad_por_equivalente": "1/2 taza" },
+      { "alimento": "Jitomate en Rebanadas", "cantidad_por_equivalente": "~120 g", "asuncion": true, "nota": "Dan pidió documentar por peso en vez de rebanadas para evitar ambigüedad. Referencia SMAE_CONSULTA.csv: jitomate entero ≈120-123g=1. Validado Junio25-Dany. También se usó por eliminación para '4 rebanadas' en Pau Junio25 (4rbs≈1 Verdura)." },
+      { "alimento": "Nopal", "cantidad_por_equivalente": "1 taza" },
+      { "alimento": "Calabaza", "cantidad_por_equivalente": "1/2 taza" },
+      { "alimento": "Mezcla verdura", "cantidad_por_equivalente": "1/2 taza", "nota": "genérico/mixto" },
+      { "alimento": "Salsa de Jitomate", "cantidad_por_equivalente": "1/2 taza", "asuncion": true },
+      { "alimento": "Zanahoria rallada", "cantidad_por_equivalente": "55 g", "nota": "confirmado exacto por SMAE_CONSULTA.csv ('Zanahoria rallada cruda', ½ taza=55g=1) — coincide con lo que Dan confirmó en Agosto26 (55-60g)." },
+      { "alimento": "Espárragos", "cantidad_por_equivalente": "6 piezas (90 g)", "nota": "confirmado exacto por SMAE_CONSULTA.csv ('Espárragos crudos', 6pza=90g=1). Validado en Dany Abril." },
+      { "alimento": "Calabacita", "cantidad_por_equivalente": "100 g (1 pieza)", "nota": "fuente: SMAE_CONSULTA.csv ('Calabacita redonda cruda', 1pza=100g=1). Validado en Dany Abril." },
+      { "alimento": "Pepino", "cantidad_por_equivalente": "1 taza (con cáscara, rebanado)", "nota": "confirmado por SMAE_CONSULTA.csv ('Pepino con cáscara rebanado', 1taza=104g=1). Validado en Dany Marzo (alternativa a Mezcla de verdura ½tza=1, ambas dan 1)." },
+      { "alimento": "Zanahoria baby / Zanahoria miniatura", "cantidad_por_equivalente": "4 piezas (60 g)", "nota": "confirmado exacto por SMAE_CONSULTA.csv ('Zanahoria miniatura cruda', 4pza=60g=1). Validado en Febrero25-Dany." },
+      { "alimento": "Jitomate Cherry / Jitomate cereza", "cantidad_por_equivalente": "4 piezas (100 g)", "nota": "confirmado exacto por SMAE_CONSULTA.csv ('Jitomate cereza', 4pza=100g=1). Validado en Dany Marzo y Febrero25-Dany." }
+    ],
+    "Fruta": [
+      { "alimento": "Plátano", "cantidad_por_equivalente": "1/2 pieza" },
+      { "alimento": "Fresa congelada", "cantidad_por_equivalente": "1 taza" },
+      { "alimento": "Uvas", "cantidad_por_equivalente": "1 taza" },
+      { "alimento": "Mango picado", "cantidad_por_equivalente": "1 taza" },
+      { "alimento": "Manzana", "cantidad_por_equivalente": "1 pieza" },
+      { "alimento": "Mandarina", "cantidad_por_equivalente": "2 piezas" },
+      { "alimento": "Papaya", "cantidad_por_equivalente": "140 g", "nota": "Confirmado por Dan (2026-08-24): 140g = 1 equivalente, coincide con SMAE_CONSULTA.csv ('Papaya picada', 1 taza=140g=1). Agosto25.json se corrigió (tenía 2 Fruta por error, ahora es 1)." },
+      { "alimento": "Cerezas", "cantidad_por_equivalente": "136 g", "nota": "SMAE_CONSULTA.csv: 'Cereza' fresca, 20 pza=136g=1. Muy cercano a los 140g=1 usados en Agosto26 (consistente, redondeo normal)." },
+      { "alimento": "Sandía", "cantidad_por_equivalente": "200 g (1 rebanada)", "nota": "confirmado exacto por SMAE_CONSULTA.csv ('Sandia rebanada', 1 rebanada=200g=1). Validado en Junio25-Dany." },
+      { "alimento": "Blueberries", "cantidad_por_equivalente": "¾ taza (109 g)", "nota": "confirmado exacto por SMAE_CONSULTA.csv ('Blueberries' fresh, ¾taza=109g=1). Validado en Septiembre25 (Dan/Dany)." },
+      { "alimento": "Guayaba", "cantidad_por_equivalente": "3 piezas (135 g)", "nota": "confirmado exacto por SMAE_CONSULTA.csv ('Guayaba', 3pza=135g=1). Validado en Septiembre25 (Dan/Dany)." },
+      { "alimento": "Melón", "cantidad_por_equivalente": "1 taza picado (160 g)", "nota": "confirmado exacto por SMAE_CONSULTA.csv ('Melón picado', 1taza=160g=1). Validado en Diciembre25 (alternativa a Papaya, ambas 1taza=1)." },
+      { "alimento": "Arándano", "cantidad_por_equivalente": "½ taza", "asuncion": true, "nota": "SMAE_CONSULTA.csv da 'Arándano fresco' 1.5taza=1 (más generoso). En Dany Marzo, ½tza es el único candidato para Fruta=1 de ese tiempo (por eliminación) — se documenta el valor más chico usado ahí." },
+      { "alimento": "Naranja", "cantidad_por_equivalente": "1 pieza (mediana)", "asuncion": true, "nota": "SMAE_CONSULTA.csv da 2 piezas=1 (naranjas más chicas/242g las 2). En Dany Marzo aparece como alternativa a Manzana (1pza=1), forzado por eliminación — probablemente una naranja más grande. Sin confirmar con Dan." },
+      { "alimento": "Fruta (genérica)", "cantidad_por_equivalente": "1 unidad", "nota": "placeholder usado cuando el tab no especifica cuál fruta" }
+    ],
+    "Aceite s/p": [
+      { "alimento": "Aguacate", "cantidad_por_equivalente": "1/3 pieza" },
+      { "alimento": "Aguacate (por peso)", "cantidad_por_equivalente": "60 g", "nota": "convención por peso confirmada por Dan en Agosto26. SMAE_CONSULTA.csv da 58g (aguacate hass, ⅓pza) — prácticamente igual, se mantiene 60g por ser la cifra que Dan confirmó." },
+      { "alimento": "Guacamole (sin mayo)", "cantidad_por_equivalente": "2 cucharadas (28 g)", "nota": "confirmado exacto por SMAE_CONSULTA.csv ('Guacamole', 2cda=28g=1). Validado en Dany Marzo." },
+      { "alimento": "Aceite de oliva", "cantidad_por_equivalente": "1 cucharadita" },
+      { "alimento": "Aceitunas", "cantidad_por_equivalente": "8 piezas" }
+    ],
+    "Aceite c/p": [
+      { "alimento": "Almendras", "cantidad_por_equivalente": "10 piezas" },
+      { "alimento": "Crema de cacahuate", "cantidad_por_equivalente": "2 cucharaditas", "nota": "Confirmado por Dan en Junio25-Dany (un '1 cdt' que aparecía en el tab era error de captura). SMAE_CONSULTA.csv no tiene 'crema de cacahuate' exacta (lo más cercano, 'Pasta de cacahuate', da otra razón), pero se mantiene 2cdt=1 por ser el valor ya validado en varios tabs. Alias: 'Mantequilla de cacahuate' (mismo producto, distinto nombre en algunos tabs — ej. Febrero25-Dany). Ojo: siempre es Aceite c/p, aunque a veces el Excel lo etiqueta por error como 'Aceite sp' (visto en Febrero25-Dany)." },
+      { "alimento": "Nuez", "cantidad_por_equivalente": "7 mitades", "asuncion": true, "nota": "Sin dato exacto en catálogo/SMAE. Validado por eliminación en Pau Febrero25 ('Al despertar' de ambos menús): única candidata para completar Aceite c/p=1 declarado." },
+      { "alimento": "Nueces", "cantidad_por_equivalente": "10 piezas", "asuncion": true, "nota": "Sin dato exacto en catálogo/SMAE para 'Nueces' (distinto de 'Nuez' en mitades). Validado por eliminación en Pau Junio26 (Menú 1 y 2, Desayuno): única candidata restante para completar Aceite c/p=1 declarado — mismo criterio/cantidad que 'Almendras' 10pza=1." }
+    ],
+    "Leguminosa": [
+      { "alimento": "Frijoles", "cantidad_por_equivalente": "1/2 taza" },
+      { "alimento": "Garbanzo cocido", "cantidad_por_equivalente": "1/2 taza (82 g)", "nota": "confirmado exacto por SMAE_CONSULTA.csv ('Garbanzo cocido', ½taza=82g=1) — mismo factor que Frijoles. Validado en Septiembre25 (Dan/Dany)." }
+    ]
+  },
+  "libres": {
+    "_nota": "Alimentos que no cuentan como ningún equivalente SMAE (cantidad libre/al gusto).",
+    "alimentos": [
+      { "alimento": "Canela", "nota": "'al gusto' / 'free'" },
+      { "alimento": "Gelatina", "nota": "confirmado por Dan en Agosto26" },
+      { "alimento": "Salsa casera (al gusto)", "nota": "cuando no lleva cantidad especificada; confirmado por Dan en Agosto26" }
+    ]
+  }
+}

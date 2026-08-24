@@ -1,0 +1,483 @@
+{
+  "persona": "Pau",
+  "periodo": "2025-07",
+  "tab_origen": "Pau Julio",
+  "sistema_referencia": "SMAE",
+  "fase": "mantenimiento",
+  "menus": [
+    {
+      "menu_id": 1,
+      "dias": [
+        "lunes",
+        "miercoles",
+        "viernes"
+      ],
+      "equivalentes_diarios": [
+        {
+          "grupo": "Fruta",
+          "cantidad": 3
+        },
+        {
+          "grupo": "AOA",
+          "cantidad": 12
+        },
+        {
+          "grupo": "Cereal",
+          "cantidad": 5
+        },
+        {
+          "grupo": "Verdura",
+          "cantidad": 5
+        },
+        {
+          "grupo": "Aceite s/p",
+          "cantidad": 2
+        }
+      ],
+      "tiempos": [
+        {
+          "tiempo": "desayuno",
+          "icono": "🌅",
+          "equivalentes": [
+            {
+              "grupo": "Fruta",
+              "cantidad": 2
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 6
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Batido de Proteína",
+              "ingredientes": [
+                {
+                  "cantidad": "1 pza",
+                  "alimento": "Plátano",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "1 scp",
+                  "alimento": "Proteína",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Leche Semi",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "¼ tza",
+                  "alimento": "Avena",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 1
+                }
+              ]
+            },
+            {
+              "nombre": "Huevos duros con zanahoria/pepino",
+              "ingredientes": [
+                {
+                  "cantidad": "2 pza",
+                  "alimento": "Huevos duros",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "2 tza",
+                  "alimento": "Pepino",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "40 g",
+                  "alimento": "Panela",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "2 pza",
+                  "alimento": "Claras",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "comida",
+          "icono": "🌇",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 3
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Atún a la Vizcaina",
+              "ingredientes": [
+                {
+                  "cantidad": "1 lta",
+                  "alimento": "Atún",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 3
+                },
+                {
+                  "cantidad": "2 paquetitos (6 pz)",
+                  "alimento": "Salmas",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "1 tza",
+                  "alimento": "Pico de gallo",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "140 g",
+                  "alimento": "Cerezas",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "colacion",
+          "icono": "🍏",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Jícama/Zanahoria",
+              "ingredientes": [
+                {
+                  "cantidad": "60 g",
+                  "alimento": "Jícama rallada o Zanahoria",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "cena",
+          "icono": "🌃",
+          "equivalentes": [
+            {
+              "grupo": "Aceite s/p",
+              "cantidad": 2
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 3
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Avocado Toast",
+              "ingredientes": [
+                {
+                  "cantidad": "80 g",
+                  "alimento": "Queso Panela",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "2 pza",
+                  "alimento": "Pan Tostado",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "120 g",
+                  "alimento": "Aguacate",
+                  "grupo_smae": "Aceite s/p",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "1 vaso (taza)",
+                  "alimento": "Leche",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1,
+                  "asuncion": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": 2,
+      "dias": [
+        "martes",
+        "jueves",
+        "sabado"
+      ],
+      "equivalentes_diarios": [
+        {
+          "grupo": "Fruta",
+          "cantidad": 2
+        },
+        {
+          "grupo": "AOA",
+          "cantidad": 12
+        },
+        {
+          "grupo": "Cereal",
+          "cantidad": 5
+        },
+        {
+          "grupo": "Verdura",
+          "cantidad": 5
+        },
+        {
+          "grupo": "Aceite s/p",
+          "cantidad": 1
+        }
+      ],
+      "tiempos": [
+        {
+          "tiempo": "desayuno",
+          "icono": "🌅",
+          "equivalentes": [
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 4
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Verdura",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Batido de Proteína",
+              "ingredientes": [
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Fresa/Mango congelado",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "1 tza",
+                  "alimento": "Leche Semi",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                }
+              ]
+            },
+            {
+              "nombre": "Sandwich Atún",
+              "ingredientes": [
+                {
+                  "cantidad": "2 pz",
+                  "alimento": "Pan Integral",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "½ tza",
+                  "alimento": "Zanahoria/Jicama",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "1 lta",
+                  "alimento": "Atun en agua",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 3
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "comida",
+          "icono": "🌇",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 1
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 4
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Tinga de Pollo",
+              "ingredientes": [
+                {
+                  "cantidad": "1 pqt",
+                  "alimento": "Salmas",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "sin cantidad",
+                  "alimento": "Salsa casera de jitomate",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1,
+                  "asuncion": true
+                },
+                {
+                  "cantidad": "120 g",
+                  "alimento": "Pechuga de Pollo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 4
+                },
+                {
+                  "cantidad": "1 tza",
+                  "alimento": "Gelatina",
+                  "grupo_smae": null,
+                  "equivalentes": 0
+                },
+                {
+                  "cantidad": "60 g",
+                  "alimento": "Zanahoria rallada",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "colacion",
+          "icono": "🍏",
+          "equivalentes": [
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Manzana",
+              "ingredientes": [
+                {
+                  "cantidad": "1 pza",
+                  "alimento": "Manzana",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "cena",
+          "icono": "🌃",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Aceite s/p",
+              "cantidad": 1
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 4
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Tacos de bistec con nopales",
+              "ingredientes": [
+                {
+                  "cantidad": "120 g",
+                  "alimento": "Bistec de res",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 4
+                },
+                {
+                  "cantidad": "2 pz",
+                  "alimento": "Tortilla de Maíz",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "2 tzas",
+                  "alimento": "Nopales",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "al gusto",
+                  "alimento": "Salsa casera",
+                  "grupo_smae": null,
+                  "equivalentes": 0
+                },
+                {
+                  "cantidad": "60 g",
+                  "alimento": "Aguacate",
+                  "grupo_smae": "Aceite s/p",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

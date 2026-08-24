@@ -1,0 +1,490 @@
+{
+  "persona": "Dan",
+  "periodo": "2025-09",
+  "tab_origen": "Dany Sep",
+  "sistema_referencia": "SMAE",
+  "fase": "mantenimiento",
+  "_nota_validacion": "Generado a partir de la hoja 'Dany Sep' (menu-Dany-Sep.ods, convertido a xlsx) + catalogo-alimentos.json + SMAE_CONSULTA.csv. El nombre del tab es 'Dany Sep' pero el encabezado interno de ambos menús dice 'Dan' (a diferencia del tab 'Pau Sep' del mismo archivo, cuyo encabezado sí dice 'Pau' correctamente). Dan confirmó (2026-08-24): 'Dan y Dany es lo mismo' — es la misma persona, sin problema. Se usa persona='Dan' para este archivo. Todos los tiempos reconciliaron exacto contra catálogo/SMAE; solo 2 puntos se resolvieron por patrones ya establecidos en tabs anteriores, sin necesitar preguntar de nuevo: (1) Comida M2 (Fajitas): Pimiento documentado '1 tz' (daría 2 Verdura) vs. declarado Verdura=2 total junto con Zanahoria baby (1 Verdura) — sumaría 3, un excedente de 1. Es la 4ª vez que se ve el patrón de Pimiento documentado al doble (antes: Junio, Abril, Febrero de Dany) — corregido a ½ taza = 1 Verdura. (2) Cena M2 (Hamburguesa): 'Jitomate/Lechuga' documentado 'free' — único candidato para completar el Verdura=1 declarado (mismo patrón de guarnición libre forzada por eliminación visto varias veces antes). Nota informativa: la celda '(sin aderezos)' junto a la guarnición no es un ingrediente, es una aclaración de que la hamburguesa no lleva aderezos/salsas extra. Resuelto vía SMAE_CONSULTA.csv sin preguntar: Blueberries frescas (¾tza=109g=1, exacto), Guayaba (3pza=135g=1, exacto), Garbanzo cocido (½tza=82g=1, exacto — mismo factor que Frijoles, va en grupo Leguminosa separado de Cereal), Pan de hamburguesa chico ('Pan para hamburguesa chico', 0.5pza=26g=1 → 2pz=4, resuelve el Cereal=4 declarado de la Cena M2 que no cuadraba con la conversión genérica de pan). Clara de huevo ¼ taza (Desayuno M1) documentada por volumen — se asume 1 equivalente por eliminación, escalando la nota ya existente en catálogo (½taza≈2) a la mitad; cuadra exacto con el AOA=4 declarado (Leche semi 1 + Huevo 2 + Claras 1).",
+  "menus": [
+    {
+      "menu_id": 1,
+      "dias": [
+        "lunes",
+        "miercoles",
+        "viernes"
+      ],
+      "equivalentes_diarios": [
+        {
+          "grupo": "Fruta",
+          "cantidad": 2
+        },
+        {
+          "grupo": "AOA",
+          "cantidad": 14
+        },
+        {
+          "grupo": "Verdura",
+          "cantidad": 5
+        },
+        {
+          "grupo": "Aceite c/p",
+          "cantidad": 1
+        },
+        {
+          "grupo": "Cereal",
+          "cantidad": 6
+        },
+        {
+          "grupo": "Leguminosa",
+          "cantidad": 1
+        }
+      ],
+      "tiempos": [
+        {
+          "tiempo": "desayuno",
+          "icono": "🌅",
+          "equivalentes": [
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 4
+            },
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Aceite c/p",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Licuado de blueberries",
+              "ingredientes": [
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Leche semi",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "¾ tz",
+                  "alimento": "Blueberries",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1,
+                  "nota": "Confirmado exacto por SMAE_CONSULTA.csv ('Blueberries', ¾taza=109g=1)."
+                },
+                {
+                  "cantidad": "al gusto",
+                  "alimento": "Canela",
+                  "grupo_smae": null,
+                  "equivalentes": 0,
+                  "nota": "Libre, no cuenta en ningún grupo."
+                }
+              ]
+            },
+            {
+              "nombre": "Omelet de Verduras",
+              "ingredientes": [
+                {
+                  "cantidad": "2 pz",
+                  "alimento": "Huevo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "¼ tz",
+                  "alimento": "Claras de huevo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1,
+                  "asuncion": true,
+                  "nota": "SMAE_CONSULTA.csv no tiene clara de huevo por taza. Único candidato para completar AOA=4 de este tiempo (Leche1+Huevo2+Claras1) — documentado por eliminación."
+                },
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Verdura mix",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 2
+                }
+              ]
+            },
+            {
+              "nombre": "Pan tostado",
+              "ingredientes": [
+                {
+                  "cantidad": "1 pz",
+                  "alimento": "Pan",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "2 cdt",
+                  "alimento": "Crema de cacahuate",
+                  "grupo_smae": "Aceite c/p",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "comida",
+          "icono": "🌇",
+          "equivalentes": [
+            {
+              "grupo": "Leguminosa",
+              "cantidad": 1
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 5
+            },
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Filete de pescado + Guayaba",
+              "ingredientes": [
+                {
+                  "cantidad": "160 g",
+                  "alimento": "Pescado",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 4
+                },
+                {
+                  "cantidad": "40 g",
+                  "alimento": "Queso Panela",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "½ tz",
+                  "alimento": "Champiñón",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Pepino",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "½ tz",
+                  "alimento": "Arroz",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "½ tz",
+                  "alimento": "Garbanzo",
+                  "grupo_smae": "Leguminosa",
+                  "equivalentes": 1,
+                  "nota": "Confirmado exacto por SMAE_CONSULTA.csv ('Garbanzo cocido', ½taza=82g=1)."
+                },
+                {
+                  "cantidad": "3 pz",
+                  "alimento": "Guayaba",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1,
+                  "nota": "Confirmado exacto por SMAE_CONSULTA.csv ('Guayaba', 3pza=135g=1)."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "cena",
+          "icono": "🌃",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 1
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 5
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 3
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Taquitos",
+              "ingredientes": [
+                {
+                  "cantidad": "150 g",
+                  "alimento": "Bistec de res o Pollo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 5
+                },
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Nopal",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "3 pz",
+                  "alimento": "Tortilla de maíz",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 3
+                },
+                {
+                  "cantidad": "al gusto",
+                  "alimento": "Salsa casera",
+                  "grupo_smae": null,
+                  "equivalentes": 0,
+                  "nota": "Libre — confirmado en tabs anteriores (Agosto26), no cuenta en ningún grupo."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": 2,
+      "dias": [
+        "martes",
+        "jueves",
+        "sabado"
+      ],
+      "equivalentes_diarios": [
+        {
+          "grupo": "Cereal",
+          "cantidad": 7
+        },
+        {
+          "grupo": "Verdura",
+          "cantidad": 4
+        },
+        {
+          "grupo": "AOA",
+          "cantidad": 14
+        },
+        {
+          "grupo": "Fruta",
+          "cantidad": 3
+        },
+        {
+          "grupo": "Aceite s/p",
+          "cantidad": 1
+        }
+      ],
+      "tiempos": [
+        {
+          "tiempo": "desayuno",
+          "icono": "🌅",
+          "equivalentes": [
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Verdura",
+              "cantidad": 1
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 5
+            },
+            {
+              "grupo": "Fruta",
+              "cantidad": 2
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Sándwich",
+              "ingredientes": [
+                {
+                  "cantidad": "2 pz",
+                  "alimento": "Pan integral",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "40 g",
+                  "alimento": "Queso Panela",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "1 lata / 90 g",
+                  "alimento": "Atún o Pollo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 3,
+                  "nota": "Alternativa (elegir una) — ambas dan la misma equivalencia por catálogo (Atún ⅓lata=1 → 1lata=3; Pollo 30g=1 → 90g=3)."
+                },
+                {
+                  "cantidad": "½ tz",
+                  "alimento": "Zanahoria/Jícama",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                }
+              ]
+            },
+            {
+              "nombre": "Yogur",
+              "ingredientes": [
+                {
+                  "cantidad": "75 g",
+                  "alimento": "Yogur griego",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "1 pz",
+                  "alimento": "Plátano",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "comida",
+          "icono": "🌇",
+          "equivalentes": [
+            {
+              "grupo": "AOA",
+              "cantidad": 5
+            },
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Fajitas",
+              "ingredientes": [
+                {
+                  "cantidad": "150 g",
+                  "alimento": "Pollo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 5
+                },
+                {
+                  "cantidad": "½ tz",
+                  "alimento": "Pimiento",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1,
+                  "nota": "Documentado '1 tz' en el Excel (daría 2 Verdura, sumando 3 con Zanahoria baby vs. declarado 2). Mismo patrón recurrente ya confirmado 4 veces (Junio, Abril, Febrero, ahora Septiembre): la cantidad real es la mitad."
+                },
+                {
+                  "cantidad": "4 pz",
+                  "alimento": "Zanahoria baby",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1,
+                  "nota": "Confirmado exacto por SMAE_CONSULTA.csv ('Zanahoria miniatura cruda', 4pza=60g=1)."
+                },
+                {
+                  "cantidad": "70 g",
+                  "alimento": "Papa cocida",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 1,
+                  "nota": "Catálogo: 68g (½pza)=1; 70g redondea a 1."
+                },
+                {
+                  "cantidad": "2 pz",
+                  "alimento": "Mandarina",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "cena",
+          "icono": "🌃",
+          "equivalentes": [
+            {
+              "grupo": "Cereal",
+              "cantidad": 4
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 4
+            },
+            {
+              "grupo": "Aceite s/p",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Verdura",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Hamburguesa",
+              "ingredientes": [
+                {
+                  "cantidad": "120 g",
+                  "alimento": "Res molida",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 4
+                },
+                {
+                  "cantidad": "2 pz",
+                  "alimento": "Pan de hamburguesa (chico)",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 4,
+                  "asuncion": true,
+                  "nota": "Confirmado por SMAE_CONSULTA.csv ('Pan para hamburguesa chico', 0.5pza=26g=1 → 1pza=2) → 2pz=4. Resuelve el Cereal=4 declarado, que no cuadraba con la conversión genérica de pan (1pza=1)."
+                },
+                {
+                  "cantidad": "porción chica (sin aderezos)",
+                  "alimento": "Jitomate/Lechuga",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1,
+                  "asuncion": true,
+                  "nota": "Documentado 'free' en el Excel — único candidato para completar el Verdura=1 declarado (mismo patrón de guarnición libre forzada por eliminación visto varias veces antes). La nota '(sin aderezos)' del Excel aclara que no lleva salsas/aderezos extra."
+                },
+                {
+                  "cantidad": "⅓ pz",
+                  "alimento": "Aguacate",
+                  "grupo_smae": "Aceite s/p",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

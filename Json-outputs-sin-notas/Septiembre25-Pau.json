@@ -1,0 +1,487 @@
+{
+  "persona": "Pau",
+  "periodo": "2025-09",
+  "tab_origen": "Pau Sep",
+  "sistema_referencia": "SMAE",
+  "fase": "mantenimiento",
+  "menus": [
+    {
+      "menu_id": 1,
+      "dias": [
+        "lunes",
+        "miercoles",
+        "viernes"
+      ],
+      "equivalentes_diarios": [
+        {
+          "grupo": "AOA",
+          "cantidad": 11
+        },
+        {
+          "grupo": "Fruta",
+          "cantidad": 2
+        },
+        {
+          "grupo": "Cereal",
+          "cantidad": 5
+        },
+        {
+          "grupo": "Verdura",
+          "cantidad": 4
+        },
+        {
+          "grupo": "Leguminosa",
+          "cantidad": 1
+        }
+      ],
+      "tiempos": [
+        {
+          "tiempo": "al_despertar",
+          "icono": "🌞",
+          "equivalentes": [
+            {
+              "grupo": "AOA",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Licuado de blueberries",
+              "ingredientes": [
+                {
+                  "cantidad": "¾ tz",
+                  "alimento": "Blueberries",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "al gusto",
+                  "alimento": "Canela",
+                  "grupo_smae": null,
+                  "equivalentes": 0
+                },
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Leche semi",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "¼ tz",
+                  "alimento": "Avena",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "desayuno",
+          "icono": "🌅",
+          "equivalentes": [
+            {
+              "grupo": "AOA",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Verdura",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Huevos duros con zanahoria",
+              "ingredientes": [
+                {
+                  "cantidad": "2 pz",
+                  "alimento": "Huevo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "4 pz",
+                  "alimento": "Zanahoria baby",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                }
+              ]
+            },
+            {
+              "nombre": "Pan tostado con mermelada",
+              "ingredientes": [
+                {
+                  "cantidad": "1 pz",
+                  "alimento": "Pan tostado",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "2 cdt",
+                  "alimento": "Mermelada light",
+                  "grupo_smae": null,
+                  "equivalentes": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "comida",
+          "icono": "🌇",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 4
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Leguminosa",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Filete de pescado + Guayaba",
+              "ingredientes": [
+                {
+                  "cantidad": "160 g",
+                  "alimento": "Pescado",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 4
+                },
+                {
+                  "cantidad": "½ tz",
+                  "alimento": "Champiñón",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Pepino",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "70 g",
+                  "alimento": "Papa cocida",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "½ tz",
+                  "alimento": "Garbanzo",
+                  "grupo_smae": "Leguminosa",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "3 pz",
+                  "alimento": "Guayaba",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "cena",
+          "icono": "🌃",
+          "equivalentes": [
+            {
+              "grupo": "AOA",
+              "cantidad": 4
+            },
+            {
+              "grupo": "Verdura",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Taquitos de bistec/pollo",
+              "ingredientes": [
+                {
+                  "cantidad": "120 g",
+                  "alimento": "Bistec de res o Pollo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 4
+                },
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Nopal",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "2 pz",
+                  "alimento": "Tortilla",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "al gusto",
+                  "alimento": "Salsa casera",
+                  "grupo_smae": null,
+                  "equivalentes": 0
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": 2,
+      "dias": [
+        "martes",
+        "jueves",
+        "sabado"
+      ],
+      "equivalentes_diarios": [
+        {
+          "grupo": "AOA",
+          "cantidad": 12
+        },
+        {
+          "grupo": "Fruta",
+          "cantidad": 3
+        },
+        {
+          "grupo": "Verdura",
+          "cantidad": 5
+        },
+        {
+          "grupo": "Cereal",
+          "cantidad": 5
+        }
+      ],
+      "tiempos": [
+        {
+          "tiempo": "al_despertar",
+          "icono": "🌞",
+          "equivalentes": [
+            {
+              "grupo": "AOA",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Fruta",
+              "cantidad": 2
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Yogur con plátano",
+              "ingredientes": [
+                {
+                  "cantidad": "75 g",
+                  "alimento": "Yogur griego",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "1 pz",
+                  "alimento": "Plátano",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "desayuno",
+          "icono": "🌅",
+          "equivalentes": [
+            {
+              "grupo": "AOA",
+              "cantidad": 3
+            },
+            {
+              "grupo": "Verdura",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Sándwich de atún/pollo",
+              "ingredientes": [
+                {
+                  "cantidad": "2 pz",
+                  "alimento": "Pan integral",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "1 lata / 90 g",
+                  "alimento": "Atún o Pollo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 3
+                },
+                {
+                  "cantidad": "½ tz",
+                  "alimento": "Zanahoria o Jícama",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "comida",
+          "icono": "🌇",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 1
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 4
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Fajitas de pollo con papas",
+              "ingredientes": [
+                {
+                  "cantidad": "120 g",
+                  "alimento": "Pollo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 4
+                },
+                {
+                  "cantidad": "½ tz",
+                  "alimento": "Pimiento",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "4 pz",
+                  "alimento": "Zanahoria baby",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "70 g",
+                  "alimento": "Papa cocida",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "2 pz",
+                  "alimento": "Mandarina",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "colacion",
+          "icono": "🍏",
+          "equivalentes": [
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Palomitas",
+              "ingredientes": [
+                {
+                  "cantidad": "5 tz",
+                  "alimento": "Palomitas",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "al gusto",
+                  "alimento": "Sal/Limón",
+                  "grupo_smae": null,
+                  "equivalentes": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "cena",
+          "icono": "🌃",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 4
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Molida con verduras",
+              "ingredientes": [
+                {
+                  "cantidad": "120 g",
+                  "alimento": "Res molida",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 4
+                },
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Verdura mix",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 2
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

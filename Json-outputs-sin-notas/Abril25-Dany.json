@@ -1,0 +1,473 @@
+{
+  "persona": "Dan",
+  "periodo": "2025-04",
+  "tab_origen": "Dany Abril",
+  "sistema_referencia": "SMAE",
+  "fase": "mantenimiento",
+  "menus": [
+    {
+      "menu_id": 1,
+      "dias": [
+        "lunes",
+        "miercoles",
+        "viernes"
+      ],
+      "equivalentes_diarios": [
+        {
+          "grupo": "Fruta",
+          "cantidad": 3
+        },
+        {
+          "grupo": "Cereal",
+          "cantidad": 5
+        },
+        {
+          "grupo": "AOA",
+          "cantidad": 15
+        },
+        {
+          "grupo": "Verdura",
+          "cantidad": 6
+        }
+      ],
+      "tiempos": [
+        {
+          "tiempo": "desayuno",
+          "icono": "🌅",
+          "equivalentes": [
+            {
+              "grupo": "Fruta",
+              "cantidad": 3
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 3
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Batido de Proteína",
+              "ingredientes": [
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Fresa/Mango congelado",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "1 scp",
+                  "alimento": "Proteína en polvo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Leche Semi",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                }
+              ]
+            },
+            {
+              "nombre": "Pan Francés",
+              "ingredientes": [
+                {
+                  "cantidad": "2 pz",
+                  "alimento": "Pan Integral",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "1 pz",
+                  "alimento": "Huevo entero + leche",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "1 pz",
+                  "alimento": "Plátano",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "al gusto",
+                  "alimento": "Vainilla/canela",
+                  "grupo_smae": null,
+                  "equivalentes": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "comida",
+          "icono": "🌇",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 6
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Filete de pescado con verduras",
+              "ingredientes": [
+                {
+                  "cantidad": "200 g",
+                  "alimento": "Filete de pescado",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 5
+                },
+                {
+                  "cantidad": "100 g",
+                  "alimento": "Calabacita",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "40 g",
+                  "alimento": "Queso Panela",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "½ tz",
+                  "alimento": "Arroz",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "6 pz",
+                  "alimento": "Espárrago",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "colacion",
+          "icono": "🍏",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Jícama con Tajín",
+              "ingredientes": [
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Jícama o Zanahoria",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "al gusto",
+                  "alimento": "Sal, Limón, Tajín",
+                  "grupo_smae": null,
+                  "equivalentes": 0
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "cena",
+          "icono": "🌃",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 1
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 6
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Alambre de Pollo",
+              "ingredientes": [
+                {
+                  "cantidad": "180 g",
+                  "alimento": "Pechuga de pollo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 6
+                },
+                {
+                  "cantidad": "4 pz (1 paquetito)",
+                  "alimento": "Rice Cakes",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Pimiento",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 2
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": 2,
+      "dias": [
+        "martes",
+        "jueves",
+        "sabado"
+      ],
+      "equivalentes_diarios": [
+        {
+          "grupo": "Fruta",
+          "cantidad": 3
+        },
+        {
+          "grupo": "Verdura",
+          "cantidad": 6
+        },
+        {
+          "grupo": "Cereal",
+          "cantidad": 5
+        },
+        {
+          "grupo": "AOA",
+          "cantidad": 17
+        },
+        {
+          "grupo": "Aceite s/p",
+          "cantidad": 1
+        }
+      ],
+      "tiempos": [
+        {
+          "tiempo": "desayuno",
+          "icono": "🌅",
+          "equivalentes": [
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 1
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 5
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Batido de Proteína",
+              "ingredientes": [
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Fresa/Mango congelado",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "1 scp",
+                  "alimento": "Proteína en polvo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                }
+              ]
+            },
+            {
+              "nombre": "Huevos con Champiñón",
+              "ingredientes": [
+                {
+                  "cantidad": "2 pz",
+                  "alimento": "Huevo entero",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "½ tz",
+                  "alimento": "Clara de Huevo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "¼ tz",
+                  "alimento": "Avena en Hojuelas",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Champiñón cocido",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 2
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "comida",
+          "icono": "🌇",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 6
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Picadillo",
+              "ingredientes": [
+                {
+                  "cantidad": "1.5 tz",
+                  "alimento": "Papa cocida",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "al gusto",
+                  "alimento": "Salsa casera de Jitomate",
+                  "grupo_smae": null,
+                  "equivalentes": 0
+                },
+                {
+                  "cantidad": "180 g",
+                  "alimento": "Molida de Res",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 6
+                },
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Mezcla de verdura",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "1 tza",
+                  "alimento": "Uvas",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "colacion",
+          "icono": "🍏",
+          "equivalentes": [
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Sandía",
+              "ingredientes": [
+                {
+                  "cantidad": "200 g",
+                  "alimento": "Sandía",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "cena",
+          "icono": "🌃",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 6
+            },
+            {
+              "grupo": "Aceite s/p",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Ceviche de atún",
+              "ingredientes": [
+                {
+                  "cantidad": "2 lat",
+                  "alimento": "Atún en agua",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 6
+                },
+                {
+                  "cantidad": "⅓ pz",
+                  "alimento": "Aguacate",
+                  "grupo_smae": "Aceite s/p",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "6 pz",
+                  "alimento": "Galleta Salma",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "1 tz",
+                  "alimento": "Pico de gallo",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 2
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,510 @@
+{
+  "persona": "Dan",
+  "periodo": "2025-08",
+  "tab_origen": "Dan Agosto",
+  "sistema_referencia": "SMAE",
+  "fase": "mantenimiento",
+  "grupos_intercambiables": [
+    [
+      "Leguminosa",
+      "Cereal"
+    ]
+  ],
+  "menus": [
+    {
+      "menu_id": 1,
+      "dias": [
+        "lunes",
+        "miercoles",
+        "viernes"
+      ],
+      "equivalentes_diarios": [
+        {
+          "grupo": "Leguminosa",
+          "cantidad": 1
+        },
+        {
+          "grupo": "AOA",
+          "cantidad": 12
+        },
+        {
+          "grupo": "Cereal",
+          "cantidad": 7
+        },
+        {
+          "grupo": "Verdura",
+          "cantidad": 6
+        },
+        {
+          "grupo": "Fruta",
+          "cantidad": 3
+        },
+        {
+          "grupo": "Aceite s/p",
+          "cantidad": 2
+        }
+      ],
+      "tiempos": [
+        {
+          "tiempo": "desayuno",
+          "icono": "🌅",
+          "equivalentes": [
+            {
+              "grupo": "Leguminosa",
+              "cantidad": 1
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 4
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 3
+            },
+            {
+              "grupo": "Verdura",
+              "cantidad": 1
+            },
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Huevos Revueltos + Molletes",
+              "ingredientes": [
+                {
+                  "cantidad": "2 pz",
+                  "alimento": "Huevo Entero",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "1 pz (2 mitades)",
+                  "alimento": "Bolillo",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 3
+                },
+                {
+                  "cantidad": "½ tza",
+                  "alimento": "Frijoles",
+                  "grupo_smae": "Leguminosa",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "80 g",
+                  "alimento": "Queso Panela",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "½ tza",
+                  "alimento": "Pico de gallo",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                }
+              ]
+            },
+            {
+              "nombre": "Papaya",
+              "ingredientes": [
+                {
+                  "cantidad": "140 g",
+                  "alimento": "Papaya",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "comida",
+          "icono": "🌇",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 6
+            },
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Atún a la Vizcaina",
+              "ingredientes": [
+                {
+                  "cantidad": "2 lta",
+                  "alimento": "Atún en agua",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 6
+                },
+                {
+                  "cantidad": "6 pza",
+                  "alimento": "Salmas",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "1 tza",
+                  "alimento": "Pico de gallo",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 2
+                }
+              ]
+            },
+            {
+              "nombre": "Cerezas",
+              "ingredientes": [
+                {
+                  "cantidad": "140 g",
+                  "alimento": "Cerezas",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1,
+                  "asuncion": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "colacion",
+          "icono": "🍏",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 3
+            },
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Jícama/Zanahoria + Manzana",
+              "ingredientes": [
+                {
+                  "cantidad": "180 g",
+                  "alimento": "Jícama o Zanahoria",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 3,
+                  "asuncion": true
+                },
+                {
+                  "cantidad": "1 pza",
+                  "alimento": "Manzana",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "cena",
+          "icono": "🌃",
+          "equivalentes": [
+            {
+              "grupo": "AOA",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Aceite s/p",
+              "cantidad": 2
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Avocado Toast",
+              "ingredientes": [
+                {
+                  "cantidad": "80 g",
+                  "alimento": "Queso Panela",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "2 pza",
+                  "alimento": "Pan Tostado",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "120 g",
+                  "alimento": "Aguacate",
+                  "grupo_smae": "Aceite s/p",
+                  "equivalentes": 2,
+                  "asuncion": true
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": 2,
+      "dias": [
+        "martes",
+        "jueves",
+        "sabado"
+      ],
+      "equivalentes_diarios": [
+        {
+          "grupo": "Fruta",
+          "cantidad": 3
+        },
+        {
+          "grupo": "AOA",
+          "cantidad": 14
+        },
+        {
+          "grupo": "Cereal",
+          "cantidad": 7
+        },
+        {
+          "grupo": "Verdura",
+          "cantidad": 5
+        },
+        {
+          "grupo": "Aceite s/p",
+          "cantidad": 1
+        }
+      ],
+      "tiempos": [
+        {
+          "tiempo": "desayuno",
+          "icono": "🌅",
+          "equivalentes": [
+            {
+              "grupo": "Fruta",
+              "cantidad": 2
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 5
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Verdura",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Licuado de plátano",
+              "ingredientes": [
+                {
+                  "cantidad": "1 pza",
+                  "alimento": "Plátano",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "al gusto",
+                  "alimento": "Canela",
+                  "grupo_smae": null,
+                  "equivalentes": 0
+                },
+                {
+                  "cantidad": "1 tza",
+                  "alimento": "Leche Semi",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                }
+              ]
+            },
+            {
+              "nombre": "Sandwich Pollo",
+              "ingredientes": [
+                {
+                  "cantidad": "2 pz",
+                  "alimento": "Pan Integral",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "½ tza",
+                  "alimento": "Zanahoria/Jícama",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1
+                },
+                {
+                  "cantidad": "90 g",
+                  "alimento": "Pechuga de Pollo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 3
+                },
+                {
+                  "cantidad": "40 g",
+                  "alimento": "Queso Panela",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "comida",
+          "icono": "🌇",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 2
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 5
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Tinga de Pollo",
+              "ingredientes": [
+                {
+                  "cantidad": "2 pqt",
+                  "alimento": "Salmas",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "1/2 tza (asumido)",
+                  "alimento": "Salsa casera jitomate",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1,
+                  "asuncion": true
+                },
+                {
+                  "cantidad": "150 g",
+                  "alimento": "Pechuga de Pollo",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 5
+                },
+                {
+                  "cantidad": "1 tza",
+                  "alimento": "Gelatina",
+                  "grupo_smae": null,
+                  "equivalentes": 0
+                },
+                {
+                  "cantidad": "55-60 g",
+                  "alimento": "Zanahoria rallada",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 1,
+                  "asuncion": true
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "colacion",
+          "icono": "🍏",
+          "equivalentes": [
+            {
+              "grupo": "Fruta",
+              "cantidad": 1
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Manzana",
+              "ingredientes": [
+                {
+                  "cantidad": "1 pza",
+                  "alimento": "Manzana",
+                  "grupo_smae": "Fruta",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tiempo": "cena",
+          "icono": "🌃",
+          "equivalentes": [
+            {
+              "grupo": "Verdura",
+              "cantidad": 2
+            },
+            {
+              "grupo": "Cereal",
+              "cantidad": 3
+            },
+            {
+              "grupo": "Aceite s/p",
+              "cantidad": 1
+            },
+            {
+              "grupo": "AOA",
+              "cantidad": 4
+            }
+          ],
+          "platillos": [
+            {
+              "nombre": "Tacos de bistec con nopales",
+              "ingredientes": [
+                {
+                  "cantidad": "2 tzas",
+                  "alimento": "Nopales",
+                  "grupo_smae": "Verdura",
+                  "equivalentes": 2
+                },
+                {
+                  "cantidad": "al gusto",
+                  "alimento": "Salsa casera",
+                  "grupo_smae": null,
+                  "equivalentes": 0
+                },
+                {
+                  "cantidad": "120 g",
+                  "alimento": "Bistec de res",
+                  "grupo_smae": "AOA",
+                  "equivalentes": 4,
+                  "asuncion": true
+                },
+                {
+                  "cantidad": "3 pz",
+                  "alimento": "Tortilla de Maíz",
+                  "grupo_smae": "Cereal",
+                  "equivalentes": 3
+                },
+                {
+                  "cantidad": "60 g",
+                  "alimento": "Aguacate",
+                  "grupo_smae": "Aceite s/p",
+                  "equivalentes": 1
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

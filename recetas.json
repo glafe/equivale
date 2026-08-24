@@ -1,0 +1,7997 @@
+{
+  "_nota": "Banco de recetas extraido automaticamente de los 17 menus ya reconciliados en Json-outputs-sin-notas/ (2026-08-24). Cada receta es una combinacion (nombre, lista de ingredientes) que ya existio en al menos un menu real y valido. Los nombres de alimento se normalizaron (se quitaron emojis y se unifico la ortografia contra catalogo-alimentos.json cuando hubo match) antes de deduplicar, para que variantes identicas escritas distinto (ej. 'Atun en agua' vs 'Atún en agua 🐟') no generen recetas separadas. 'vector_equivalentes' es la suma de equivalentes por grupo_smae de sus ingredientes -- usar este vector para el solver de generacion (bin-packing contra el objetivo diario). 'origen' trae la trazabilidad (persona/periodo/tab/tiempo) de donde salio cada variante, para auditoria -- no es necesario para generar menus nuevos.",
+  "total_recetas": 159,
+  "recetas": [
+    {
+      "receta_id": "alambre-de-pollo-v1",
+      "nombre": "Alambre de Pollo",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 6,
+        "Cereal": 1,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "180 g",
+          "alimento": "Pechuga de pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 6
+        },
+        {
+          "cantidad": "4 pz (1 paquetito)",
+          "alimento": "Rice Cakes",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Pimiento",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-04",
+          "tab_origen": "Dany Abril",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "alambre-de-pollo-v2",
+      "nombre": "Alambre de Pollo",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 5,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "150 g",
+          "alimento": "Pechuga de pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Pimiento",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-04",
+          "tab_origen": "Pau Abril",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "atun-a-la-vizcaina-v1",
+      "nombre": "Atún a la Vizcaina",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 6,
+        "Cereal": 2,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 lta",
+          "alimento": "Atún en agua",
+          "grupo_smae": "AOA",
+          "equivalentes": 6
+        },
+        {
+          "cantidad": "6 pza",
+          "alimento": "Salmas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-08",
+          "tab_origen": "Dan Agosto",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "atun-a-la-vizcaina-v2",
+      "nombre": "Atún a la Vizcaina",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 3,
+        "Cereal": 2,
+        "Verdura": 2,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 lta",
+          "alimento": "Atún",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "2 paquetitos (6 pz)",
+          "alimento": "Salmas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "140 g",
+          "alimento": "Cerezas",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-07",
+          "tab_origen": "Pau Julio",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "avena",
+      "nombre": "Avena",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 2,
+        "Fruta": 2,
+        "Cereal": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tza",
+          "alimento": "Leche",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 scoop",
+          "alimento": "Proteína en polvo",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pza",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "125 ml",
+          "alimento": "Avena",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-06",
+          "tab_origen": "Dan Junio 26",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "avena-remojada-v1",
+      "nombre": "Avena remojada",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 1,
+        "AOA": 1,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "¼ tz",
+          "alimento": "Avena en hojuelas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche semi descremada",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Manzana",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Canela",
+          "grupo_smae": null,
+          "equivalentes": 0
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-12",
+          "tab_origen": "Dany Menu Dic",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "avena-remojada-v2",
+      "nombre": "Avena remojada",
+      "tiempo_tipico": [
+        "al_despertar"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 1,
+        "Aceite c/p": 1,
+        "Fruta": 1,
+        "Cereal": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "7 mitades",
+          "alimento": "Nuez",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1,
+          "asuncion": true
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Arándano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Canela",
+          "grupo_smae": null,
+          "equivalentes": 0
+        },
+        {
+          "cantidad": "¼ tz",
+          "alimento": "Copos de Avena",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-02",
+          "tab_origen": "Pau",
+          "menu_id": 2,
+          "tiempo": "al_despertar"
+        }
+      ]
+    },
+    {
+      "receta_id": "avocado-toast-v1",
+      "nombre": "Avocado Toast",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 2,
+        "Cereal": 2,
+        "Aceite s/p": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "80 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "2 pza",
+          "alimento": "Pan tostado",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "120 g",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 2,
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-08",
+          "tab_origen": "Dan Agosto",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "avocado-toast-v2",
+      "nombre": "Avocado Toast",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 3,
+        "Cereal": 2,
+        "Aceite s/p": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "80 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "2 pza",
+          "alimento": "Pan tostado",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "120 g",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 vaso (taza)",
+          "alimento": "Leche",
+          "grupo_smae": "AOA",
+          "equivalentes": 1,
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-07",
+          "tab_origen": "Pau Julio",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "avocado-toast-v3",
+      "nombre": "Avocado Toast",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 1,
+        "Aceite s/p": 1,
+        "AOA": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pz",
+          "alimento": "Pan tostado",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "40 gr",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-03",
+          "tab_origen": "Dany Marzo",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "avocado-toast-huevo-v1",
+      "nombre": "Avocado toast + Huevo",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 1,
+        "Cereal": 2,
+        "AOA": 3,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "½ tz",
+          "alimento": "Jitomate",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 pz",
+          "alimento": "Pan integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "2 pz",
+          "alimento": "Huevo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "40 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26-Dan",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "avocado-toast-huevo-v2",
+      "nombre": "Avocado toast + Huevo",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 1,
+        "Cereal": 2,
+        "AOA": 2,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "⅓ tz",
+          "alimento": "Jitomate",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Pan integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Huevo",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "30 g",
+          "alimento": "Panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "¼ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26PPau",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "batido-de-proteina-v1",
+      "nombre": "Batido de Proteína",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan",
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "AOA": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Fresa/Mango congelado",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 scp",
+          "alimento": "Proteína en polvo",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 2,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-04",
+          "tab_origen": "Dany Abril",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        },
+        {
+          "persona": "Pau",
+          "periodo": "2025-04",
+          "tab_origen": "Pau Abril",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "batido-de-proteina-v2",
+      "nombre": "Batido de Proteína",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan",
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "AOA": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Fresa/Mango congelado",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 scp",
+          "alimento": "Proteína en polvo",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 2,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-04",
+          "tab_origen": "Dany Abril",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        },
+        {
+          "persona": "Pau",
+          "periodo": "2025-04",
+          "tab_origen": "Pau Abril",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "batido-de-proteina-v3",
+      "nombre": "Batido de Proteína",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 2,
+        "AOA": 2,
+        "Cereal": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pza",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 scp",
+          "alimento": "Proteína",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "¼ tza",
+          "alimento": "Avena",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-07",
+          "tab_origen": "Pau Julio",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "batido-de-proteina-v4",
+      "nombre": "Batido de Proteína",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "AOA": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Fresa/Mango congelado",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-07",
+          "tab_origen": "Pau Julio",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "batido-de-proteina-v5",
+      "nombre": "Batido de Proteína",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "AOA": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Fresa/Mango congelado",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 scp",
+          "alimento": "Proteína",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-06",
+          "tab_origen": "Pau Junio",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "batido-de-proteina-v6",
+      "nombre": "Batido de Proteína",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "AOA": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Fresa/Mango congelado",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 scp",
+          "alimento": "Proteína",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-06",
+          "tab_origen": "Pau Junio",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "caldo-de-pollo",
+      "nombre": "Caldo de pollo",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 5,
+        "Verdura": 2,
+        "Cereal": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "150 g",
+          "alimento": "Pechuga de pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Mezcla de verdura (calabaza, chayote, zanahoria)",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Arroz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-12",
+          "tab_origen": "Dany Menu Dic",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "cerezas",
+      "nombre": "Cerezas",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "140 g",
+          "alimento": "Cerezas",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1,
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-08",
+          "tab_origen": "Dan Agosto",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "ceviche-de-atun-v1",
+      "nombre": "Ceviche de atún",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 6,
+        "Aceite s/p": 1,
+        "Cereal": 2,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 lat",
+          "alimento": "Atún en agua",
+          "grupo_smae": "AOA",
+          "equivalentes": 6
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "6 pz",
+          "alimento": "Galleta Salma",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-04",
+          "tab_origen": "Dany Abril",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "ceviche-de-atun-v2",
+      "nombre": "Ceviche de atún",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Cereal": 1,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 lata",
+          "alimento": "Atún en agua",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "3 pz",
+          "alimento": "Galleta Salma",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "40 gr",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 2,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-04",
+          "tab_origen": "Pau Abril",
+          "menu_id": 2,
+          "tiempo": "cena"
+        },
+        {
+          "persona": "Pau",
+          "periodo": "2025-06",
+          "tab_origen": "Pau Junio",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "ceviche-de-atun-v3",
+      "nombre": "Ceviche de atún",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Verdura": 2,
+        "Cereal": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 lata",
+          "alimento": "Atún en agua",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "40 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Mezcla de verdura (pepino, jitomate, cebolla, cilantro, limón)",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "6 pz",
+          "alimento": "Salmas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-12",
+          "tab_origen": "Dany Menu Dic",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "ceviche-de-atun-v4",
+      "nombre": "Ceviche de atún",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 6,
+        "Verdura": 2,
+        "Cereal": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 lata",
+          "alimento": "Atún en agua",
+          "grupo_smae": "AOA",
+          "equivalentes": 6
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Mezcla de verdura",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "3 pz",
+          "alimento": "Galleta Salma",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-02",
+          "tab_origen": "Dany",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "ceviche-de-atun-v5",
+      "nombre": "Ceviche de atún",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 3,
+        "Aceite s/p": 1,
+        "Verdura": 2,
+        "Cereal": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 lata",
+          "alimento": "Atún en agua",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Mezcla de verdura",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "3 pz",
+          "alimento": "Galleta Salma",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-02",
+          "tab_origen": "Pau",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "ceviche-de-atun-v6",
+      "nombre": "Ceviche de atún",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Cereal": 1,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 lata",
+          "alimento": "Atún en agua",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "3 pz",
+          "alimento": "Galleta Salma",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "40 gr",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-06",
+          "tab_origen": "Dany Junio",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "ceviche-de-atun-v7",
+      "nombre": "Ceviche de atún",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Cereal": 2,
+        "Fruta": 1,
+        "Verdura": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 lata",
+          "alimento": "Atún en agua",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "6 pz",
+          "alimento": "Salmas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "40 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1",
+          "alimento": "Fruta",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "8 pza",
+          "alimento": "Aceitunas",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-06",
+          "tab_origen": "Dan Junio 26",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "ceviche-de-atun-v8",
+      "nombre": "Ceviche de atún",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan",
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Aceite s/p": 1,
+        "Cereal": 1,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 lata",
+          "alimento": "Atún en agua",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "40 gr",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "3 pz",
+          "alimento": "Galleta Salma",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 2,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-03",
+          "tab_origen": "Dany Marzo",
+          "menu_id": 2,
+          "tiempo": "cena"
+        },
+        {
+          "persona": "Pau",
+          "periodo": "2025-03",
+          "tab_origen": "Pau Marzo",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "ceviche-de-atun-v9",
+      "nombre": "Ceviche de atún",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Cereal": 2,
+        "Verdura": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 lata",
+          "alimento": "Atún en agua",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "6 pz",
+          "alimento": "Galleta Salma",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "8 pza",
+          "alimento": "Aceitunas",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Leche",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-06",
+          "tab_origen": "Pau Junio 26",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "ceviche-de-atun-salmas-v1",
+      "nombre": "Ceviche de atún + Salmas",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 2,
+        "AOA": 4,
+        "Cereal": 2,
+        "Fruta": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 la",
+          "alimento": "Atún en agua",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "40 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 pqt",
+          "alimento": "Salmas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "2 pz",
+          "alimento": "Mandarina",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26-Dan",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "ceviche-de-atun-salmas-v2",
+      "nombre": "Ceviche de atún + Salmas",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 1,
+        "AOA": 2,
+        "Cereal": 2,
+        "Fruta": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "¾ tz + ⅓ tz",
+          "alimento": "Pico de gallo y Pepino",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 la",
+          "alimento": "Atún en agua",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "30 g",
+          "alimento": "Panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 paquetitos (6 pz)",
+          "alimento": "Salmas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Mandarina",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "¼ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26PPau",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "complemento-proteina-faltante",
+      "nombre": "Complemento (proteína faltante)",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-03",
+          "tab_origen": "Dany Marzo",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "ensalada-de-quinoa-v1",
+      "nombre": "Ensalada de Quinoa",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 5,
+        "Fruta": 1,
+        "Verdura": 2,
+        "Aceite s/p": 1,
+        "Cereal": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "150 g",
+          "alimento": "Pechuga pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Arándano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1,
+          "asuncion": true
+        },
+        {
+          "cantidad": "4 pz",
+          "alimento": "Jitomate Cherry",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Pepino picado o Mezcla de verdura",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "⅔ tz",
+          "alimento": "Quinoa cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2,
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-03",
+          "tab_origen": "Dany Marzo",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "ensalada-de-quinoa-v2",
+      "nombre": "Ensalada de Quinoa",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Aceite s/p": 1,
+        "Fruta": 1,
+        "Verdura": 1,
+        "Cereal": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "120 g",
+          "alimento": "Pechuga pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Arándano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz / ½ tz",
+          "alimento": "Pepino picado o Mezcla de verdura",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Quinoa cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1,
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-03",
+          "tab_origen": "Pau Marzo",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "espagueti-bolonesa-v1",
+      "nombre": "Espagueti Boloñesa",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 5,
+        "Verdura": 2,
+        "Cereal": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "150 g",
+          "alimento": "Molida de res sin grasa",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Mezcla de verdura",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Pasta (preferencia)",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Salsa de Jitomate",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-02",
+          "tab_origen": "Dany",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "espagueti-bolonesa-v2",
+      "nombre": "Espagueti Boloñesa",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Verdura": 2,
+        "Cereal": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "120 g",
+          "alimento": "Molida de res sin grasa",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Mezcla de verdura",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Pasta (preferencia)",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Salsa de Jitomate",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-02",
+          "tab_origen": "Pau",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "espagueti-bolonesa-uvas-v1",
+      "nombre": "Espagueti boloñesa + Uvas",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 2,
+        "AOA": 5,
+        "Cereal": 2,
+        "Fruta": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1/2 tz",
+          "alimento": "Mezcla verdura",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Salsa de Jitomate",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        },
+        {
+          "cantidad": "150 g",
+          "alimento": "Res molida",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "60 gr",
+          "alimento": "Pasta cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pqt",
+          "alimento": "Salmas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Uvas",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 cdt",
+          "alimento": "Aceite de oliva",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26-Dan",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "espagueti-bolonesa-uvas-v2",
+      "nombre": "Espagueti boloñesa + Uvas",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 2,
+        "AOA": 3,
+        "Cereal": 2,
+        "Fruta": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "¾ tz",
+          "alimento": "Mezcla verdura",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "⅓ tz",
+          "alimento": "Jitomate",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "120 g",
+          "alimento": "Res molida",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "¾ tz",
+          "alimento": "Pasta",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Uvas",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 cd",
+          "alimento": "Aceite oliva",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26PPau",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "estofado-de-pollo-v1",
+      "nombre": "Estofado de pollo",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 2,
+        "AOA": 5,
+        "Cereal": 3
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tza",
+          "alimento": "Mezcla de verdura",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "150 g",
+          "alimento": "Pechuga de pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "210 g",
+          "alimento": "Papa cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-06",
+          "tab_origen": "Dany Junio",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "estofado-de-pollo-v2",
+      "nombre": "Estofado de pollo",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Cereal": 1,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "120 g",
+          "alimento": "Pechuga de pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "70 g",
+          "alimento": "Papa cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Mezcla de verdura",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-06",
+          "tab_origen": "Pau Junio",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "fajitas",
+      "nombre": "Fajitas",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 5,
+        "Verdura": 2,
+        "Cereal": 1,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "150 g",
+          "alimento": "Pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Pimiento",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "4 pz",
+          "alimento": "Zanahoria baby",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "70 g",
+          "alimento": "Papa cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 pz",
+          "alimento": "Mandarina",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-09",
+          "tab_origen": "Dany Sep",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "fajitas-de-pollo-v1",
+      "nombre": "Fajitas de Pollo",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 6,
+        "Cereal": 4,
+        "Verdura": 2,
+        "Aceite s/p": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "180 g",
+          "alimento": "Pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 6
+        },
+        {
+          "cantidad": "4 pza",
+          "alimento": "Tortilla de maíz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Champiñones/Pimiento",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1/3 pza",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 cdt",
+          "alimento": "Aceite",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-06",
+          "tab_origen": "Dan Junio 26",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "fajitas-de-pollo-v2",
+      "nombre": "Fajitas de Pollo",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 5,
+        "Cereal": 2,
+        "Verdura": 2,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "150 g",
+          "alimento": "Pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "2 pza",
+          "alimento": "Tortilla de maíz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Champis/ Pimiento",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 cdt",
+          "alimento": "Aceite",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-06",
+          "tab_origen": "Pau Junio 26",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "fajitas-de-pollo-con-papas",
+      "nombre": "Fajitas de pollo con papas",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Verdura": 2,
+        "Cereal": 1,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "120 g",
+          "alimento": "Pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Pimiento",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "4 pz",
+          "alimento": "Zanahoria baby",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "70 g",
+          "alimento": "Papa cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 pz",
+          "alimento": "Mandarina",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-09",
+          "tab_origen": "Pau Sep",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "filete-pescado",
+      "nombre": "Filete Pescado",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Verdura": 2,
+        "Cereal": 1,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "160 g",
+          "alimento": "Filete de Pescado",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "4 pz",
+          "alimento": "Jitomate cherry",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "¾ tz",
+          "alimento": "Papa cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "4 pz",
+          "alimento": "Zanahoria baby",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 pz",
+          "alimento": "Mandarina",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-02",
+          "tab_origen": "Pau",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "filete-de-pescado",
+      "nombre": "Filete de Pescado",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Aceite s/p": 1,
+        "Cereal": 2,
+        "Verdura": 2,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "160 g",
+          "alimento": "Filete de Pescado",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Arroz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "4 pz",
+          "alimento": "Zanahoria baby",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "4 pz",
+          "alimento": "Jitomate Cherry",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 pz",
+          "alimento": "Mandarina",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-02",
+          "tab_origen": "Dany",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "filete-de-pescado-guayaba-v1",
+      "nombre": "Filete de pescado + Guayaba",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Verdura": 2,
+        "Cereal": 1,
+        "Leguminosa": 1,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "160 g",
+          "alimento": "Pescado",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Champiñón",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Pepino",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "70 g",
+          "alimento": "Papa cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Garbanzo",
+          "grupo_smae": "Leguminosa",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "3 pz",
+          "alimento": "Guayaba",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-09",
+          "tab_origen": "Pau Sep",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "filete-de-pescado-guayaba-v2",
+      "nombre": "Filete de pescado + Guayaba",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 5,
+        "Verdura": 2,
+        "Cereal": 2,
+        "Leguminosa": 1,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "160 g",
+          "alimento": "Pescado",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "40 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Champiñón",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Pepino",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Arroz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Garbanzo",
+          "grupo_smae": "Leguminosa",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "3 pz",
+          "alimento": "Guayaba",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-09",
+          "tab_origen": "Dany Sep",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "filete-de-pescado-asado-con-papas-y-nopales-v1",
+      "nombre": "Filete de pescado asado con papas y nopales",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 3,
+        "AOA": 5,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "210 g",
+          "alimento": "Papa cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "200 g",
+          "alimento": "Filete de pescado",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Nopales",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-06",
+          "tab_origen": "Dany Junio",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "filete-de-pescado-asado-con-papas-y-nopales-v2",
+      "nombre": "Filete de pescado asado con papas y nopales",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 1,
+        "AOA": 4,
+        "Fruta": 1,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "70 g",
+          "alimento": "Papa cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "160 g",
+          "alimento": "Filete de pescado",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Uvas",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 tzas",
+          "alimento": "Nopales",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-06",
+          "tab_origen": "Pau Junio",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "filete-de-pescado-con-papas-y-verduras",
+      "nombre": "Filete de pescado con papas y verduras",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 5,
+        "Cereal": 3,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "200 g",
+          "alimento": "Filete de pescado",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "210 g",
+          "alimento": "Papa cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Mezcla de verdura (calabaza, chayote, zanahoria)",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-12",
+          "tab_origen": "Dany Menu Dic",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "filete-de-pescado-con-verduras-v1",
+      "nombre": "Filete de pescado con verduras",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 6,
+        "Verdura": 2,
+        "Cereal": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "200 g",
+          "alimento": "Filete de pescado",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "100 g",
+          "alimento": "Calabacita",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "40 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Arroz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "6 pz",
+          "alimento": "Espárrago",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-04",
+          "tab_origen": "Dany Abril",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "filete-de-pescado-con-verduras-v2",
+      "nombre": "Filete de pescado con verduras",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Cereal": 2,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "160 g",
+          "alimento": "Filete de pescado",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Arroz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "6 pz",
+          "alimento": "Espárrago",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "100 g",
+          "alimento": "Calabacita",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-04",
+          "tab_origen": "Pau Abril",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "fruta-postre-aparte-del-filete",
+      "nombre": "Fruta (postre, aparte del filete)",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tza",
+          "alimento": "Uvas",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-06",
+          "tab_origen": "Dany Junio",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "guayaba",
+      "nombre": "Guayaba",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "3 pz",
+          "alimento": "Guayaba",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-12",
+          "tab_origen": "Dany Menu Dic",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "hamburguesa",
+      "nombre": "Hamburguesa",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Cereal": 4,
+        "Verdura": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "120 g",
+          "alimento": "Res molida",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "2 pz",
+          "alimento": "Pan de hamburguesa (chico)",
+          "grupo_smae": "Cereal",
+          "equivalentes": 4,
+          "asuncion": true
+        },
+        {
+          "cantidad": "porción chica (sin aderezos)",
+          "alimento": "Jitomate/Lechuga",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-09",
+          "tab_origen": "Dany Sep",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "huevos-cocidos",
+      "nombre": "Huevos Cocidos",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 2,
+        "Verdura": 1,
+        "Fruta": 1,
+        "Aceite c/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pza",
+          "alimento": "Huevo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Zanahoria/ Jicama",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1",
+          "alimento": "Fruta suelta",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "10 pza",
+          "alimento": "Nueces",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1,
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-06",
+          "tab_origen": "Pau Junio 26",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "huevos-revueltos-molletes",
+      "nombre": "Huevos Revueltos + Molletes",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Cereal": 3,
+        "Leguminosa": 1,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Huevo Entero",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 pz (2 mitades)",
+          "alimento": "Bolillo",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Frijoles",
+          "grupo_smae": "Leguminosa",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "80 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-08",
+          "tab_origen": "Dan Agosto",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "huevos-con-champinon",
+      "nombre": "Huevos con Champiñón",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Cereal": 1,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Huevo entero",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Clara de huevo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "¼ tz",
+          "alimento": "Avena en hojuelas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Champiñón cocido",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-04",
+          "tab_origen": "Dany Abril",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "huevos-con-tortilla",
+      "nombre": "Huevos con tortilla",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "Verdura": 1,
+        "AOA": 2,
+        "Aceite c/p": 1,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pza",
+          "alimento": "Tortilla",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Zanahoria/Jícama",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 pza",
+          "alimento": "Huevo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "10 pza",
+          "alimento": "Almendras",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1",
+          "alimento": "Fruta suelta",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-06",
+          "tab_origen": "Dan Junio 26",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "huevos-con-verdura",
+      "nombre": "Huevos con verdura",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Huevo entero",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Clara de huevo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Mezcla de verdura",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-03",
+          "tab_origen": "Dany Marzo",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "huevos-duros-avocado-toast",
+      "nombre": "Huevos duros / Avocado Toast",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 3,
+        "Cereal": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Huevo cocido",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Pan tostado",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "40 gr",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-03",
+          "tab_origen": "Pau Marzo",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "huevos-duros-con-zanahoria",
+      "nombre": "Huevos duros con zanahoria",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 2,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Huevo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "4 pz",
+          "alimento": "Zanahoria baby",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-09",
+          "tab_origen": "Pau Sep",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "huevos-duros-con-zanahoria-pepino-v1",
+      "nombre": "Huevos duros con zanahoria/pepino",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pza",
+          "alimento": "Huevos duros",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "2 tza",
+          "alimento": "Pepino",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "40 g",
+          "alimento": "Panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 pza",
+          "alimento": "Claras",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-07",
+          "tab_origen": "Pau Julio",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "huevos-duros-con-zanahoria-pepino-v2",
+      "nombre": "Huevos duros con zanahoria/pepino",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 3,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pza",
+          "alimento": "Huevos duros",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 tza / 2 tzas",
+          "alimento": "Zanahoria o Pepino",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "40 g",
+          "alimento": "Panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-06",
+          "tab_origen": "Pau Junio",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "jitomate-con-queso-v1",
+      "nombre": "Jitomate con queso",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 1,
+        "AOA": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "~120 g",
+          "alimento": "Jitomate en Rebanadas",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        },
+        {
+          "cantidad": "40 gr",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-06",
+          "tab_origen": "Dany Junio",
+          "menu_id": 2,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "jitomate-con-queso-v2",
+      "nombre": "Jitomate con queso",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 1,
+        "AOA": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "4 rbs",
+          "alimento": "Jitomate",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "40 gr",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-06",
+          "tab_origen": "Pau Junio",
+          "menu_id": 2,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "jicama-con-tajin",
+      "nombre": "Jícama con Tajín",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Jícama o Zanahoria",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Sal, Limón, Tajín",
+          "grupo_smae": null,
+          "equivalentes": 0
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-04",
+          "tab_origen": "Dany Abril",
+          "menu_id": 1,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "jicama-o-zanahoria",
+      "nombre": "Jícama o Zanahoria",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tza",
+          "alimento": "Jícama o Zanahoria",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-04",
+          "tab_origen": "Pau Abril",
+          "menu_id": 1,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "jicama-zanahoria",
+      "nombre": "Jícama/Zanahoria",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "60 g",
+          "alimento": "Jícama rallada o Zanahoria",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-07",
+          "tab_origen": "Pau Julio",
+          "menu_id": 1,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "jicama-zanahoria-manzana",
+      "nombre": "Jícama/Zanahoria + Manzana",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 3,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "180 g",
+          "alimento": "Jícama o Zanahoria",
+          "grupo_smae": "Verdura",
+          "equivalentes": 3,
+          "asuncion": true
+        },
+        {
+          "cantidad": "1 pza",
+          "alimento": "Manzana",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-08",
+          "tab_origen": "Dan Agosto",
+          "menu_id": 1,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "licuado-v1",
+      "nombre": "Licuado",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 1,
+        "Aceite c/p": 1,
+        "Fruta": 1,
+        "Cereal": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "10 pz",
+          "alimento": "Almendra",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Fresa",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Canela",
+          "grupo_smae": null,
+          "equivalentes": 0
+        },
+        {
+          "cantidad": "¼ tz",
+          "alimento": "Copos de Avena",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-02",
+          "tab_origen": "Dany",
+          "menu_id": 2,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "licuado-v2",
+      "nombre": "Licuado",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 2,
+        "Fruta": 2,
+        "Aceite c/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tza",
+          "alimento": "Leche",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 scp",
+          "alimento": "Proteína",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pza",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "10 pza",
+          "alimento": "Nueces",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1,
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-06",
+          "tab_origen": "Pau Junio 26",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "licuado-de-fresa",
+      "nombre": "Licuado de Fresa",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "AOA": 2,
+        "Cereal": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tza",
+          "alimento": "Fresa",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "75 g",
+          "alimento": "yogurt",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1/2 tza",
+          "alimento": "Avena",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-06",
+          "tab_origen": "Pau Junio 26",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "licuado-de-blueberries-v1",
+      "nombre": "Licuado de blueberries",
+      "tiempo_tipico": [
+        "al_despertar"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "AOA": 1,
+        "Cereal": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "¾ tz",
+          "alimento": "Blueberries",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Canela",
+          "grupo_smae": null,
+          "equivalentes": 0
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "¼ tz",
+          "alimento": "Avena",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-09",
+          "tab_origen": "Pau Sep",
+          "menu_id": 1,
+          "tiempo": "al_despertar"
+        }
+      ]
+    },
+    {
+      "receta_id": "licuado-de-blueberries-v2",
+      "nombre": "Licuado de blueberries",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 1,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "¾ tz",
+          "alimento": "Blueberries",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Canela",
+          "grupo_smae": null,
+          "equivalentes": 0
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-09",
+          "tab_origen": "Dany Sep",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "licuado-de-fresa-2",
+      "nombre": "Licuado de fresa",
+      "tiempo_tipico": [
+        "al_despertar"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 1,
+        "Aceite c/p": 1,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "7 mitades",
+          "alimento": "Nuez",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1,
+          "asuncion": true
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Fresa",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Canela",
+          "grupo_smae": null,
+          "equivalentes": 0
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-02",
+          "tab_origen": "Pau",
+          "menu_id": 1,
+          "tiempo": "al_despertar"
+        }
+      ]
+    },
+    {
+      "receta_id": "licuado-de-fresa-o-mango",
+      "nombre": "Licuado de fresa o mango",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "Cereal": 1,
+        "AOA": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Fresa/Mango congelado",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "¼ tz",
+          "alimento": "Avena en hojuela",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-03",
+          "tab_origen": "Pau Marzo",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "licuado-de-mango-v1",
+      "nombre": "Licuado de mango",
+      "tiempo_tipico": [
+        "al_despertar"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "Cereal": 1,
+        "AOA": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Mango picado",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "free",
+          "alimento": "Canela",
+          "grupo_smae": null,
+          "equivalentes": 0
+        },
+        {
+          "cantidad": "1/4 tz",
+          "alimento": "Avena",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26-Dan",
+          "menu_id": 2,
+          "tiempo": "al_despertar"
+        }
+      ]
+    },
+    {
+      "receta_id": "licuado-de-mango-v2",
+      "nombre": "Licuado de mango",
+      "tiempo_tipico": [
+        "al_despertar"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "Cereal": 1,
+        "AOA": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "¾ tz",
+          "alimento": "Mango congelado",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "free",
+          "alimento": "Canela",
+          "grupo_smae": null,
+          "equivalentes": 0
+        },
+        {
+          "cantidad": "⅓ tz",
+          "alimento": "Avena",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "¾ tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26PPau",
+          "menu_id": 2,
+          "tiempo": "al_despertar"
+        }
+      ]
+    },
+    {
+      "receta_id": "licuado-de-platano-v1",
+      "nombre": "Licuado de plátano",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 2,
+        "AOA": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pza",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Canela",
+          "grupo_smae": null,
+          "equivalentes": 0
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-08",
+          "tab_origen": "Dan Agosto",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "licuado-de-platano-v2",
+      "nombre": "Licuado de plátano",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 2,
+        "AOA": 2,
+        "Cereal": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pza",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "75 g",
+          "alimento": "Yogurt",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1/2 tza",
+          "alimento": "Avena",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-06",
+          "tab_origen": "Dan Junio 26",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "manzana",
+      "nombre": "Manzana",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Dan",
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pza",
+          "alimento": "Manzana",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 2,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-08",
+          "tab_origen": "Dan Agosto",
+          "menu_id": 2,
+          "tiempo": "colacion"
+        },
+        {
+          "persona": "Pau",
+          "periodo": "2025-07",
+          "tab_origen": "Pau Julio",
+          "menu_id": 2,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "manzana-fruta-aparte",
+      "nombre": "Manzana (fruta aparte)",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pz",
+          "alimento": "Manzana",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-02",
+          "tab_origen": "Dany",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "molida-con-nopales-y-pepino",
+      "nombre": "Molida con nopales y pepino",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 5,
+        "Verdura": 2,
+        "Cereal": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "150 g",
+          "alimento": "Molida de res sin grasa",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Nopales",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Pepino con cáscara",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "6 pz",
+          "alimento": "Salmas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-12",
+          "tab_origen": "Dany Menu Dic",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "molida-con-verduras",
+      "nombre": "Molida con verduras",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "120 g",
+          "alimento": "Res molida",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Verdura mix",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-09",
+          "tab_origen": "Pau Sep",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "molletes-pico-de-gallo-v1",
+      "nombre": "Molletes + Pico de gallo",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 2,
+        "Cereal": 3,
+        "AOA": 2,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 pz (2 mitades)",
+          "alimento": "Bolillo",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "80 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26-Dan",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "molletes-pico-de-gallo-v2",
+      "nombre": "Molletes + Pico de gallo",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 1,
+        "Cereal": 2,
+        "AOA": 2,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "⅓ tz",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pz (mitad)",
+          "alimento": "Bolillo",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "60 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "¼ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26PPau",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "molletes-con-jamon-v1",
+      "nombre": "Molletes con Jamón",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 3,
+        "Cereal": 2,
+        "Leguminosa": 1,
+        "Verdura": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "42 g",
+          "alimento": "Jamón de Pavo",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 rebanadas",
+          "alimento": "Pan de caja (2 rebanadas)",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Frijoles",
+          "grupo_smae": "Leguminosa",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "80 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1/3 pza",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-06",
+          "tab_origen": "Dan Junio 26",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "molletes-con-jamon-v2",
+      "nombre": "Molletes con Jamón",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 2,
+        "Cereal": 2,
+        "Leguminosa": 1,
+        "Aceite s/p": 1,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "80 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "2 pza",
+          "alimento": "Pan de caja",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Frijoles",
+          "grupo_smae": "Leguminosa",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1/3 pza",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-06",
+          "tab_origen": "Pau Junio 26",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "omelet-con-champinon",
+      "nombre": "Omelet con champiñón",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Huevo Entero",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Clara de huevo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Champiñón",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-02",
+          "tab_origen": "Dany",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "omelet-de-verduras",
+      "nombre": "Omelet de Verduras",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 3,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Huevo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "¼ tz",
+          "alimento": "Claras de huevo",
+          "grupo_smae": "AOA",
+          "equivalentes": 1,
+          "asuncion": true
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Verdura mix",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-09",
+          "tab_origen": "Dany Sep",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "omelet-de-champinones",
+      "nombre": "Omelet de champiñones",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Huevo entero",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Clara de huevo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Champiñones",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-12",
+          "tab_origen": "Dany Menu Dic",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "omelete-con-verduras",
+      "nombre": "Omelete con verduras",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Cereal": 2,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Huevos duros",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "2 pz",
+          "alimento": "Tortilla de maíz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Claras",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Champiñón, Verdura congelada o Nopales",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2,
+          "alternativas": [
+            "Champiñón",
+            "Verdura congelada",
+            "Nopales"
+          ],
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-06",
+          "tab_origen": "Dany Junio",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "pnb-banana-toast-pan-tostado-con-crema-de-cacahuate-y-platano",
+      "nombre": "PNB Banana Toast (Pan tostado con crema de cacahuate y plátano)",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 1,
+        "Fruta": 1,
+        "Aceite c/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pz",
+          "alimento": "Pan tostado",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ pz",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1,
+          "asuncion": true
+        },
+        {
+          "cantidad": "2 cdt",
+          "alimento": "Mantequilla de cacahuate",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-02",
+          "tab_origen": "Dany",
+          "menu_id": 1,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "palomitas",
+      "nombre": "Palomitas",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "5 tz",
+          "alimento": "Palomitas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Sal/Limón",
+          "grupo_smae": null,
+          "equivalentes": 0
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-09",
+          "tab_origen": "Pau Sep",
+          "menu_id": 2,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "pan-frances-v1",
+      "nombre": "Pan Francés",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "AOA": 1,
+        "Fruta": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Pan integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Huevo entero + leche",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Vainilla/canela",
+          "grupo_smae": null,
+          "equivalentes": 0
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-04",
+          "tab_origen": "Dany Abril",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "pan-frances-v2",
+      "nombre": "Pan Francés",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "AOA": 1,
+        "Fruta": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Pan integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 pza",
+          "alimento": "Huevo entero",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 crrt (dip)",
+          "alimento": "Leche semi",
+          "grupo_smae": null,
+          "equivalentes": 0
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-04",
+          "tab_origen": "Pau Abril",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "pan-con-crema-de-cacahuate",
+      "nombre": "Pan con crema de cacahuate",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 1,
+        "Aceite c/p": 1,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pza",
+          "alimento": "Pan integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 cdts",
+          "alimento": "Crema Cacahuate",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1",
+          "alimento": "Fruta",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-06",
+          "tab_origen": "Dan Junio 26",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "pan-tostado",
+      "nombre": "Pan tostado",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 1,
+        "Aceite c/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pz",
+          "alimento": "Pan",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 cdt",
+          "alimento": "Crema de cacahuate",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-09",
+          "tab_origen": "Dany Sep",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "pan-tostado-con-crema-de-cacahuate",
+      "nombre": "Pan tostado con crema de cacahuate",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 1,
+        "Aceite c/p": 1,
+        "Fruta": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pza",
+          "alimento": "Pan integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 cdt",
+          "alimento": "Crema de cacahuate",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pza",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-06",
+          "tab_origen": "Dany Junio",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "pan-tostado-con-mermelada",
+      "nombre": "Pan tostado con mermelada",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pz",
+          "alimento": "Pan tostado",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 cdt",
+          "alimento": "Mermelada light",
+          "grupo_smae": null,
+          "equivalentes": 0
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-09",
+          "tab_origen": "Pau Sep",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "pan-tostado-con-platano-v1",
+      "nombre": "Pan tostado con plátano",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 1,
+        "Aceite c/p": 1,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pz",
+          "alimento": "Pan tostado",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 cdt",
+          "alimento": "Mantequilla de cacahuate",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ pz",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-12",
+          "tab_origen": "Dany Menu Dic",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "pan-tostado-con-platano-v2",
+      "nombre": "Pan tostado con plátano",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 1,
+        "Fruta": 1,
+        "Aceite c/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pz",
+          "alimento": "Pan tostado",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ pz",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 cdt",
+          "alimento": "Crema de cacahuate",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-03",
+          "tab_origen": "Dany Marzo",
+          "menu_id": 2,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "pan-tostado-con-platano-v3",
+      "nombre": "Pan tostado con plátano",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "Cereal": 1,
+        "Aceite c/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "½ pz",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Pan tostado",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 ct",
+          "alimento": "Crema de cacahuate",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26-Dan",
+          "menu_id": 2,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "pan-tostado-con-platano-v4",
+      "nombre": "Pan tostado con plátano",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "Cereal": 1,
+        "Aceite c/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "½ pz",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Pan tostado",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 ct",
+          "alimento": "Crema cacahuate",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26PPau",
+          "menu_id": 2,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "papaya",
+      "nombre": "Papaya",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "140 g",
+          "alimento": "Papaya",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-08",
+          "tab_origen": "Dan Agosto",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "pasta-con-res-v1",
+      "nombre": "Pasta con res",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 4,
+        "Verdura": 2,
+        "AOA": 5,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 tz",
+          "alimento": "Pasta",
+          "grupo_smae": "Cereal",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "½ taza",
+          "alimento": "Salsa casera de Jitomate",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "150 g",
+          "alimento": "Molida de Res",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Champiñones",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Manzana o Naranja",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-03",
+          "tab_origen": "Dany Marzo",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "pasta-con-res-v2",
+      "nombre": "Pasta con res",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "AOA": 4,
+        "Fruta": 1,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Pasta",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "120 g",
+          "alimento": "Molida de Res",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Manzana o Naranja",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Champiñones",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Salsa de Jitomate",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-03",
+          "tab_origen": "Pau Marzo",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "pasta-con-res-verduras-v1",
+      "nombre": "Pasta con res + Verduras",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 3,
+        "AOA": 5,
+        "Cereal": 4,
+        "Fruta": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Calabaza",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1/2 tz",
+          "alimento": "Champiñón",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "150 g",
+          "alimento": "Res molida",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "240 gr",
+          "alimento": "Pasta cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Manzana",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 cdt",
+          "alimento": "Aceite de oliva",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26-Dan",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "pasta-con-res-verduras-v2",
+      "nombre": "Pasta con res + Verduras",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 2,
+        "AOA": 3,
+        "Cereal": 3,
+        "Fruta": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "¾ tz",
+          "alimento": "Calabaza",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "⅓ tz",
+          "alimento": "Champiñón",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "120 g",
+          "alimento": "Res molida",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Pasta",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Manzana",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 cd",
+          "alimento": "Aceite oliva",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26PPau",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "pescado-con-tomate-v1",
+      "nombre": "Pescado con tomate",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "Aceite s/p": 1,
+        "AOA": 5,
+        "Fruta": 1,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1/2 tza",
+          "alimento": "Arroz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "8 pza",
+          "alimento": "Aceitunas",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "200 g",
+          "alimento": "Pescado",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "1",
+          "alimento": "Fruta",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 taza",
+          "alimento": "Jitomate, cebolla, jalapeños",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-06",
+          "tab_origen": "Dan Junio 26",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "pescado-con-tomate-v2",
+      "nombre": "Pescado con tomate",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "Aceite s/p": 1,
+        "AOA": 4,
+        "Fruta": 1,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1/2 tza",
+          "alimento": "Arroz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "8 pza",
+          "alimento": "Aceitunas",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "160 g",
+          "alimento": "Pescado",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "1",
+          "alimento": "Fruta",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 V",
+          "alimento": "Jitomate, cebolla, jalapeños",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-06",
+          "tab_origen": "Pau Junio 26",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "picadillo-v1",
+      "nombre": "Picadillo",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "AOA": 6,
+        "Verdura": 2,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1.5 tz",
+          "alimento": "Papa cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Salsa casera de Jitomate",
+          "grupo_smae": null,
+          "equivalentes": 0
+        },
+        {
+          "cantidad": "180 g",
+          "alimento": "Molida de Res",
+          "grupo_smae": "AOA",
+          "equivalentes": 6
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Mezcla de verdura",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Uvas",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-04",
+          "tab_origen": "Dany Abril",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "picadillo-v2",
+      "nombre": "Picadillo",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 1,
+        "AOA": 5,
+        "Fruta": 1,
+        "Verdura": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "¾ tz",
+          "alimento": "Papa cocida",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "150 g",
+          "alimento": "Molida de Res",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Uvas",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Mezcla de verdura",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Salsa de Jitomate",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-04",
+          "tab_origen": "Pau Abril",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "pizza-casera-v1",
+      "nombre": "Pizza Casera",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 3,
+        "AOA": 4,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pz",
+          "alimento": "Pan Pita",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "3 reb",
+          "alimento": "Pechuga de pavo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Pimiento",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "80 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-02",
+          "tab_origen": "Dany",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "pizza-casera-v2",
+      "nombre": "Pizza Casera",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 3,
+        "AOA": 3,
+        "Verdura": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pz",
+          "alimento": "Pan Pita",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "3 reb",
+          "alimento": "Pechuga de pavo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Pimiento",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "40 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-02",
+          "tab_origen": "Pau",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "pizza-casera-v1-2",
+      "nombre": "Pizza casera",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Cereal": 3,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "80 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "~64 g",
+          "alimento": "Pechuga de pavo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2,
+          "asuncion": true
+        },
+        {
+          "cantidad": "1 pza",
+          "alimento": "Pan Pita",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Pimiento",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "alternativas": [
+            "Pimiento",
+            "4 Jitomates cherry"
+          ]
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-06",
+          "tab_origen": "Dany Junio",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "pizza-casera-v2-2",
+      "nombre": "Pizza casera",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Cereal": 3,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "3 pza",
+          "alimento": "Pechuga de pavo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 pza",
+          "alimento": "Pan Pita",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "80 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Pimiento o 4 Jitomate cherry",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-06",
+          "tab_origen": "Pau Junio",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "quesadilla",
+      "nombre": "Quesadilla",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 1,
+        "AOA": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pz",
+          "alimento": "Tortilla de maíz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "40 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-02",
+          "tab_origen": "Dany",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "salpicon-de-res-v1",
+      "nombre": "Salpicón de Res",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 6,
+        "Cereal": 2,
+        "Verdura": 3,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "180 g",
+          "alimento": "Res deshebrada",
+          "grupo_smae": "AOA",
+          "equivalentes": 6
+        },
+        {
+          "cantidad": "6 pza",
+          "alimento": "Salmas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "3 tza",
+          "alimento": "Lechuga",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-06",
+          "tab_origen": "Dan Junio 26",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "salpicon-de-res-v2",
+      "nombre": "Salpicón de Res",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 5,
+        "Cereal": 2,
+        "Verdura": 3,
+        "Aceite s/p": 1,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "150 g",
+          "alimento": "Res deshebrada",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "6 pza",
+          "alimento": "Salmas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Lechuga",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        },
+        {
+          "cantidad": "1",
+          "alimento": "Fruta",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-06",
+          "tab_origen": "Pau Junio 26",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "sandwich-v1",
+      "nombre": "Sandwich",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "AOA": 3,
+        "Verdura": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Pan integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "40 gr",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "3 reb",
+          "alimento": "Pechuga Pavo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "porción chica de cada uno",
+          "alimento": "Jitomate, Lechuga y Cebolla (guarnición)",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        },
+        {
+          "cantidad": "⅓ pza",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-04",
+          "tab_origen": "Pau Abril",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "sandwich-v2",
+      "nombre": "Sandwich",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "Aceite s/p": 1,
+        "AOA": 3,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Pan caja Integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "3 reb",
+          "alimento": "Pechuga de pavo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "40 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Zanahoria/Jicama rayada",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-02",
+          "tab_origen": "Pau",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "sandwich-v3",
+      "nombre": "Sandwich",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "AOA": 3,
+        "Verdura": 1,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Pan integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "40 gr",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "3 reb",
+          "alimento": "Pechuga Pavo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Zanahoria/Jícama",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pza",
+          "alimento": "Naranja",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-06",
+          "tab_origen": "Pau Junio",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "sandwich-v4",
+      "nombre": "Sandwich",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "AOA": 3,
+        "Verdura": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Pan integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "40 gr",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "3 reb",
+          "alimento": "Pechuga Pavo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "porción chica de cada uno (~¼ tza c/u)",
+          "alimento": "Jitomate, Lechuga y Cebolla (guarnición)",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-03",
+          "tab_origen": "Dany Marzo",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "sandwich-v5",
+      "nombre": "Sandwich",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "AOA": 3,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Pan integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "40 gr",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "3 reb",
+          "alimento": "Pechuga Pavo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Zanahoria/Jícama",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-03",
+          "tab_origen": "Pau Marzo",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "sandwich-atun",
+      "nombre": "Sandwich Atún",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "Verdura": 1,
+        "AOA": 3
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Pan integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Zanahoria/Jícama",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 lta",
+          "alimento": "Atún en agua",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-07",
+          "tab_origen": "Pau Julio",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "sandwich-pollo",
+      "nombre": "Sandwich Pollo",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "Verdura": 1,
+        "AOA": 4
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Pan integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Zanahoria/Jícama",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "90 g",
+          "alimento": "Pechuga de Pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "40 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-08",
+          "tab_origen": "Dan Agosto",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "sandia",
+      "nombre": "Sandía",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Dan",
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "200 g",
+          "alimento": "Sandía",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 4,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-04",
+          "tab_origen": "Dany Abril",
+          "menu_id": 2,
+          "tiempo": "colacion"
+        },
+        {
+          "persona": "Pau",
+          "periodo": "2025-04",
+          "tab_origen": "Pau Abril",
+          "menu_id": 2,
+          "tiempo": "colacion"
+        },
+        {
+          "persona": "Dan",
+          "periodo": "2025-06",
+          "tab_origen": "Dany Junio",
+          "menu_id": 1,
+          "tiempo": "colacion"
+        },
+        {
+          "persona": "Pau",
+          "periodo": "2025-06",
+          "tab_origen": "Pau Junio",
+          "menu_id": 1,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "sandia-uva",
+      "nombre": "Sandía/Uva",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "200 g / 1 tz",
+          "alimento": "Sandía o Uva",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-12",
+          "tab_origen": "Dany Menu Dic",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "smoothie-de-fresa-v1",
+      "nombre": "Smoothie de fresa",
+      "tiempo_tipico": [
+        "al_despertar"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "Cereal": 1,
+        "AOA": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Fresa congelada",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "free",
+          "alimento": "Canela",
+          "grupo_smae": null,
+          "equivalentes": 0
+        },
+        {
+          "cantidad": "1/4 tz",
+          "alimento": "Avena",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26-Dan",
+          "menu_id": 1,
+          "tiempo": "al_despertar"
+        }
+      ]
+    },
+    {
+      "receta_id": "smoothie-de-fresa-v2",
+      "nombre": "Smoothie de fresa",
+      "tiempo_tipico": [
+        "al_despertar"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "Cereal": 1,
+        "AOA": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "¾ tz",
+          "alimento": "Fresa congelada",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "free",
+          "alimento": "Canela",
+          "grupo_smae": null,
+          "equivalentes": 0
+        },
+        {
+          "cantidad": "⅓ tz",
+          "alimento": "Avena",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "¾ tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26PPau",
+          "menu_id": 1,
+          "tiempo": "al_despertar"
+        }
+      ]
+    },
+    {
+      "receta_id": "smoothie-de-fresa-o-mango-v1",
+      "nombre": "Smoothie de fresa o mango",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "Aceite c/p": 1,
+        "AOA": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Fresa/Mango congelado",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "10 pz",
+          "alimento": "Almendra",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "75 gr",
+          "alimento": "Yogurt Griego",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-03",
+          "tab_origen": "Dany Marzo",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "smoothie-de-fresa-o-mango-v2",
+      "nombre": "Smoothie de fresa o mango",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "AOA": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Fresa/Mango congelado",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "75 gr",
+          "alimento": "Yogurt Griego",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Leche semi",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-03",
+          "tab_origen": "Pau Marzo",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "sandwich",
+      "nombre": "Sándwich",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "AOA": 4,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Pan integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "40 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 lata / 90 g",
+          "alimento": "Atún o Pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Zanahoria/Jícama",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-09",
+          "tab_origen": "Dany Sep",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "sandwich-de-atun-pollo-v1",
+      "nombre": "Sándwich de atún/pollo",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "AOA": 4,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Pan de caja integral (Oroweat)",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 lata / 90 g",
+          "alimento": "Atún en agua o Pechuga de pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "40 g",
+          "alimento": "Queso panela",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "porción chica al gusto",
+          "alimento": "Verdura al gusto (lechuga, jitomate, zanahoria, cebolla)",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-12",
+          "tab_origen": "Dany Menu Dic",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "sandwich-de-atun-pollo-v2",
+      "nombre": "Sándwich de atún/pollo",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "AOA": 3,
+        "Verdura": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Pan integral",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 lata / 90 g",
+          "alimento": "Atún o Pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Zanahoria o Jícama",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-09",
+          "tab_origen": "Pau Sep",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "tacos-de-bistec-con-guacamole-v1",
+      "nombre": "Tacos de Bistec con Guacamole",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 5,
+        "Cereal": 3,
+        "Verdura": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "150 g",
+          "alimento": "Bistec de res",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "3 pz",
+          "alimento": "Tortilla de maíz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 crd",
+          "alimento": "Guacamole (sin mayo)",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-03",
+          "tab_origen": "Dany Marzo",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "tacos-de-bistec-con-guacamole-v2",
+      "nombre": "Tacos de Bistec con Guacamole",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Cereal": 2,
+        "Verdura": 1,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "120 g",
+          "alimento": "Bistec de res",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "2 pz",
+          "alimento": "Tortilla de maíz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 crd",
+          "alimento": "Guacamole s/mayo",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-03",
+          "tab_origen": "Pau Marzo",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "tacos-de-bistec-con-nopales-v1",
+      "nombre": "Tacos de bistec con nopales",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 2,
+        "AOA": 4,
+        "Cereal": 3,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 tzas",
+          "alimento": "Nopales",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Salsa casera",
+          "grupo_smae": null,
+          "equivalentes": 0
+        },
+        {
+          "cantidad": "120 g",
+          "alimento": "Bistec de res",
+          "grupo_smae": "AOA",
+          "equivalentes": 4,
+          "asuncion": true
+        },
+        {
+          "cantidad": "3 pz",
+          "alimento": "Tortilla de maíz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "60 g",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-08",
+          "tab_origen": "Dan Agosto",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "tacos-de-bistec-con-nopales-v2",
+      "nombre": "Tacos de bistec con nopales",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Cereal": 2,
+        "Verdura": 2,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "120 g",
+          "alimento": "Bistec de res",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "2 pz",
+          "alimento": "Tortilla de maíz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "2 tzas",
+          "alimento": "Nopales",
+          "grupo_smae": "Verdura",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Salsa casera",
+          "grupo_smae": null,
+          "equivalentes": 0
+        },
+        {
+          "cantidad": "60 g",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-07",
+          "tab_origen": "Pau Julio",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "tacos-de-bistec-o-pollo-con-nopal-v1",
+      "nombre": "Tacos de bistec o pollo con Nopal",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 3,
+        "Verdura": 1,
+        "AOA": 4
+      },
+      "ingredientes": [
+        {
+          "cantidad": "3 pz",
+          "alimento": "Tortilla de maíz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Nopales",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "120 g",
+          "alimento": "Bistec de res sin grasa o Pechuga de pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-02",
+          "tab_origen": "Dany",
+          "menu_id": 2,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "tacos-de-bistec-o-pollo-con-nopal-v2",
+      "nombre": "Tacos de bistec o pollo con Nopal",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "Verdura": 1,
+        "AOA": 3,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pz",
+          "alimento": "Tortilla maíz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Nopales",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "90 g",
+          "alimento": "Bistec de res sin grasa o Pechuga de pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-02",
+          "tab_origen": "Pau",
+          "menu_id": 2,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "tacos-de-pollo-con-nopal-v1",
+      "nombre": "Tacos de pollo con nopal",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 2,
+        "AOA": 4,
+        "Cereal": 3,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Nopal",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "½ tz",
+          "alimento": "Pimiento",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "120 g",
+          "alimento": "Pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "3 pz",
+          "alimento": "Tortilla de maíz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "⅓ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26-Dan",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "tacos-de-pollo-con-nopal-v2",
+      "nombre": "Tacos de pollo con nopal",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Verdura": 1,
+        "AOA": 2,
+        "Cereal": 2,
+        "Aceite s/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "¾ tz + ⅓ tz",
+          "alimento": "Nopal y Pimiento",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "120 g",
+          "alimento": "Pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "2 pz",
+          "alimento": "Tortilla maíz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "¼ pz",
+          "alimento": "Aguacate",
+          "grupo_smae": "Aceite s/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26PPau",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "tacos-de-pollo-bistec",
+      "nombre": "Tacos de pollo/bistec",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 5,
+        "Verdura": 1,
+        "Cereal": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "150 g",
+          "alimento": "Bistec o Pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 5,
+          "alternativas": [
+            "Bistec",
+            "Pollo"
+          ]
+        },
+        {
+          "cantidad": "½ tza",
+          "alimento": "Pico de gallo",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 pzas",
+          "alimento": "Tortilla de maíz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-06",
+          "tab_origen": "Dany Junio",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "taquitos",
+      "nombre": "Taquitos",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 5,
+        "Verdura": 1,
+        "Cereal": 3
+      },
+      "ingredientes": [
+        {
+          "cantidad": "150 g",
+          "alimento": "Bistec de res o Pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Nopal",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "3 pz",
+          "alimento": "Tortilla de maíz",
+          "grupo_smae": "Cereal",
+          "equivalentes": 3
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Salsa casera",
+          "grupo_smae": null,
+          "equivalentes": 0
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-09",
+          "tab_origen": "Dany Sep",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "taquitos-de-bistec-pollo",
+      "nombre": "Taquitos de bistec/pollo",
+      "tiempo_tipico": [
+        "cena"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 4,
+        "Verdura": 1,
+        "Cereal": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "120 g",
+          "alimento": "Bistec de res o Pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "1 tz",
+          "alimento": "Nopal",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 pz",
+          "alimento": "Tortilla",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Salsa casera",
+          "grupo_smae": null,
+          "equivalentes": 0
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-09",
+          "tab_origen": "Pau Sep",
+          "menu_id": 1,
+          "tiempo": "cena"
+        }
+      ]
+    },
+    {
+      "receta_id": "tinga-de-pollo-v1",
+      "nombre": "Tinga de Pollo",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 2,
+        "Verdura": 2,
+        "AOA": 5
+      },
+      "ingredientes": [
+        {
+          "cantidad": "2 pqt",
+          "alimento": "Salmas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1/2 tza (asumido)",
+          "alimento": "Salsa casera jitomate",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        },
+        {
+          "cantidad": "150 g",
+          "alimento": "Pechuga de Pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 5
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Gelatina",
+          "grupo_smae": null,
+          "equivalentes": 0
+        },
+        {
+          "cantidad": "55-60 g",
+          "alimento": "Zanahoria rallada",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-08",
+          "tab_origen": "Dan Agosto",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "tinga-de-pollo-v2",
+      "nombre": "Tinga de Pollo",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Cereal": 1,
+        "Verdura": 2,
+        "AOA": 4
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pqt",
+          "alimento": "Salmas",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "sin cantidad",
+          "alimento": "Salsa casera de jitomate",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1,
+          "asuncion": true
+        },
+        {
+          "cantidad": "120 g",
+          "alimento": "Pechuga de Pollo",
+          "grupo_smae": "AOA",
+          "equivalentes": 4
+        },
+        {
+          "cantidad": "1 tza",
+          "alimento": "Gelatina",
+          "grupo_smae": null,
+          "equivalentes": 0
+        },
+        {
+          "cantidad": "60 g",
+          "alimento": "Zanahoria rallada",
+          "grupo_smae": "Verdura",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-07",
+          "tab_origen": "Pau Julio",
+          "menu_id": 2,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "uvas-congeladas-con-limon-y-tajin",
+      "nombre": "Uvas congeladas con limón y tajín",
+      "tiempo_tipico": [
+        "comida"
+      ],
+      "personas_vistas": [
+        "Dan",
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 tz",
+          "alimento": "Uva",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "al gusto",
+          "alimento": "Limón y tajín",
+          "grupo_smae": null,
+          "equivalentes": 0
+        }
+      ],
+      "veces_visto": 2,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-02",
+          "tab_origen": "Dany",
+          "menu_id": 1,
+          "tiempo": "comida"
+        },
+        {
+          "persona": "Pau",
+          "periodo": "2025-02",
+          "tab_origen": "Pau",
+          "menu_id": 1,
+          "tiempo": "comida"
+        }
+      ]
+    },
+    {
+      "receta_id": "yogur",
+      "nombre": "Yogur",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 1,
+        "Fruta": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "75 g",
+          "alimento": "Yogur griego",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-09",
+          "tab_origen": "Dany Sep",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "yogur-con-fruta",
+      "nombre": "Yogur con fruta",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 1,
+        "Fruta": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "75 g",
+          "alimento": "Yogur griego",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 tz",
+          "alimento": "Papaya o Melón",
+          "grupo_smae": "Fruta",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-12",
+          "tab_origen": "Dany Menu Dic",
+          "menu_id": 2,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "yogur-con-platano",
+      "nombre": "Yogur con plátano",
+      "tiempo_tipico": [
+        "al_despertar"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 1,
+        "Fruta": 2
+      },
+      "ingredientes": [
+        {
+          "cantidad": "75 g",
+          "alimento": "Yogur griego",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pz",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 2
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-09",
+          "tab_origen": "Pau Sep",
+          "menu_id": 2,
+          "tiempo": "al_despertar"
+        }
+      ]
+    },
+    {
+      "receta_id": "yogur-con-platano-y-granola-v1",
+      "nombre": "Yogur con plátano y granola",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 2,
+        "AOA": 1,
+        "Cereal": 1,
+        "Aceite c/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "1 pz",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "75 g",
+          "alimento": "Yogur bajo en grasa",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1/4 tz",
+          "alimento": "Granola",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 ct",
+          "alimento": "Crema de cacahuate",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26-Dan",
+          "menu_id": 1,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "yogur-con-platano-y-granola-v2",
+      "nombre": "Yogur con plátano y granola",
+      "tiempo_tipico": [
+        "colacion"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "Fruta": 1,
+        "AOA": 1,
+        "Cereal": 1,
+        "Aceite c/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "½ pz",
+          "alimento": "Plátano",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "80 g",
+          "alimento": "Yogur griego",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "⅓ tz",
+          "alimento": "Granola",
+          "grupo_smae": "Cereal",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 ct",
+          "alimento": "Crema cacahuate",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2026-03",
+          "tab_origen": "Marzo26PPau",
+          "menu_id": 1,
+          "tiempo": "colacion"
+        }
+      ]
+    },
+    {
+      "receta_id": "yogurt-con-manzana-v1",
+      "nombre": "Yogurt con Manzana",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Dan"
+      ],
+      "vector_equivalentes": {
+        "AOA": 2,
+        "Fruta": 1,
+        "Aceite c/p": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "150 g",
+          "alimento": "Yogurt",
+          "grupo_smae": "AOA",
+          "equivalentes": 2
+        },
+        {
+          "cantidad": "1 pza",
+          "alimento": "Manzana",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "2 cdt",
+          "alimento": "Crema de cacahuate",
+          "grupo_smae": "Aceite c/p",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Dan",
+          "periodo": "2025-06",
+          "tab_origen": "Dany Junio",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    },
+    {
+      "receta_id": "yogurt-con-manzana-v2",
+      "nombre": "Yogurt con Manzana",
+      "tiempo_tipico": [
+        "desayuno"
+      ],
+      "personas_vistas": [
+        "Pau"
+      ],
+      "vector_equivalentes": {
+        "AOA": 1,
+        "Fruta": 1
+      },
+      "ingredientes": [
+        {
+          "cantidad": "75 g",
+          "alimento": "Yogurt",
+          "grupo_smae": "AOA",
+          "equivalentes": 1
+        },
+        {
+          "cantidad": "1 pza",
+          "alimento": "Manzana",
+          "grupo_smae": "Fruta",
+          "equivalentes": 1
+        }
+      ],
+      "veces_visto": 1,
+      "origen": [
+        {
+          "persona": "Pau",
+          "periodo": "2025-06",
+          "tab_origen": "Pau Junio",
+          "menu_id": 1,
+          "tiempo": "desayuno"
+        }
+      ]
+    }
+  ]
+}
