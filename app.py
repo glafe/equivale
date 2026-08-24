@@ -62,7 +62,13 @@ def _formatear_cantidad_real(paso: str, n: int) -> str:
     if m:
         num, den, resto = m.groups()
         valor = Fraction(int(num), int(den)) * n
-        texto = str(valor.numerator) if valor.denominator == 1 else f"{valor.numerator}/{valor.denominator}"
+        entero, resto_frac = divmod(valor.numerator, valor.denominator)
+        if resto_frac == 0:
+            texto = str(entero)
+        elif entero == 0:
+            texto = f"{resto_frac}/{valor.denominator}"
+        else:
+            texto = f"{entero} {resto_frac}/{valor.denominator}"
         return f"{texto} {resto} ({n} equivalentes)".strip()
     m = RE_NUMERO.match(paso)
     if m:
