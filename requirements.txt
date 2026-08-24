@@ -1,0 +1,4 @@
+pymongo>=4.8
+streamlit>=1.38
+python-dotenv>=1.0
+pytest>=8.0
