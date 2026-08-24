@@ -99,6 +99,10 @@ def render() -> None:
     recetas_por_id = {r["receta_id"]: r for r in recetas}
     if "_flash" in st.session_state:
         st.success(st.session_state.pop("_flash"))
+    # No se puede asignar a session_state["editor_receta_selector"] después de que el
+    # selectbox ya se instanció en este mismo run -> se aplica acá, antes de crearlo.
+    if "_seleccionar_tras_guardar" in st.session_state:
+        st.session_state["editor_receta_selector"] = st.session_state.pop("_seleccionar_tras_guardar")
 
     opciones = [NUEVA_RECETA] + sorted(recetas_por_id, key=lambda rid: recetas_por_id[rid]["nombre"])
     elegido = st.selectbox(
@@ -224,7 +228,7 @@ def render() -> None:
                 # Necesita rerun para que el selectbox deje de mostrar "Nueva receta" y
                 # apunte a la receta recién creada -> el mensaje debe sobrevivir ese rerun.
                 st.session_state["_flash"] = f"Receta '{documento['nombre']}' guardada como `{receta_id}`."
-                st.session_state["editor_receta_selector"] = receta_id
+                st.session_state["_seleccionar_tras_guardar"] = receta_id
                 st.session_state["_editor_actual"] = receta_id
                 st.rerun()
             # Editando una receta existente: no hace falta rerun, se puede mostrar directo.
@@ -237,7 +241,7 @@ def render() -> None:
             if st.button("🗑️ Eliminar receta", disabled=not confirmar):
                 db().recetas.delete_one({"receta_id": draft["receta_id"]})
                 invalidar_cache_recetas()
-                st.session_state["editor_receta_selector"] = NUEVA_RECETA
+                st.session_state["_seleccionar_tras_guardar"] = NUEVA_RECETA
                 st.session_state["_editor_actual"] = NUEVA_RECETA
                 st.session_state["_flash"] = "Receta eliminada."
                 st.rerun()
