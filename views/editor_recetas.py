@@ -224,15 +224,17 @@ def render() -> None:
             }
             db().recetas.replace_one({"receta_id": receta_id}, documento, upsert=True)
             invalidar_cache_recetas()
+            draft["receta_id"] = receta_id
             if elegido == NUEVA_RECETA:
                 # Necesita rerun para que el selectbox deje de mostrar "Nueva receta" y
                 # apunte a la receta recién creada -> el mensaje debe sobrevivir ese rerun.
+                # draft["receta_id"] ya quedó actualizado arriba, antes del rerun, para que el
+                # mismo objeto en session_state["editor_draft"] llegue correcto al siguiente run.
                 st.session_state["_flash"] = f"Receta '{documento['nombre']}' guardada como `{receta_id}`."
                 st.session_state["_seleccionar_tras_guardar"] = receta_id
                 st.session_state["_editor_actual"] = receta_id
                 st.rerun()
             # Editando una receta existente: no hace falta rerun, se puede mostrar directo.
-            draft["receta_id"] = receta_id
             st.success(f"Receta '{documento['nombre']}' guardada como `{receta_id}`.")
 
     with col_eliminar:
