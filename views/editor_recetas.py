@@ -50,6 +50,7 @@ def _fila_vacia() -> dict:
         "fila_id": str(uuid.uuid4()),
         "alimento": "",
         "grupo_smae": None,
+        "cantidad": "",
         "equivalentes": 1,
         "bloqueado": False,
     }
@@ -71,6 +72,7 @@ def _draft_desde_receta(receta: dict | None) -> dict:
             "fila_id": str(uuid.uuid4()),
             "alimento": ing["alimento"],
             "grupo_smae": ing.get("grupo_smae"),
+            "cantidad": ing.get("cantidad", ""),
             "equivalentes": ing["equivalentes"],
             "bloqueado": ing.get("bloqueado", False),
         }
@@ -133,7 +135,7 @@ def render() -> None:
 
     for fila in list(draft["ingredientes"]):
         with st.container(border=True):
-            c1, c2, c3, c4, c5 = st.columns([3, 2, 1, 1, 1])
+            c1, c2, c_cant, c3, c4, c5 = st.columns([3, 2, 2, 1, 1, 1])
 
             en_catalogo = fila["alimento"] in alimentos_catalogo
             sel = c1.selectbox(
@@ -165,6 +167,14 @@ def render() -> None:
                 label_visibility="collapsed",
             )
             fila["grupo_smae"] = None if grupo_sel == LIBRE else grupo_sel
+
+            fila["cantidad"] = c_cant.text_input(
+                "Cantidad",
+                value=fila["cantidad"],
+                key=f"cantidad_{fila['fila_id']}",
+                label_visibility="collapsed",
+                placeholder="ej. 1/2 taza, 150 g",
+            )
 
             fila["equivalentes"] = c3.number_input(
                 "Equiv.", min_value=1, step=1, value=fila["equivalentes"],
@@ -211,7 +221,7 @@ def render() -> None:
                 "vector_equivalentes": sumar_por_grupo(ingredientes_validos, "grupo_smae", "equivalentes"),
                 "ingredientes": [
                     {
-                        "cantidad": "",
+                        "cantidad": i["cantidad"].strip(),
                         "alimento": i["alimento"].strip(),
                         "grupo_smae": i["grupo_smae"],
                         "equivalentes": i["equivalentes"],

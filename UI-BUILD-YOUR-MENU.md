@@ -116,9 +116,11 @@ corregirse. Alcance actual (más acotado que la idea original — sin integraci�
   (multi-select).
 - **Ingredientes**: agregar fila nueva, quitar fila existente. Por fila: `alimento` (elegir de
   `catalogo_alimentos` o escribir uno libre/nuevo), `grupo_smae` (de los 7 canónicos, o "ninguno"
-  para libre), `equivalentes` (entero), y un checkbox **bloquear edición** que fija
-  `Ingrediente.bloqueado` (ver `schema.md`) — evita que ese ingrediente sea ajustable con el
-  stepper en "Build your menu" aunque el catálogo sí resuelva un paso.
+  para libre), `cantidad` (texto libre, ej. "1/2 taza" — no se deriva del catálogo automáticamente,
+  se escribe a mano; si se deja vacío no rompe nada pero pierde detalle informativo),
+  `equivalentes` (entero), y un checkbox **bloquear edición** que fija `Ingrediente.bloqueado` (ver
+  `schema.md`) — evita que ese ingrediente sea ajustable con el stepper en "Build your menu" aunque
+  el catálogo sí resuelva un paso.
 - **Resumen en vivo**: `vector_equivalentes` recalculado de los ingredientes actuales (nunca
   editado a mano), mostrado con los chips de color de la tabla de arriba.
 - **Guardar**: upsert a `recetas` por `receta_id` (slug generado del nombre, con sufijo `-v2`, etc.
