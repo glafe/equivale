@@ -52,6 +52,23 @@ Construir `app.py` cubriendo SOLO el flujo de un tiempo (ej. Comida) para una pe
 delta por grupo actualizarse correctamente contra el **presupuesto diario restante** (no contra un
 objetivo fijo de ese tiempo — ver nota de diseño en `schema.md` → `objetivos`).
 
+## Fase 3.5 — Editor de recetas + convención de colores (adelantada a pedido del usuario, 2026-08-24)
+
+Al usar el MVP de Fase 3, el usuario encontró recetas del banco duplicadas/con datos a corregir —
+se adelanta esta herramienta (originalmente en "Ideas para más adelante") antes de seguir a Fase 4.
+Ver `UI-BUILD-YOUR-MENU.md` → "Convención de colores por grupo SMAE" y "Editor de recetas" para el
+detalle completo. Resumen:
+- `nutriguia/colores.py`: paleta fija por grupo SMAE, reutilizada en toda la app.
+- App pasa a multipágina (`st.navigation`/`st.Page`) con barra lateral: "Build your menu" +
+  "Editor de recetas".
+- Editor: crear/editar/eliminar recetas; agregar/quitar ingredientes; checkbox para
+  bloquear/desbloquear un ingrediente como ajustable (`Ingrediente.bloqueado`, ver `schema.md`);
+  resumen en vivo del `vector_equivalentes` con los chips de color.
+
+**Hecho cuando**: se puede crear una receta nueva desde cero, editar una existente (sin perder su
+`veces_visto`/`origen`), bloquear un ingrediente y confirmar que deja de ser ajustable en "Build
+your menu", y eliminar una receta con confirmación explícita — todo probado en navegador real.
+
 ## Fase 4 — Día completo + guardar
 
 Extender a los `st.tabs` de todos los tiempos (punto 2-3 completo de `UI-BUILD-YOUR-MENU.md`),
@@ -82,17 +99,14 @@ retomar solo después de que la Fase 4 (o 5) esté en uso real y se sienta bien.
   perfil por persona — no tener que tocar la base de datos a mano cada vez que cambie el objetivo
   con el nutriólogo. Ver nota de diseño en `schema.md` → `objetivos` (el objetivo ya es solo
   diario, no por tiempo, lo cual simplifica esta futura pantalla de edición).
-- **"EquiVale Chef"** — una herramienta (dentro de `app.py` o un modo separado) para construir y
-  actualizar `recetas` sin editar JSON a mano:
-  - Al armar un platillo, sugerir alimentos primero desde `catalogo_alimentos` (autocompletar por
-    nombre, mostrando su `grupo` y `cantidad_por_equivalente`).
-  - Si el alimento no está en el catálogo, permitir agregarlo buscándolo en `SMAE_CONSULTA.csv`
-    (la tabla oficial SMAE) y preguntar la unidad de medida a usar (ej. "taza", "g", "pieza") para
-    fijar su `cantidad_por_equivalente` — mismo criterio que la regla 5 de `CLAUDE.md` (si tampoco
-    está en `SMAE_CONSULTA.csv`, marcar `asuncion: true` y pedir confirmación antes de guardar).
-  - Esto permite crecer `catalogo_alimentos` y el banco de `recetas` poco a poco, en vez de
-    depender solo de lo ya extraído de los menús históricos — útil para cuando el banco no tiene
-    ninguna combinación que cuadre con un objetivo (ver "Generar menús nuevos" en `CLAUDE.md`).
+- **"EquiVale Chef" — integración con `SMAE_CONSULTA.csv`** (la primera versión del editor de
+  recetas ya se construyó el 2026-08-24, ver Fase 3.5 abajo y `UI-BUILD-YOUR-MENU.md` → "Editor de
+  recetas"; esto es lo que falta para la versión completa de la idea original): si un alimento
+  nuevo no está en `catalogo_alimentos`, permitir buscarlo en `SMAE_CONSULTA.csv` (la tabla oficial
+  SMAE) y preguntar la unidad de medida a usar para fijar su `cantidad_por_equivalente` — mismo
+  criterio que la regla 5 de `CLAUDE.md` (si tampoco está ahí, marcar `asuncion: true` y pedir
+  confirmación). Esto permite crecer `catalogo_alimentos` desde el propio editor, no solo elegir
+  entre lo que ya existe.
 
 ## Checklist rápido
 
@@ -100,5 +114,6 @@ retomar solo después de que la Fase 4 (o 5) esté en uso real y se sienta bien.
 - [x] Fase 1 — datos importados, conteos correctos
 - [x] Fase 2 — 34/34 tests de validación en verde
 - [x] Fase 3 — MVP de un tiempo funcionando
+- [ ] Fase 3.5 — editor de recetas + convención de colores
 - [ ] Fase 4 — día completo + guardado funcionando
 - [ ] Fase 5 — pulido (solo tras uso real)

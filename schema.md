@@ -105,9 +105,18 @@ clave, NO usar un dict/objeto que sobreescriba duplicados (ver `sumar_por_grupo(
   "grupo_smae": string | null,      // uno de los 7 grupos canónicos, o null si no cuenta (libre)
   "equivalentes": int,
   "asuncion"?: bool,
+  "bloqueado"?: bool,                // ver nota abajo — solo aplica dentro de `recetas`, no en `menus`
   "nota"?: string                   // presente solo en Json-outputs/ (no en -sin-notas/)
 }
 ```
+
+**`bloqueado`** (agregado 2026-08-24 para el editor de recetas — solo relevante en la colección
+`recetas`, los `Ingrediente` de `menus` son histórico de solo lectura y lo ignoran): por default,
+si un `alimento` tiene `cantidad_por_equivalente` en `catalogo_alimentos` es ajustable con el
+stepper +/- en "Build your menu" (ver `paso_equivalente()` en `VALIDATION.md`). `bloqueado: true`
+fuerza a que NO sea ajustable aunque el catálogo sí resuelva un paso — para ingredientes que el
+usuario decide fijos en una receta concreta (ej. una guarnición base que no debería tocarse).
+Ausente o `false` = se comporta según el catálogo (default, sin cambios).
 
 ## Colección `recetas` — banco de platillos reutilizables (para generación y para la UI)
 

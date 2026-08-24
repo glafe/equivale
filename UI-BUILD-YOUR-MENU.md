@@ -79,6 +79,56 @@ equivalente, nunca slider libre**, y la UI debe mostrar en vivo si falta o sobra
   [ Guardar tiempo (incompleto) ]
 ```
 
+## Convención de colores por grupo SMAE (confirmada con el usuario, 2026-08-24)
+
+La app usa un color fijo por grupo (identidad del grupo, no estado) en cualquier lugar donde se
+muestren equivalentes por grupo — panel de estado, resumen del día, editor de recetas. Aproximado
+de una referencia visual del usuario; ajustar si no calzan exactamente:
+
+| Grupo canónico | Color   | Etiqueta mostrada       |
+|-----------------|---------|--------------------------|
+| Fruta           | `#FFC000` | Fruta                  |
+| Verdura         | `#00A651` | Verdura                |
+| Cereal          | `#F07C22` | Cereal                 |
+| Leguminosa      | `#FF0000` | Leguminosas            |
+| AOA             | `#A6081C` | AOA (Alimento de origen animal) |
+| Aceite s/p      | `#3D4A1E` | Aceites s/proteína     |
+| Aceite c/p      | `#6D6E71` | Aceite c/proteína      |
+
+Texto blanco, negrita, itálica sobre el color de fondo (chip/badge). Esto es la identidad visual
+del GRUPO — es independiente del color de ESTADO (verde/amarillo/rojo de exacto/falta/excedido);
+el estado se muestra aparte (ej. un ícono o texto junto al chip), no reemplazando el color del
+grupo. Vive en `nutriguia/colores.py` como single source of truth para no repetir hex en cada
+página.
+
+## Editor de recetas ("EquiVale Chef") — promovido desde "Ideas para más adelante"
+
+El usuario pidió adelantar esta herramienta (ver nota original en `BUILD-PLAN.md`) porque al usar
+"Build your menu" encontró recetas del banco duplicadas o con ingredientes que deberían poder
+corregirse. Alcance actual (más acotado que la idea original — sin integración a
+`SMAE_CONSULTA.csv` todavía, eso sigue en "Ideas para más adelante"):
+
+- **Navegación**: la app pasa a ser multipágina con `st.navigation`/`st.Page` — barra lateral
+  izquierda con "Build your menu" y "Editor de recetas".
+- **Listado**: seleccionar una receta existente (buscador por nombre) para editarla, o crear una
+  nueva desde cero.
+- **Campos editables de la receta**: `nombre`, `tiempo_tipico` (multi-select), `personas_vistas`
+  (multi-select).
+- **Ingredientes**: agregar fila nueva, quitar fila existente. Por fila: `alimento` (elegir de
+  `catalogo_alimentos` o escribir uno libre/nuevo), `grupo_smae` (de los 7 canónicos, o "ninguno"
+  para libre), `equivalentes` (entero), y un checkbox **bloquear edición** que fija
+  `Ingrediente.bloqueado` (ver `schema.md`) — evita que ese ingrediente sea ajustable con el
+  stepper en "Build your menu" aunque el catálogo sí resuelva un paso.
+- **Resumen en vivo**: `vector_equivalentes` recalculado de los ingredientes actuales (nunca
+  editado a mano), mostrado con los chips de color de la tabla de arriba.
+- **Guardar**: upsert a `recetas` por `receta_id` (slug generado del nombre, con sufijo `-v2`, etc.
+  si ya existe uno con ese nombre pero ingredientes distintos — mismo criterio que el banco
+  original, ver `schema.md` → `recetas`). Editar una receta existente conserva su `veces_visto` y
+  `origen` (trazabilidad histórica) — el editor no los toca. Una receta nueva creada desde cero
+  arranca con `veces_visto: 0`, `origen: []`.
+- **Eliminar**: requiere un checkbox de confirmación explícito antes de habilitar el botón —
+  eliminar una receta usada en el banco es una acción difícil de revertir.
+
 ## Notas de implementación Streamlit
 
 - Guardar el estado del menú en construcción en `st.session_state` (por persona+tiempo), no en
