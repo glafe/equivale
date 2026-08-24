@@ -99,6 +99,6 @@ retomar solo después de que la Fase 4 (o 5) esté en uso real y se sienta bien.
 - [x] Fase 0 — Mongo corriendo, venv listo
 - [x] Fase 1 — datos importados, conteos correctos
 - [x] Fase 2 — 34/34 tests de validación en verde
-- [ ] Fase 3 — MVP de un tiempo funcionando
+- [x] Fase 3 — MVP de un tiempo funcionando
 - [ ] Fase 4 — día completo + guardado funcionando
 - [ ] Fase 5 — pulido (solo tras uso real)
