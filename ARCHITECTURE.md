@@ -89,7 +89,11 @@ nutri-guia/
 2. **Los menús históricos (`menus`) se importan tal cual, de solo lectura** — son el archivo/la
    prueba de que el sistema funciona, no se editan desde la UI.
 3. **`recetas` se importa tal cual** desde `recetas.json` — es el banco de bloques de
-   construcción para la UI y el generador.
+   construcción para la UI y el generador. **Desde 2026-08-24 esto ya no es 100% cierto**: el
+   Editor de recetas (`views/editor_recetas.py`) edita `recetas` en vivo en Mongo — esas ediciones
+   NO se reflejan de vuelta en `recetas.json`. `import_data.py` ahora se niega a sobreescribir
+   `recetas` si ya tiene datos, salvo `--force-recetas` explícito (que sí las destruiría). Tratar
+   `recetas.json` como la semilla histórica inicial, no como la fuente de verdad continua.
 4. **Aumentar/disminuir porción = pasos de 1 equivalente completo, nunca fracciones.** Ver
    `schema.md` (sección "ajuste de porción") y `VALIDATION.md` (función `paso_equivalente`) para
    el mecanismo exacto de cuánta `cantidad` real representa un paso, usando

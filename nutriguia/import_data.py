@@ -1,3 +1,4 @@
+import argparse
 import json
 from pathlib import Path
 
@@ -87,7 +88,13 @@ def importar_menus(db: Database) -> int:
     return len(docs)
 
 
-def importar_recetas(db: Database) -> int:
+def importar_recetas(db: Database, force: bool = False) -> int:
+    # `recetas` se edita en vivo desde el Editor de recetas (views/editor_recetas.py) desde
+    # 2026-08-24 -- esas ediciones solo viven en Mongo, NO en recetas.json. Re-importar sin
+    # --force las borraría. Ver ARCHITECTURE.md.
+    if not force and db.recetas.count_documents({}) > 0:
+        print("  (recetas ya tiene datos -- se omite, usar --force-recetas para sobreescribir)")
+        return db.recetas.count_documents({})
     banco = json.loads((DATA_DIR / "recetas.json").read_text(encoding="utf-8"))
     docs = banco["recetas"]
     db.recetas.delete_many({})
@@ -112,10 +119,18 @@ def importar_objetivos(db: Database) -> int:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--force-recetas", action="store_true",
+        help="Sobreescribir la colección recetas aunque ya tenga datos (borra ediciones hechas "
+             "desde el Editor de recetas -- usar con cuidado).",
+    )
+    args = parser.parse_args()
+
     db = get_db()
     n_catalogo = importar_catalogo(db)
     n_menus = importar_menus(db)
-    n_recetas = importar_recetas(db)
+    n_recetas = importar_recetas(db, force=args.force_recetas)
     n_personas = importar_personas(db)
     n_objetivos = importar_objetivos(db)
 
