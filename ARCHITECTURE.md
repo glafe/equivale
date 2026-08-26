@@ -52,6 +52,7 @@ exactamente el tipo de bug silencioso que ya vimos en el histórico (declarados 
 
 ```
 nutri-guia/
+  README.md
   CLAUDE.md
   ARCHITECTURE.md
   SETUP.md
@@ -79,7 +80,6 @@ nutri-guia/
     editor_recetas.py              #   choca con st.navigation/st.Page, ver ARCHITECTURE.md abajo)
   tests/
     test_validation.py             # corre validation.py contra los menús históricos
-    test_import.py                 # smoke test: conteos esperados tras importar
 ```
 
 ## Decisiones de diseño ya tomadas (no re-derivar)
