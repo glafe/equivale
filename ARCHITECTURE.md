@@ -70,6 +70,7 @@ nutri-guia/
     db.py                          # conexión a Mongo (lee MONGO_URI de .env)
     validation.py                  # ver VALIDATION.md — contrato exacto
     colores.py                     # paleta fija por grupo SMAE (UI, no aritmética)
+    cantidades.py                  # escalar_cantidad(): "30 g" x3 -> "90 g" (UI, no aritmética)
     streamlit_data.py              # loaders cacheados compartidos entre páginas de Streamlit
     import_data.py                 # script: carga catalogo/recetas/menus/objetivos a Mongo
   app.py                           # entrypoint Streamlit: st.navigation entre las páginas de views/

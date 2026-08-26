@@ -3,12 +3,11 @@
 Ver UI-BUILD-YOUR-MENU.md puntos 1-3 para la especificación de interacción.
 """
 
-import re
 import uuid
-from fractions import Fraction
 
 import streamlit as st
 
+from nutriguia.cantidades import escalar_cantidad
 from nutriguia.colores import GRUPO_ETIQUETA, chip_html
 from nutriguia.streamlit_data import cargar_catalogo, cargar_objetivo, cargar_personas, cargar_recetas
 from nutriguia.validation import (
@@ -23,32 +22,9 @@ TIEMPO_LABEL = "Comida"
 
 ICONO_POR_ESTADO = {"exacto": "✅", "falta": "🔺", "excedido": "🔻"}
 
-RE_FRACCION = re.compile(r"^(\d+)/(\d+)\s*(.*)$")
-RE_NUMERO = re.compile(r"^(\d+(?:\.\d+)?)\s*(.*)$")
-
 
 def _formatear_cantidad_real(paso: str, n: int) -> str:
-    """paso = 'cantidad_por_equivalente' de un alimento (ej. '30 g', '1/2 taza'). Multiplica por
-    n equivalentes cuando el formato es reconocible; si no, muestra el paso tal cual."""
-    m = RE_FRACCION.match(paso)
-    if m:
-        num, den, resto = m.groups()
-        valor = Fraction(int(num), int(den)) * n
-        entero, resto_frac = divmod(valor.numerator, valor.denominator)
-        if resto_frac == 0:
-            texto = str(entero)
-        elif entero == 0:
-            texto = f"{resto_frac}/{valor.denominator}"
-        else:
-            texto = f"{entero} {resto_frac}/{valor.denominator}"
-        return f"{texto} {resto} ({n} equivalentes)".strip()
-    m = RE_NUMERO.match(paso)
-    if m:
-        val, resto = m.groups()
-        valor = float(val) * n
-        texto = str(int(valor)) if valor == int(valor) else str(valor)
-        return f"{texto} {resto} ({n} equivalentes)".strip()
-    return f"{paso} × {n} ({n} equivalentes)"
+    return f"{escalar_cantidad(paso, n)} ({n} equivalentes)"
 
 
 def _nueva_instancia(receta: dict) -> dict:

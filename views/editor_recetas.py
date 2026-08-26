@@ -8,6 +8,7 @@ import uuid
 
 import streamlit as st
 
+from nutriguia.cantidades import escalar_cantidad
 from nutriguia.colores import GRUPO_ETIQUETA, chip_html
 from nutriguia.streamlit_data import (
     cargar_nombres_alimentos,
@@ -16,7 +17,7 @@ from nutriguia.streamlit_data import (
     db,
     invalidar_cache_recetas,
 )
-from nutriguia.validation import sumar_por_grupo
+from nutriguia.validation import paso_equivalente, sumar_por_grupo
 
 GRUPOS_CANONICOS = ["AOA", "Cereal", "Verdura", "Fruta", "Aceite s/p", "Aceite c/p", "Leguminosa"]
 TIEMPOS_CANONICOS = ["al_despertar", "desayuno", "colacion", "comida", "cena"]
@@ -163,17 +164,17 @@ def render() -> None:
                     entrada = catalogo_por_nombre[sel]
                     fila["grupo_smae"] = entrada["grupo"]
                     if cambio_de_alimento:
-                        # Alimento recién elegido -> auto-llenar grupo/cantidad/equivalentes desde
-                        # el catálogo en vez de dejar lo que hubiera quedado del alimento anterior
-                        # en esta fila (evita inconsistencias tipo "Pollo, 200 g, 5 equivalentes").
-                        # Los 3 widgets (grupo/cantidad/equivalentes) ya tienen su propio key desde
-                        # que la fila se creó -> hay que empujar el nuevo valor a session_state
-                        # también, no solo a `fila`, porque Streamlit ignora el `index`/`value` de
-                        # un widget con key una vez que ya tiene una entrada guardada.
-                        fila["cantidad"] = entrada["cantidad_por_equivalente"]
+                        # Alimento recién elegido -> resetear a 1 equivalente en vez de dejar lo
+                        # que hubiera quedado del alimento anterior en esta fila (evita
+                        # inconsistencias tipo "Pollo, 5 equivalentes" recién puesto). La cantidad
+                        # se deriva más abajo de equivalentes × cantidad_por_equivalente, no hace
+                        # falta fijarla aquí. El selectbox de Grupo y el number_input de
+                        # equivalentes ya tienen su propio key desde que la fila se creó -> hay que
+                        # empujar el nuevo valor a session_state también, porque Streamlit ignora
+                        # el `index`/`value` de un widget con key una vez que ya tiene una entrada
+                        # guardada.
                         fila["equivalentes"] = 1
                         st.session_state[f"grupo_{fila['fila_id']}"] = entrada["grupo"]
-                        st.session_state[f"cantidad_{fila['fila_id']}"] = entrada["cantidad_por_equivalente"]
                         st.session_state[f"equiv_{fila['fila_id']}"] = 1
 
             grupo_actual = fila["grupo_smae"] if fila["grupo_smae"] in GRUPOS_CANONICOS else LIBRE
@@ -185,14 +186,6 @@ def render() -> None:
                 label_visibility="collapsed",
             )
             fila["grupo_smae"] = None if grupo_sel == LIBRE else grupo_sel
-
-            fila["cantidad"] = c_cant.text_input(
-                "Cantidad",
-                value=fila["cantidad"],
-                key=f"cantidad_{fila['fila_id']}",
-                label_visibility="collapsed",
-                placeholder="ej. 1/2 taza, 150 g",
-            )
 
             # Un ingrediente "libre" (grupo_smae None, ej. "Canela", "Salsa casera al gusto")
             # legítimamente no cuenta ningún equivalente -> 0. sumar_por_grupo() los ignora de
@@ -206,11 +199,39 @@ def render() -> None:
             # ANTES de instanciar el widget (después de instanciarlo ya no se puede tocar).
             if equiv_key in st.session_state and st.session_state[equiv_key] < min_equivalentes:
                 st.session_state[equiv_key] = min_equivalentes
+            # equivalentes se renderiza antes que cantidad porque, para alimentos del catálogo,
+            # cantidad se DERIVA de equivalentes (ver abajo) -- necesitamos el valor ya resuelto.
             fila["equivalentes"] = c3.number_input(
                 "Equiv.", min_value=min_equivalentes, step=1,
                 value=max(fila["equivalentes"], min_equivalentes),
                 key=equiv_key, label_visibility="collapsed",
             )
+
+            paso = paso_equivalente(fila["alimento"], catalogo_por_nombre)
+            if paso is not None:
+                # Alimento reconocido en el catálogo -> cantidad se calcula sola
+                # (equivalentes × cantidad_por_equivalente), no editable a mano, para que nunca
+                # queden desincronizadas (ej. "3 equivalentes" con "30 g" de cuando eran 1).
+                fila["cantidad"] = escalar_cantidad(paso, fila["equivalentes"])
+                c_cant.text_input(
+                    "Cantidad",
+                    value=fila["cantidad"],
+                    disabled=True,
+                    # key incluye equivalentes a propósito: al cambiar equivalentes esto es un
+                    # widget "nuevo" para Streamlit, así que el `value` recién calculado sí se ve
+                    # -- si el key fuera fijo, Streamlit ignoraría el `value` en reruns siguientes.
+                    key=f"cantidad_ro_{fila['fila_id']}_{fila['equivalentes']}",
+                    label_visibility="collapsed",
+                )
+            else:
+                # Alimento libre o no catalogado -> cantidad es texto libre, como siempre.
+                fila["cantidad"] = c_cant.text_input(
+                    "Cantidad",
+                    value=fila["cantidad"],
+                    key=f"cantidad_{fila['fila_id']}",
+                    label_visibility="collapsed",
+                    placeholder="ej. 1/2 taza, 150 g",
+                )
             fila["bloqueado"] = c4.checkbox(
                 "🔒", value=fila["bloqueado"], key=f"bloqueado_{fila['fila_id']}",
                 help="Bloquear: no ajustable con +/- en Build your menu",

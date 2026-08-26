@@ -120,18 +120,21 @@ corregirse. Alcance actual (más acotado que la idea original — sin integraci�
   (multi-select).
 - **Ingredientes**: agregar fila nueva, quitar fila existente. Por fila: `alimento` (elegir de
   `catalogo_alimentos` o escribir uno libre/nuevo), `grupo_smae` (de los 7 canónicos, o "ninguno"
-  para libre), `cantidad` (texto libre, ej. "1/2 taza"), `equivalentes` (entero), y un checkbox
-  **bloquear edición** que fija `Ingrediente.bloqueado` (ver `schema.md`) — evita que ese
-  ingrediente sea ajustable con el stepper en "Build your menu" aunque el catálogo sí resuelva un
-  paso.
-  - **Auto-llenado al elegir un alimento del catálogo** (2026-08-25, para evitar inconsistencias
-    tipo "Pollo, 200 g, 5 equivalentes" arrastradas de un alimento anterior en la misma fila):
-    seleccionar un alimento de `catalogo_alimentos` sobreescribe `grupo_smae` (según el catálogo),
-    `cantidad` (= `cantidad_por_equivalente` del catálogo) y `equivalentes` (= 1) en esa fila —
-    el usuario ajusta `equivalentes` después si la porción real es más de 1. Esto SOLO pasa en el
-    momento de elegir/cambiar el alimento de esa fila, no en cada rerun — editar `cantidad` a mano
-    después de elegir el alimento no se vuelve a pisar solo. No aplica a alimentos libres/nuevos
-    (`(otro / alimento nuevo)`) ni si el alimento no está en el catálogo.
+  para libre), `cantidad`, `equivalentes` (entero), y un checkbox **bloquear edición** que fija
+  `Ingrediente.bloqueado` (ver `schema.md`) — evita que ese ingrediente sea ajustable con el
+  stepper en "Build your menu" aunque el catálogo sí resuelva un paso.
+  - **Al elegir/cambiar el alimento de una fila** (2026-08-25, para evitar inconsistencias tipo
+    "Pollo, 200 g, 5 equivalentes" arrastradas de un alimento anterior en la misma fila): si el
+    alimento está en `catalogo_alimentos`, se sobreescribe `grupo_smae` (según el catálogo) y se
+    resetea `equivalentes` a 1. Esto SOLO pasa en el momento de elegir/cambiar el alimento de esa
+    fila, no en cada rerun. No aplica a alimentos libres/nuevos (`(otro / alimento nuevo)`) ni si
+    el alimento no está en el catálogo.
+  - **`cantidad` es de solo lectura cuando el alimento está en el catálogo** (2026-08-25): se
+    calcula sola como `equivalentes × cantidad_por_equivalente` (ej. Pollo a 3 equivalentes ->
+    "90 g") usando `nutriguia/cantidades.py` (`escalar_cantidad`, compartido con "Build your
+    menu") — nunca editable a mano en ese caso, para que no se pueda desincronizar de
+    `equivalentes`. Solo para alimentos libres/nuevos (no resueltos por `paso_equivalente()`,
+    ver `VALIDATION.md`) `cantidad` sigue siendo texto libre editable.
 - **Resumen en vivo**: `vector_equivalentes` recalculado de los ingredientes actuales (nunca
   editado a mano), mostrado con los chips de color de la tabla de arriba.
 - **Guardar**: upsert a `recetas` por `receta_id` (slug generado del nombre, con sufijo `-v2`, etc.
