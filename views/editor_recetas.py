@@ -163,11 +163,16 @@ def render() -> None:
                     entrada = catalogo_por_nombre[sel]
                     fila["grupo_smae"] = entrada["grupo"]
                     if cambio_de_alimento:
-                        # Alimento recién elegido -> auto-llenar cantidad/equivalentes desde el
-                        # catálogo en vez de dejar lo que hubiera quedado del alimento anterior en
-                        # esta fila (evita inconsistencias tipo "Pollo, 200 g, 5 equivalentes").
+                        # Alimento recién elegido -> auto-llenar grupo/cantidad/equivalentes desde
+                        # el catálogo en vez de dejar lo que hubiera quedado del alimento anterior
+                        # en esta fila (evita inconsistencias tipo "Pollo, 200 g, 5 equivalentes").
+                        # Los 3 widgets (grupo/cantidad/equivalentes) ya tienen su propio key desde
+                        # que la fila se creó -> hay que empujar el nuevo valor a session_state
+                        # también, no solo a `fila`, porque Streamlit ignora el `index`/`value` de
+                        # un widget con key una vez que ya tiene una entrada guardada.
                         fila["cantidad"] = entrada["cantidad_por_equivalente"]
                         fila["equivalentes"] = 1
+                        st.session_state[f"grupo_{fila['fila_id']}"] = entrada["grupo"]
                         st.session_state[f"cantidad_{fila['fila_id']}"] = entrada["cantidad_por_equivalente"]
                         st.session_state[f"equiv_{fila['fila_id']}"] = 1
 
