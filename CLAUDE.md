@@ -19,6 +19,11 @@ datos importados, `nutriguia/validation.py` con 35/35 tests en verde, app Stream
 ("Build your menu" + "Editor de recetas") corriendo en producción. Falta Fase 4 (día completo +
 guardado a `menus_construidos`) en adelante.
 
+El banco de `recetas` ya no tiene 159 documentos como en la importación original — se dedupicó por
+nombre el 2026-08-25 y quedó en 97 (ver regla 9 abajo y `scripts/migraciones/`). Es normal y
+esperado que el conteo en vivo de Mongo no coincida con el de `recetas.json`; `import_data.py`
+protege contra que un re-import accidental lo revierta (ver `ARCHITECTURE.md`).
+
 **La app YA está desplegada y corriendo** en un servidor Linux (Ubuntu 24.04) en la red local del
 usuario, como servicio systemd — no hay que "levantarla" de cero. Ver `SETUP.md` sección final para
 la IP, cómo redesplegar cambios (`git pull` + `systemctl restart`), y gotchas ya resueltos (una
@@ -107,13 +112,25 @@ generar un platillo nuevo desde el catálogo — y ahí sí aplican las reglas d
 8. Al reutilizar un platillo ya existente para la otra persona (ej. adaptar un platillo de Dan para
    Pau), no asumir que el `equivalentes` declarado se ajustó correctamente solo porque la porción
    cambió — validar la suma real contra los ingredientes.
-9. **Criterio para fusionar recetas "duplicadas" del banco** (usado 2026-08-24 en la limpieza de
-   "filete de pescado", ver `scripts/migraciones/`): solo fusionar dos recetas en una si son
-   literalmente el mismo platillo — misma proteína/base y la única diferencia es una porción
-   distinta o UN ingrediente extra (usar `Ingrediente.opcional`, ver `schema.md`, para ese extra).
-   Si la diferencia real es el carbohidrato o la verdura base (ej. papa vs arroz, nopales vs mezcla
-   de verdura), son platillos distintos aunque se llamen parecido — NO fusionar, solo mejorar el
-   `nombre` de cada uno para que no se vean como duplicados en el picker de "Build your menu".
+9. **Criterio para fusionar recetas "duplicadas" del banco** — dos niveles, según si el `nombre`
+   coincide exacto o solo se parece:
+   - **Mismo `nombre` exacto** (normalizado sin distinguir mayúsculas/espacios): fusionar siempre,
+     de forma mecánica (usado 2026-08-25, ver `scripts/migraciones/2026-08-25-fusionar-recetas-por-
+     nombre.py` — 156→97 recetas). Un ingrediente presente en TODAS las variantes de ese nombre se
+     mantiene fijo (ajustable con el stepper como siempre); uno presente solo en ALGUNAS se marca
+     `Ingrediente.opcional` (ver `schema.md`) — esto también cubre "ingrediente A en una variante,
+     alternativa B en otra" (ej. papa vs arroz): ambos quedan opcionales independientes, y el
+     usuario incluye uno/excluye el otro en "Build your menu" para reconstruir la variante que
+     quiera. Conocido efecto secundario menor: si el mismo alimento real aparece escrito distinto
+     entre variantes (ej. "Atún" vs "Atún en agua", "Proteína" vs "Proteína en polvo"), el script no
+     los reconoce como el mismo ingrediente y quedan como dos opcionales separados en vez de uno —
+     no se persiguió exhaustivamente, corregible a mano desde el Editor si se nota al usar la app.
+   - **Nombres solo parecidos, no exactos** (usado 2026-08-24 en "filete de pescado"): NO fusionar
+     automático — solo si de verdad es el mismo platillo (misma proteína/base, difiere una porción
+     o un ingrediente extra) se fusiona igual que arriba. Si la diferencia real es el carbohidrato o
+     la verdura base (ej. papa vs arroz, nopales vs mezcla de verdura), son platillos distintos
+     aunque se llamen parecido — mejorar el `nombre` de cada uno para desambiguar en el picker, no
+     fusionar.
 
 ## Dónde vive cada cosa
 

@@ -74,6 +74,11 @@ fusionar recetas casi idénticas en una sola con un extra incluible/excluible, y
 el banco de recetas de "filete de pescado" (11→8 recetas). Ver `CLAUDE.md` regla 9 para el criterio
 de cuándo fusionar vs. solo renombrar, y `scripts/migraciones/` para el registro del cambio.
 
+**Extensión (2026-08-25)**: a pedido del usuario, pasada general de deduplicación — una sola receta
+por `nombre` exacto en todo el banco (156→97 recetas), con las diferencias entre variantes como
+ingredientes opcionales. Ver `CLAUDE.md` regla 9 (ahora con los dos niveles de criterio) y
+`scripts/migraciones/2026-08-25-fusionar-recetas-por-nombre.py`.
+
 ## Fase 4 — Día completo + guardar
 
 Extender a los `st.tabs` de todos los tiempos (punto 2-3 completo de `UI-BUILD-YOUR-MENU.md`),
