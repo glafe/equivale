@@ -79,6 +79,14 @@ por `nombre` exacto en todo el banco (156→97 recetas), con las diferencias ent
 ingredientes opcionales. Ver `CLAUDE.md` regla 9 (ahora con los dos niveles de criterio) y
 `scripts/migraciones/2026-08-25-fusionar-recetas-por-nombre.py`.
 
+**Extensión (2026-08-25, segunda pasada)**: a pedido del usuario, revisión de recetas con nombres
+*parecidos* (no exactos) para fusionar las que de verdad eran el mismo platillo, más limpieza de
+ingredientes duplicados por ortografía distinta dentro de una misma receta (95→86 recetas — el
+banco ya había bajado de 97 a 95 por ediciones sueltas en vivo desde el Editor de recetas entre
+ambas pasadas). Ver
+`CLAUDE.md` regla 9 y `scripts/migraciones/2026-08-25-unificar-recetas-similares.py` para el detalle
+completo de qué se fusionó y qué se dejó igual a propósito (ej. "filete de pescado").
+
 ## Fase 4 — Día completo + guardar
 
 Extender a los `st.tabs` de todos los tiempos (punto 2-3 completo de `UI-BUILD-YOUR-MENU.md`),

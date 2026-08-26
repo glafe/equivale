@@ -20,9 +20,10 @@ datos importados, `nutriguia/validation.py` con 35/35 tests en verde, app Stream
 guardado a `menus_construidos`) en adelante.
 
 El banco de `recetas` ya no tiene 159 documentos como en la importación original — se dedupicó por
-nombre el 2026-08-25 y quedó en 97 (ver regla 9 abajo y `scripts/migraciones/`). Es normal y
-esperado que el conteo en vivo de Mongo no coincida con el de `recetas.json`; `import_data.py`
-protege contra que un re-import accidental lo revierta (ver `ARCHITECTURE.md`).
+nombre el 2026-08-25 y quedó en 97 (ver regla 9 abajo y `scripts/migraciones/`), y una segunda
+pasada el mismo día (nombres solo parecidos, no exactos — ver regla 9 nivel 2) la dejó en 86. Es
+normal y esperado que el conteo en vivo de Mongo no coincida con el de `recetas.json`;
+`import_data.py` protege contra que un re-import accidental lo revierta (ver `ARCHITECTURE.md`).
 
 **La app YA está desplegada y corriendo** en un servidor Linux (Ubuntu 24.04) en la red local del
 usuario, como servicio systemd — no hay que "levantarla" de cero. Ver `SETUP.md` sección final para
@@ -125,12 +126,22 @@ generar un platillo nuevo desde el catálogo — y ahí sí aplican las reglas d
      entre variantes (ej. "Atún" vs "Atún en agua", "Proteína" vs "Proteína en polvo"), el script no
      los reconoce como el mismo ingrediente y quedan como dos opcionales separados en vez de uno —
      no se persiguió exhaustivamente, corregible a mano desde el Editor si se nota al usar la app.
-   - **Nombres solo parecidos, no exactos** (usado 2026-08-24 en "filete de pescado"): NO fusionar
-     automático — solo si de verdad es el mismo platillo (misma proteína/base, difiere una porción
-     o un ingrediente extra) se fusiona igual que arriba. Si la diferencia real es el carbohidrato o
-     la verdura base (ej. papa vs arroz, nopales vs mezcla de verdura), son platillos distintos
-     aunque se llamen parecido — mejorar el `nombre` de cada uno para desambiguar en el picker, no
-     fusionar.
+   - **Nombres solo parecidos, no exactos** (usado 2026-08-24 en "filete de pescado", y de nuevo el
+     2026-08-25 en una pasada más amplia — ver `scripts/migraciones/2026-08-25-unificar-recetas-
+     similares.py`, 95→86 recetas): NO fusionar automático — solo si de verdad es el mismo platillo
+     (misma proteína/base, difiere una porción o un ingrediente extra) se fusiona igual que arriba.
+     Si la diferencia real es el carbohidrato o la verdura base (ej. papa vs arroz, nopales vs
+     mezcla de verdura — caso de "filete de pescado", se dejó igual en la pasada del 2026-08-25), son
+     platillos distintos aunque se llamen parecido — mejorar el `nombre` de cada uno para
+     desambiguar en el picker, no fusionar. Fusionados el 2026-08-25: "Ceviche de atún" (+ variante
+     "Salmas"), "Espagueti Boloñesa" (+ variante "Uvas"), "Fajitas de pollo con papas" (dos
+     gramajes de pollo, Dan/Pau), "Jícama o Zanahoria" (+ variantes Tajín/rallada/Manzana), "Huevos
+     duros con zanahoria" (+ variante pepino), "Omelet de champiñones", "Manzana". Se renombró
+     "Fajitas de Pollo" (con tortilla) a "Fajitas de pollo con tortilla" para no confundirse con la
+     recién fusionada "Fajitas de pollo con papas". La misma pasada también corrigió ~16 casos del
+     efecto secundario de ingrediente-con-ortografía-distinta descrito abajo (ej. "Aceite de oliva"
+     / "Aceite oliva", "Tortilla de maíz" / "Tortilla maíz") — sigue sin perseguirse exhaustivamente
+     en el resto del banco, solo se corrigió donde se detectó.
 
 ## Dónde vive cada cosa
 
