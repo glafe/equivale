@@ -139,6 +139,7 @@ def render() -> None:
         with st.container(border=True):
             c1, c2, c_cant, c3, c4, c_opc, c5 = st.columns([3, 2, 2, 1, 1, 1, 1])
 
+            alimento_anterior = fila["alimento"]
             en_catalogo = fila["alimento"] in alimentos_catalogo
             sel = c1.selectbox(
                 "Alimento",
@@ -156,9 +157,19 @@ def render() -> None:
                     placeholder="Nombre del alimento nuevo",
                 )
             else:
+                cambio_de_alimento = sel != alimento_anterior
                 fila["alimento"] = sel
                 if sel in catalogo_por_nombre:
-                    fila["grupo_smae"] = catalogo_por_nombre[sel]["grupo"]
+                    entrada = catalogo_por_nombre[sel]
+                    fila["grupo_smae"] = entrada["grupo"]
+                    if cambio_de_alimento:
+                        # Alimento recién elegido -> auto-llenar cantidad/equivalentes desde el
+                        # catálogo en vez de dejar lo que hubiera quedado del alimento anterior en
+                        # esta fila (evita inconsistencias tipo "Pollo, 200 g, 5 equivalentes").
+                        fila["cantidad"] = entrada["cantidad_por_equivalente"]
+                        fila["equivalentes"] = 1
+                        st.session_state[f"cantidad_{fila['fila_id']}"] = entrada["cantidad_por_equivalente"]
+                        st.session_state[f"equiv_{fila['fila_id']}"] = 1
 
             grupo_actual = fila["grupo_smae"] if fila["grupo_smae"] in GRUPOS_CANONICOS else LIBRE
             grupo_sel = c2.selectbox(
