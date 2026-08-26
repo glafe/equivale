@@ -178,9 +178,22 @@ def render() -> None:
                 placeholder="ej. 1/2 taza, 150 g",
             )
 
+            # Un ingrediente "libre" (grupo_smae None, ej. "Canela", "Salsa casera al gusto")
+            # legítimamente no cuenta ningún equivalente -> 0. sumar_por_grupo() los ignora de
+            # todas formas (ver VALIDATION.md), así que min_value=1 aquí solo aplicaba a
+            # ingredientes con grupo real; forzarlo siempre tronaba el editor en cuanto cargaba
+            # una receta con un ingrediente libre ya guardado en equivalentes=0.
+            min_equivalentes = 0 if fila["grupo_smae"] is None else 1
+            equiv_key = f"equiv_{fila['fila_id']}"
+            # Si el usuario acaba de cambiar el Grupo de "libre" a uno real en esta misma sesión,
+            # el valor ya guardado en session_state para este widget puede seguir en 0 -> subirlo
+            # ANTES de instanciar el widget (después de instanciarlo ya no se puede tocar).
+            if equiv_key in st.session_state and st.session_state[equiv_key] < min_equivalentes:
+                st.session_state[equiv_key] = min_equivalentes
             fila["equivalentes"] = c3.number_input(
-                "Equiv.", min_value=1, step=1, value=fila["equivalentes"],
-                key=f"equiv_{fila['fila_id']}", label_visibility="collapsed",
+                "Equiv.", min_value=min_equivalentes, step=1,
+                value=max(fila["equivalentes"], min_equivalentes),
+                key=equiv_key, label_visibility="collapsed",
             )
             fila["bloqueado"] = c4.checkbox(
                 "🔒", value=fila["bloqueado"], key=f"bloqueado_{fila['fila_id']}",
