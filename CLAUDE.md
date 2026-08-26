@@ -1,15 +1,29 @@
-# Nutri-guía — contexto para Claude Code
+# EquiVale (nutri-guía) — contexto para Claude Code
 
 Sistema de planes de alimentación basado en equivalentes nutricionales SMAE (Sistema Mexicano de
 Alimentos Equivalentes), para dos personas: **Dan** y **Pau** (uso personal, 1-2 usuarios
-concurrentes como máximo — no se está construyendo para escalar a muchos usuarios). Esta fase del
-proyecto es: instalar MongoDB, cargar los menús ya reconciliados, y construir una app Streamlit
-("build your menu") donde el usuario arma su día eligiendo recetas de un banco y ajustando
-porciones en pasos de equivalente completo, con validación en vivo de qué le falta o le sobra.
+concurrentes como máximo — no se está construyendo para escalar a muchos usuarios). Nombre del
+proyecto: **EquiVale** (repo privado `glafe/equivale` en GitHub). Esta fase del proyecto es:
+instalar MongoDB, cargar los menús ya reconciliados, y construir una app Streamlit ("build your
+menu") donde el usuario arma su día eligiendo recetas de un banco y ajustando porciones en pasos de
+equivalente completo, con validación en vivo de qué le falta o le sobra.
 
 La fase anterior (parsear Excels/ODS desordenados hacia JSON) ya terminó — este documento y los de
 abajo son contexto de generación/DB/UI, no el historial de esa reconciliación (para eso ver
 `agosto26-dan-notas.md` en el Project).
+
+## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
+
+Al 2026-08-25: **Fases 0 a 3.5 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
+datos importados, `nutriguia/validation.py` con 35/35 tests en verde, app Streamlit multipágina
+("Build your menu" + "Editor de recetas") corriendo en producción. Falta Fase 4 (día completo +
+guardado a `menus_construidos`) en adelante.
+
+**La app YA está desplegada y corriendo** en un servidor Linux (Ubuntu 24.04) en la red local del
+usuario, como servicio systemd — no hay que "levantarla" de cero. Ver `SETUP.md` sección final para
+la IP, cómo redesplegar cambios (`git pull` + `systemctl restart`), y gotchas ya resueltos (una
+incompatibilidad de kernel que le impedía arrancar a Mongo). Antes de asumir que hay que reinstalar
+algo desde cero, revisar si ya existe y solo necesita un redeploy.
 
 ## Índice de documentos — leer en este orden
 
@@ -93,6 +107,13 @@ generar un platillo nuevo desde el catálogo — y ahí sí aplican las reglas d
 8. Al reutilizar un platillo ya existente para la otra persona (ej. adaptar un platillo de Dan para
    Pau), no asumir que el `equivalentes` declarado se ajustó correctamente solo porque la porción
    cambió — validar la suma real contra los ingredientes.
+9. **Criterio para fusionar recetas "duplicadas" del banco** (usado 2026-08-24 en la limpieza de
+   "filete de pescado", ver `scripts/migraciones/`): solo fusionar dos recetas en una si son
+   literalmente el mismo platillo — misma proteína/base y la única diferencia es una porción
+   distinta o UN ingrediente extra (usar `Ingrediente.opcional`, ver `schema.md`, para ese extra).
+   Si la diferencia real es el carbohidrato o la verdura base (ej. papa vs arroz, nopales vs mezcla
+   de verdura), son platillos distintos aunque se llamen parecido — NO fusionar, solo mejorar el
+   `nombre` de cada uno para que no se vean como duplicados en el picker de "Build your menu".
 
 ## Dónde vive cada cosa
 
@@ -105,6 +126,9 @@ generar un platillo nuevo desde el catálogo — y ahí sí aplican las reglas d
 - `data/recetas.json` — banco de 159 platillos reutilizables extraídos de los menús históricos,
   cada uno con su vector de equivalentes ya calculado. Punto de partida para generar menús nuevos.
 - `schema.md` — forma exacta de cada colección/documento. Leer antes de generar o validar un menú.
+- `scripts/migraciones/` — registro histórico de cambios hechos directo en Mongo (ej. fusiones de
+  recetas duplicadas) — Mongo no tiene git, así que estos scripts documentan qué cambió y por qué.
+  No están diseñados para volver a correrse.
 
 ## Convenciones para la base de datos (MongoDB)
 

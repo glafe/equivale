@@ -4,6 +4,11 @@ Instrucciones para dejar corriendo MongoDB + el entorno Python en la máquina Li
 accede por SSH. Ejecutar en orden. Si algún paso falla, diagnosticar antes de continuar — no
 saltarse pasos de verificación.
 
+**Ya ejecutado una vez** (2026-08-24) — este documento ahora sirve doble propósito: la receta
+original de instalación, Y la referencia de cómo quedó configurado el servidor real (pasos 1 y 8
+incluyen notas de gotchas/decisiones ya resueltas). Si el servidor ya existe y solo se necesita
+redesplegar código nuevo, ir directo a la sección "Redesplegar cambios de código" en el paso 8.
+
 ## 0. Detectar la distro antes de instalar nada
 
 ```bash
@@ -38,6 +43,26 @@ sudo systemctl status mongod   # confirmar "active (running)" antes de seguir
 
 Si `apt install` falla por falta de `gnupg`/`curl`, instalar esos dos primero
 (`sudo apt install -y gnupg curl`) y reintentar.
+
+**Gotcha real encontrado (2026-08-24)**: en kernels Linux 6.19 a 7.0.13, `mongod` se niega a
+arrancar (`MongoDB cannot start: Linux kernel versions 6.19 and newer has a known incompatibility`)
+por un bug de TCMalloc/rseq — afecta a MongoDB 8.0.x en cualquier instalación (paquete, Docker,
+etc.), no es específico de esta máquina. Verificar con `uname -r` si el kernel cae en ese rango. Si
+`systemctl status mongod` muestra `Failed with result 'exit-code'` después de instalar, revisar
+`journalctl -u mongod` — si aparece ese mensaje, el workaround (sin necesitar tocar el kernel) es:
+
+```bash
+sudo mkdir -p /etc/systemd/system/mongod.service.d
+sudo tee /etc/systemd/system/mongod.service.d/override.conf <<'EOF'
+[Service]
+Environment=GLIBC_TUNABLES=glibc.pthread.rseq=1
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart mongod
+```
+
+(Ya aplicado en el servidor actual — dejarlo documentado por si se reinstala Mongo o se migra a otra
+máquina con un kernel en ese rango. Kernel 7.0.14+ ya no lo necesita.)
 
 ## 2. Verificar que Mongo responde
 
@@ -93,17 +118,19 @@ Confirmar que `.gitignore` incluye `.env` y `.venv/` antes del primer commit.
 
 ## 6. Cargar los datos iniciales
 
-Los archivos fuente (`catalogo-alimentos.json`, `recetas.json`, `Json-outputs-sin-notas/*.json`)
-deben copiarse a `data/` dentro del repo antes de este paso (vienen del Project de Claude o de la
-carpeta `Nutri` del usuario en su máquina Windows — pedirle al usuario que los pase si no están).
+Los archivos fuente ya viven en `data/` dentro del repo (`catalogo-alimentos.json`, `recetas.json`,
+`Json-outputs-sin-notas/*.json` — ver estructura en `ARCHITECTURE.md`), se traen solos con
+`git clone`/`git pull`, no hace falta copiarlos a mano.
 
 ```bash
 python -m nutriguia.import_data
 ```
 
-Este script (a escribir según `schema.md` y `BUILD-PLAN.md` fase 1) debe imprimir un resumen de
-conteos por colección al terminar — usarlo para confirmar que la carga fue completa antes de
-seguir a la fase de validación.
+Imprime un resumen de conteos por colección al terminar (17 menús, 159 recetas, ~80 alimentos, 2
+personas, 2 objetivos) — usarlo para confirmar que la carga fue completa. **Ojo**: desde que existe
+el Editor de recetas, este comando se niega a sobreescribir `recetas` si ya tiene datos (para no
+borrar ediciones hechas en vivo) — solo lo hace con `--force-recetas` explícito. Ver
+`ARCHITECTURE.md` → decisión 3.
 
 ## 7. Correr los tests de validación
 
@@ -115,14 +142,58 @@ Todos los menús históricos deben validar en verde (ver `VALIDATION.md`). Si al
 señal de bug en `validation.py` o en el import — NO en los datos (los datos ya se validaron
 manualmente antes de llegar aquí, ver `agosto26-dan-notas.md` en el Project).
 
-## 8. Correr la app
+## 8. Correr la app como servicio systemd (así quedó desplegada, no a mano)
+
+`streamlit run app.py` a mano funciona para probar, pero no sobrevive un reinicio del servidor ni
+se reinicia solo si truena. Se dejó como servicio systemd, igual patrón que `mongod`:
 
 ```bash
-streamlit run app.py
+sudo tee /etc/systemd/system/equivale.service <<'EOF'
+[Unit]
+Description=EquiVale Streamlit App
+After=network.target mongod.service
+
+[Service]
+Type=simple
+User=glafe
+WorkingDirectory=/home/glafe/equivale
+ExecStart=/home/glafe/equivale/.venv/bin/streamlit run app.py --server.headless true --server.address 0.0.0.0 --server.port 8501
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+sudo systemctl daemon-reload
+sudo systemctl enable equivale
+sudo systemctl start equivale
+sudo systemctl status equivale   # confirmar "active (running)"
 ```
 
-Por default Streamlit sirve en `localhost:8501`. Si se accede por SSH, abrir un túnel:
+`--server.address 0.0.0.0` (no `127.0.0.1`) para que sea accesible desde cualquier dispositivo de
+la red local del usuario en `http://192.168.68.59:8501`, sin necesidad de túnel SSH. Si hay
+firewall (`ufw status`), abrir el puerto: `sudo ufw allow 8501/tcp`.
+
+**Servidor actual**: Ubuntu 24.04 en `192.168.68.59`, usuario `glafe`. Acceso SSH por llave (sin
+password) desde la máquina de desarrollo — ver `~/.ssh/config` local para el alias, si existe. Este
+IP es de red local (LAN), no expuesto a internet por sí solo.
+
+**Nota de seguridad**: la app no tiene login propio — cualquiera en la red local puede entrar y
+guardar/editar. Aceptable para uso doméstico personal; si el router llegara a reenviar ese puerto a
+internet quedaría expuesta públicamente (fuera del control de esta app).
+
+### Redesplegar cambios de código
+
+El servidor clona el repo por SSH con una **deploy key de solo lectura** (no puede hacer push) — el
+flujo normal es: editar y pushear desde la máquina de desarrollo, y en el servidor:
+
 ```bash
-ssh -L 8501:localhost:8501 usuario@la-maquina-linux
+cd ~/equivale
+git pull
+sudo systemctl restart equivale   # systemd no hace hot-reload del código
 ```
-y luego abrir `http://localhost:8501` en el navegador local.
+
+Si el cambio afecta `requirements.txt`, correr `source .venv/bin/activate && pip install -r
+requirements.txt` antes del restart. Verificar que levantó bien:
+`curl -sf http://localhost:8501/_stcore/health` debe regresar `ok`.

@@ -69,6 +69,11 @@ detalle completo. Resumen:
 `veces_visto`/`origen`), bloquear un ingrediente y confirmar que deja de ser ajustable en "Build
 your menu", y eliminar una receta con confirmación explícita — todo probado en navegador real.
 
+**Extensión (2026-08-24)**: se agregó también `Ingrediente.opcional` (ver `schema.md`) para poder
+fusionar recetas casi idénticas en una sola con un extra incluible/excluible, y se usó para limpiar
+el banco de recetas de "filete de pescado" (11→8 recetas). Ver `CLAUDE.md` regla 9 para el criterio
+de cuándo fusionar vs. solo renombrar, y `scripts/migraciones/` para el registro del cambio.
+
 ## Fase 4 — Día completo + guardar
 
 Extender a los `st.tabs` de todos los tiempos (punto 2-3 completo de `UI-BUILD-YOUR-MENU.md`),
