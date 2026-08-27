@@ -16,10 +16,16 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-Al 2026-08-25: **Fases 0 a 3.5 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
+Al 2026-08-27: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
 datos importados, `nutriguia/validation.py` con 35/35 tests en verde, app Streamlit multipágina
-("Build your menu" + "Editor de recetas") corriendo en producción. Falta Fase 4 (día completo +
-guardado a `menus_construidos`) en adelante.
+("Build your menu", "Editor de recetas", "Personas") corriendo en producción. "Build your menu"
+ya cubre el día completo (los 5 tiempos vía tabs), guarda por `(persona, fecha)` en
+`menus_construidos`, y tiene historial de planes guardados con round-trip verificado. Falta
+Fase 5 (pulido) — no empezarla sin haber usado la Fase 4 unos días en la vida real.
+
+El repo se hizo público el 2026-08-27 — se reescribió toda la historia de git para purgar datos
+reales (ver nota de privacidad arriba); `data/` y `scripts/migraciones/` ya no viajan con
+`git clone`, viven fuera de git.
 
 El banco de `recetas` ya no tiene 159 documentos como en la importación original — se dedupicó por
 nombre el 2026-08-25 y quedó en 97 (ver regla 9 abajo y `scripts/migraciones/`), y una segunda

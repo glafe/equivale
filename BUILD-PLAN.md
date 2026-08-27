@@ -150,5 +150,5 @@ retomar solo después de que la Fase 4 (o 5) esté en uso real y se sienta bien.
 - [x] Fase 3 — MVP de un tiempo funcionando
 - [x] Fase 3.5 — editor de recetas + convención de colores
 - [x] Fase 3.6 — página Personas (crear/editar objetivos)
-- [ ] Fase 4 — día completo + guardado + historial funcionando
+- [x] Fase 4 — día completo + guardado + historial funcionando
 - [ ] Fase 5 — pulido (solo tras uso real)
