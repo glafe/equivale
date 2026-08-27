@@ -1,16 +1,18 @@
 # EquiVale (nutri-guía) — contexto para Claude Code
 
 Sistema de planes de alimentación basado en equivalentes nutricionales SMAE (Sistema Mexicano de
-Alimentos Equivalentes), para dos personas: **Dan** y **Pau** (uso personal, 1-2 usuarios
-concurrentes como máximo — no se está construyendo para escalar a muchos usuarios). Nombre del
-proyecto: **EquiVale** (repo privado `glafe/equivale` en GitHub). Esta fase del proyecto es:
-instalar MongoDB, cargar los menús ya reconciliados, y construir una app Streamlit ("build your
-menu") donde el usuario arma su día eligiendo recetas de un banco y ajustando porciones en pasos de
-equivalente completo, con validación en vivo de qué le falta o le sobra.
+Alimentos Equivalentes), para dos personas: **Persona A** y **Persona B** (uso personal, 1-2
+usuarios concurrentes como máximo — no se está construyendo para escalar a muchos usuarios).
+Nombre del proyecto: **EquiVale** (repo `glafe/equivale` en GitHub — el código es público, los
+datos reales de nutrición/menús viven solo en Mongo y fuera de git, ver `.gitignore` y `SETUP.md`).
+Esta fase del proyecto es: instalar MongoDB, cargar los menús ya reconciliados, y construir una app
+Streamlit ("build your menu") donde el usuario arma su día eligiendo recetas de un banco y
+ajustando porciones en pasos de equivalente completo, con validación en vivo de qué le falta o le
+sobra.
 
 La fase anterior (parsear Excels/ODS desordenados hacia JSON) ya terminó — este documento y los de
-abajo son contexto de generación/DB/UI, no el historial de esa reconciliación (para eso ver
-`agosto26-dan-notas.md` en el Project).
+abajo son contexto de generación/DB/UI, no el historial de esa reconciliación (esas notas viven
+fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
@@ -46,20 +48,32 @@ algo desde cero, revisar si ya existe y solo necesita un redeploy.
 
 ## Personas (canónico)
 
-- **`"Dan"`** — un solo persona_id. Los archivos de origen usaban a veces "Dany" como nombre del tab
-  de Excel, pero el campo `persona` en TODO el JSON ya está normalizado a `"Dan"`.
-- **`"Pau"`** — persona distinta, propio set de archivos y objetivos de equivalentes diarios
-  (generalmente ~12-14 AOA/día vs. ~13-15 de Dan — varía por periodo, no asumir un valor fijo).
+Los nombres reales de las dos personas viven solo en Mongo (`personas.persona`, y como valor de
+`persona`/`personas_vistas` en `menus`/`recetas`/`objetivos`) y fuera de este repo público — acá se
+habla de **Persona A** y **Persona B** como placeholders genéricos.
+
+- **Persona A** — un solo persona_id. Los archivos de origen usaban a veces una variante del nombre
+  como tab de Excel, pero el campo `persona` en TODO el JSON ya está normalizado a un solo valor.
+- **Persona B** — persona distinta, propio set de archivos y objetivos de equivalentes diarios
+  (generalmente ~12-14 AOA/día vs. ~13-15 de Persona A — varía por periodo, no asumir un valor
+  fijo).
 
 No hay terceras personas. No inventar un persona_id nuevo sin que el usuario lo pida.
+
+**Nota de privacidad (repo público desde 2026-08-27)**: los nombres reales, valores concretos de
+objetivos/porciones, y cualquier dato nutricional específico de cada persona NO se escriben en
+estos documentos de diseño — viven solo en Mongo (privado) y en archivos fuera de git (ver
+`.gitignore`). Estos documentos hablan en términos genéricos (Persona A/Persona B, "el objetivo de
+esa persona") a propósito. Si haces un cambio que involucre valores reales, ponlos en Mongo/el
+`.env`/un archivo ignorado — no en un `.md` que se commitea.
 
 ## Los 7 grupos SMAE (canónico)
 
 `AOA`, `Cereal`, `Verdura`, `Fruta`, `Aceite s/p`, `Aceite c/p`, `Leguminosa`.
 
-Ojo: dos archivos (Junio26-Dany.json, PauJunio26.json) originalmente usaban `"Legumin"` en vez de
-`"Leguminosa"` — ya normalizado. Si aparece `"Legumin"` en cualquier dato nuevo, es el mismo grupo
-y se debe guardar como `"Leguminosa"`.
+Ojo: dos de los archivos de origen (uno por persona, periodo junio) originalmente usaban
+`"Legumin"` en vez de `"Leguminosa"` — ya normalizado. Si aparece `"Legumin"` en cualquier dato
+nuevo, es el mismo grupo y se debe guardar como `"Leguminosa"`.
 
 `Leguminosa` es intercambiable con `Cereal` en algunos periodos (campo `grupos_intercambiables`,
 ver schema.md) — al generar un menú nuevo, un platillo puede satisfacer su cuota de Cereal usando
@@ -81,8 +95,8 @@ El catálogo trae dos archivos gemelos:
 
 ## Generar menús nuevos: usar el banco de recetas, no inventar desde cero
 
-`data/recetas.json` trae 159 platillos reales, ya cocinados en algún menú anterior de
-Dan o Pau, cada uno con su `vector_equivalentes` ya calculado (suma por grupo_smae). Generar un
+`data/recetas.json` trae 159 platillos reales, ya cocinados en algún menú anterior de alguna de las
+dos personas, cada uno con su `vector_equivalentes` ya calculado (suma por grupo_smae). Generar un
 menú nuevo es un problema de encontrar combinaciones de recetas cuyo vector sume el objetivo del
 tiempo/día — resolver esto con un solver determinístico (Python), no pidiéndole a un modelo que
 haga la aritmética en texto. El LLM sirve para elegir entre candidatos válidos (variedad, qué no
@@ -110,9 +124,9 @@ generar un platillo nuevo desde el catálogo — y ahí sí aplican las reglas d
    nombre.
 7. Notación `"N V"` (ej. `"2 V"`) en el campo `cantidad` = N equivalentes de Verdura directo, sin
    cantidad medida — no intentar convertirlo a tazas/gramos.
-8. Al reutilizar un platillo ya existente para la otra persona (ej. adaptar un platillo de Dan para
-   Pau), no asumir que el `equivalentes` declarado se ajustó correctamente solo porque la porción
-   cambió — validar la suma real contra los ingredientes.
+8. Al reutilizar un platillo ya existente para la otra persona (ej. adaptar un platillo de Persona A
+   para Persona B), no asumir que el `equivalentes` declarado se ajustó correctamente solo porque
+   la porción cambió — validar la suma real contra los ingredientes.
 9. **Criterio para fusionar recetas "duplicadas" del banco** — dos niveles, según si el `nombre`
    coincide exacto o solo se parece:
    - **Mismo `nombre` exacto** (normalizado sin distinguir mayúsculas/espacios): fusionar siempre,
@@ -135,7 +149,7 @@ generar un platillo nuevo desde el catálogo — y ahí sí aplican las reglas d
      platillos distintos aunque se llamen parecido — mejorar el `nombre` de cada uno para
      desambiguar en el picker, no fusionar. Fusionados el 2026-08-25: "Ceviche de atún" (+ variante
      "Salmas"), "Espagueti Boloñesa" (+ variante "Uvas"), "Fajitas de pollo con papas" (dos
-     gramajes de pollo, Dan/Pau), "Jícama o Zanahoria" (+ variantes Tajín/rallada/Manzana), "Huevos
+     gramajes de pollo, uno por persona), "Jícama o Zanahoria" (+ variantes Tajín/rallada/Manzana), "Huevos
      duros con zanahoria" (+ variante pepino), "Omelet de champiñones", "Manzana". Se renombró
      "Fajitas de Pollo" (con tortilla) a "Fajitas de pollo con tortilla" para no confundirse con la
      recién fusionada "Fajitas de pollo con papas". La misma pasada también corrigió ~16 casos del

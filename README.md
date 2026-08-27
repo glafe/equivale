@@ -1,12 +1,14 @@
 # EquiVale
 
 Sistema personal de planeación de menús basado en **Equivalentes SMAE** (Sistema Mexicano de
-Alimentos Equivalentes), para dos personas: **Dan** y **Pau**. La app ("Build your menu") arma el
-día eligiendo recetas de un banco reutilizable y ajustando porciones en pasos de equivalente
-completo, con validación en vivo de qué falta o sobra por grupo.
+Alimentos Equivalentes), para dos personas. La app ("Build your menu") arma el día eligiendo
+recetas de un banco reutilizable y ajustando porciones en pasos de equivalente completo, con
+validación en vivo de qué falta o sobra por grupo.
 
-Repo privado, uso personal (1-2 usuarios concurrentes como máximo) — no está pensado para escalar
-a muchos usuarios ni tiene login propio (ver nota de seguridad en `SETUP.md`).
+Código abierto/público, uso personal (1-2 usuarios concurrentes como máximo) — no está pensado para
+escalar a muchos usuarios ni tiene login propio (ver nota de seguridad en `SETUP.md`). Los datos
+reales de nutrición/menús de las personas que lo usan NO viven en este repo — ver `.gitignore` y
+la nota de privacidad en `CLAUDE.md`.
 
 ## Estado actual
 

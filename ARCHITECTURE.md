@@ -3,7 +3,7 @@
 Este documento define QUÉ se construye y CÓMO se acomodan las piezas. `SETUP.md` trae los pasos
 de instalación, `VALIDATION.md` el contrato exacto de la lógica de negocio, `UI-BUILD-YOUR-MENU.md`
 la interacción de la pantalla principal, y `BUILD-PLAN.md` el orden de ejecución. Este repo es de
-uso personal (Dan y Pau, 1-2 usuarios concurrentes como máximo) — las decisiones de abajo están
+uso personal (dos personas, 1-2 usuarios concurrentes como máximo) — las decisiones de abajo están
 optimizadas para simplicidad de mantenimiento, no para escalar a muchos usuarios.
 
 ## Componentes

@@ -19,19 +19,17 @@ Copiar `catalogo-alimentos.json`, `recetas.json` y los 17 archivos de menús his
 - `catalogo_alimentos`: aplanar el JSON anidado por grupo a un documento por alimento.
 - `recetas`: importar tal cual desde `recetas.json` (ya vienen con `receta_id` único).
 - `menus`: importar tal cual los 17 archivos (son de solo lectura/referencia histórica).
-- `personas`: crear 2 documentos simples, `{persona: "Dan", ...}` y `{persona: "Pau", ...}` — usar
+- `personas`: crear 2 documentos simples, uno por persona (`{persona: <persona_id>, ...}`) — usar
   como punto de extensión futuro, no hace falta más que el nombre por ahora.
 - `objetivos`: **no hay un archivo fuente para esto** — confirmado con el usuario el 2026-08-24
-  para el periodo Agosto-Septiembre 2026:
-  - Dan: `equivalentes_diarios_indicados` de `Junio26-Dany.json` — AOA 15, Cereal 10, Verdura 5,
-    Fruta 4, Aceite s/p 3, Aceite c/p 1.
-  - Pau: no existe `equivalentes_diarios_indicados` en ningún archivo 2026 de Pau (ni siquiera los
-    dos `menu_id` de un mismo periodo coinciden entre sí) — por decisión explícita del usuario, se
-    usa `equivalentes_diarios` del `menu_id 1` de `PauJunio26.json` — AOA 13, Cereal 6,
-    Leguminosa 1, Verdura 5, Aceite c/p 1, Aceite s/p 3, Fruta 3.
-  - Ambos con `vigente_desde: "2026-08-24"`. No poblar `por_tiempo` — ver nota de diseño en
-    `schema.md` → `objetivos` (el objetivo es diario, no por comida; no importa cómo se reparta
-    entre tiempos).
+  para el periodo Agosto-Septiembre 2026, a partir de `equivalentes_diarios_indicados` del archivo
+  2026 más reciente de cada persona (o, si ese campo no existía para esa persona en ningún archivo
+  2026 — ni siquiera coincidían entre sí los dos `menu_id` de un mismo periodo — por decisión
+  explícita del usuario, `equivalentes_diarios` del `menu_id 1` más reciente disponible). Valores
+  reales por persona en Mongo, no repetidos aquí (repo público, ver nota de privacidad en
+  `CLAUDE.md`). Ambos con `vigente_desde: "2026-08-24"`. No poblar `por_tiempo` — ver nota de diseño
+  en `schema.md` → `objetivos` (el objetivo es diario, no por comida; no importa cómo se reparta
+  entre tiempos).
 
 **Hecho cuando**: `import_data.py` corre sin error e imprime conteos por colección (17 menús, 159
 recetas, ~80 alimentos en catálogo, 2 personas, 2 objetivos).
@@ -91,8 +89,8 @@ completo de qué se fusionó y qué se dejó igual a propósito (ej. "filete de 
 
 Extender a los `st.tabs` de todos los tiempos (punto 2-3 completo de `UI-BUILD-YOUR-MENU.md`),
 agregar el resumen del día (punto 4), y el guardado real a `menus_construidos` (punto 5).
-**Hecho cuando**: se puede armar un día completo para Dan o Pau, guardarlo, y volver a abrirlo
-mostrando lo mismo que se guardó (round-trip correcto).
+**Hecho cuando**: se puede armar un día completo para cualquiera de las dos personas, guardarlo, y
+volver a abrirlo mostrando lo mismo que se guardó (round-trip correcto).
 
 ## Fase 5 — Pulido (solo si el flujo básico ya se siente bien de usar)
 
@@ -113,7 +111,7 @@ retomar solo después de que la Fase 4 (o 5) esté en uso real y se sienta bien.
 
 - **Objetivos editables por persona, con perfiles** — hoy `objetivos` se siembra una sola vez en
   Fase 1 y solo se actualiza insertando un documento nuevo directamente en Mongo. El usuario quiere
-  poder editar el objetivo diario de cada persona (Dan/Pau) desde la propia UI, como parte de un
+  poder editar el objetivo diario de cada persona desde la propia UI, como parte de un
   perfil por persona — no tener que tocar la base de datos a mano cada vez que cambie el objetivo
   con el nutriólogo. Ver nota de diseño en `schema.md` → `objetivos` (el objetivo ya es solo
   diario, no por tiempo, lo cual simplifica esta futura pantalla de edición).

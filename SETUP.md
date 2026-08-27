@@ -118,18 +118,25 @@ Confirmar que `.gitignore` incluye `.env` y `.venv/` antes del primer commit.
 
 ## 6. Cargar los datos iniciales
 
-Los archivos fuente ya viven en `data/` dentro del repo (`catalogo-alimentos.json`, `recetas.json`,
-`Json-outputs-sin-notas/*.json` — ver estructura en `ARCHITECTURE.md`), se traen solos con
-`git clone`/`git pull`, no hace falta copiarlos a mano.
+**El repo es público desde 2026-08-27 — `data/` está en `.gitignore` y NO se trae con
+`git clone`.** Hay que conseguir estos archivos aparte (fuera de git, ej. una copia local o un
+respaldo privado) y ponerlos en `data/` antes de este paso:
+- `Json-outputs-sin-notas/catalogo-alimentos.json`
+- `Json-outputs-sin-notas/*.json` (17 archivos de menús históricos)
+- `recetas.json`
+- `personas_y_objetivos.json` — `{"vigente_desde": "YYYY-MM-DD", "personas": [{"persona": ...,
+  "equivalentes_diarios": [{"grupo": ..., "cantidad": ...}, ...]}, ...]}` (ver
+  `nutriguia/import_data.py` → `importar_personas_y_objetivos` para el formato exacto)
 
 ```bash
 python -m nutriguia.import_data
 ```
 
 Imprime un resumen de conteos por colección al terminar (17 menús, 159 recetas, ~80 alimentos, 2
-personas, 2 objetivos) — usarlo para confirmar que la carga fue completa. **Ojo**: desde que existe
-el Editor de recetas, este comando se niega a sobreescribir `recetas` si ya tiene datos (para no
-borrar ediciones hechas en vivo) — solo lo hace con `--force-recetas` explícito. Ver
+personas, 2 objetivos) — usarlo para confirmar que la carga fue completa. Si falta
+`personas_y_objetivos.json` no truena, solo avisa y deja esas dos colecciones como estaban. **Ojo**:
+desde que existe el Editor de recetas, este comando se niega a sobreescribir `recetas` si ya tiene
+datos (para no borrar ediciones hechas en vivo) — solo lo hace con `--force-recetas` explícito. Ver
 `ARCHITECTURE.md` → decisión 3.
 
 ## 7. Correr los tests de validación

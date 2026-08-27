@@ -54,7 +54,7 @@ usuario: `AOA`, `Cereal`, `Verdura`, `Fruta`, `Aceite s/p`, `Aceite c/p`, `Legum
 
 ```
 {
-  "persona": string,               // "Dan" | "Pau" — canónico, sin variantes
+  "persona": string,               // persona_id canónico, sin variantes (ver colección `personas`)
   "periodo": string,                // "YYYY-MM", ej. "2026-06"
   "tab_origen": string,             // nombre del tab de Excel de origen (histórico/auditoría)
   "sistema_referencia": "SMAE",
@@ -143,7 +143,7 @@ usan como bloques de construcción, en vez de inventar ingredientes/cantidades d
   "receta_id": string,              // slug único, ej. "ceviche-de-atun-v3"
   "nombre": string,                 // nombre del platillo tal como aparecía en el menú de origen
   "tiempo_tipico": [string, ...],   // en qué tiempo(s) se vio: desayuno/comida/cena/colacion/al_despertar
-  "personas_vistas": [string, ...], // "Dan" y/o "Pau" — para qué persona(s) ya se usó este platillo
+  "personas_vistas": [string, ...], // persona_id(s) — para qué persona(s) ya se usó este platillo
   "vector_equivalentes": { grupo: int, ... },  // suma de equivalentes por grupo_smae — usar esto para el solver
   "ingredientes": [ Ingrediente, ... ],         // misma forma que Ingrediente en la colección menus
   "veces_visto": int,               // cuántas veces apareció con exactamente estos ingredientes
@@ -152,8 +152,8 @@ usan como bloques de construcción, en vez de inventar ingredientes/cantidades d
 ```
 
 Cuando el mismo `nombre` de platillo tiene más de una combinación de ingredientes distinta (ej.
-porción más chica para Pau, o variantes de fruta/verdura de acompañamiento a lo largo de los
-meses), cada combinación es una receta separada con sufijo `-v1`, `-v2`, etc. — 44 de los 98
+porción más chica para una persona, o variantes de fruta/verdura de acompañamiento a lo largo de
+los meses), cada combinación es una receta separada con sufijo `-v1`, `-v2`, etc. — 44 de los 98
 nombres de platillo tienen 2+ variantes así. Nombres de alimento en `ingredientes` ya se
 normalizaron contra `catalogo-alimentos.json` (sin emojis, ortografía unificada) antes de
 deduplicar.
@@ -170,10 +170,10 @@ banco no tiene ninguna combinación que cuadre con el objetivo.
 ## Colección `objetivos` — objetivo diario vigente, por persona
 
 **No viene de un archivo fuente** — se construyó en Fase 1 de `BUILD-PLAN.md`, confirmado con el
-usuario el 2026-08-24 para el periodo Agosto-Septiembre 2026 (Dan: `equivalentes_diarios_indicados`
-de `Junio26-Dany.json`; Pau: `equivalentes_diarios` del `menu_id 1` de `PauJunio26.json`, ya que
-Pau no trae `equivalentes_diarios_indicados` en ningún archivo 2026 — decisión explícita del
-usuario, ver historial de commits).
+usuario el 2026-08-24 para el periodo Agosto-Septiembre 2026 a partir de
+`equivalentes_diarios_indicados` (o, si no estaba presente en los archivos 2026 de esa persona,
+`equivalentes_diarios` del `menu_id 1` más reciente disponible — decisión explícita del usuario,
+ver historial de commits) de cada persona.
 
 **Decisión de diseño (confirmada con el usuario, 2026-08-24): el objetivo es diario, no por
 tiempo.** No importa cómo se reparta entre comidas (una persona puede comer todo en una sola
@@ -184,7 +184,7 @@ ausente/vacío.
 
 ```
 {
-  "persona": string,                // "Dan" | "Pau"
+  "persona": string,                // persona_id (ver colección `personas`)
   "vigente_desde": string,          // fecha ISO, ej. "2026-08-24" — para poder tener historial de objetivos
   "equivalentes_diarios": [ EquivalenteGrupo, ... ],
   "por_tiempo"?: { ... }            // opcional, ver nota arriba — no es un target por comida, no poblado en Fase 1

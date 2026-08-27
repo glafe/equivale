@@ -5,7 +5,8 @@ equivalente, nunca slider libre**, y la UI debe mostrar en vivo si falta o sobra
 
 ## Flujo principal
 
-1. **Selector de persona**: Dan | Pau (dropdown arriba de todo, cambia el objetivo aplicable).
+1. **Selector de persona**: dropdown arriba de todo con las personas de la colección `personas`,
+   cambia el objetivo aplicable.
 2. **Selector de tiempo**: al_despertar | desayuno | colación | comida | cena (tabs de Streamlit,
    `st.tabs`, uno por tiempo — así se ve el día completo sin perder contexto).
 3. Dentro de cada tab de tiempo:
@@ -16,7 +17,7 @@ equivalente, nunca slider libre**, y la UI debe mostrar en vivo si falta o sobra
       seis, solo el total del día (decisión confirmada con el usuario, 2026-08-24).
    b. **Picker de receta**: `st.selectbox` filtrado por `tiempo_tipico` que incluya este tiempo Y
       (`personas_vistas` incluya la persona seleccionada, con opción de "ver todas" — un platillo
-      probado para Dan puede servir de punto de partida para Pau). Mostrar nombre + su
+      probado para una persona puede servir de punto de partida para la otra). Mostrar nombre + su
       `vector_equivalentes` como preview antes de agregar.
    c. Botón "Agregar al tiempo" — permite agregar más de una receta al mismo tiempo (los tiempos
       históricos casi siempre tienen 2 platillos).
@@ -60,7 +61,7 @@ equivalente, nunca slider libre**, y la UI debe mostrar en vivo si falta o sobra
 ## Wireframe en texto (una pestaña de tiempo, ej. "Comida")
 
 ```
-┌─ Presupuesto restante del día (Dan) ──────────────────┐
+┌─ Presupuesto restante del día (persona seleccionada) ──┐
 │ Verdura 2   Cereal 2   AOA 4   Aceite s/p 1           │
 └────────────────────────────────────────────────────────┘
 

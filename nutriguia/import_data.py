@@ -19,39 +19,11 @@ GRUPOS_CANONICOS = [
     "Leguminosa",
 ]
 
-# Objetivos diarios confirmados con el usuario el 2026-08-24 para el periodo Ago-Sep 2026.
-# Dan: equivalentes_diarios_indicados de Junio26-Dany.json.
-# Pau: no existe equivalentes_diarios_indicados en ningún archivo 2026 de Pau -> se usa
-# equivalentes_diarios del menu_id 1 de PauJunio26.json (decisión explícita del usuario).
-# Ver schema.md -> "objetivos" para la nota de diseño (objetivo diario, no por tiempo).
-VIGENTE_DESDE = "2026-08-24"
-OBJETIVOS_CONFIRMADOS = [
-    {
-        "persona": "Dan",
-        "vigente_desde": VIGENTE_DESDE,
-        "equivalentes_diarios": [
-            {"grupo": "AOA", "cantidad": 15},
-            {"grupo": "Cereal", "cantidad": 10},
-            {"grupo": "Verdura", "cantidad": 5},
-            {"grupo": "Fruta", "cantidad": 4},
-            {"grupo": "Aceite s/p", "cantidad": 3},
-            {"grupo": "Aceite c/p", "cantidad": 1},
-        ],
-    },
-    {
-        "persona": "Pau",
-        "vigente_desde": VIGENTE_DESDE,
-        "equivalentes_diarios": [
-            {"grupo": "AOA", "cantidad": 13},
-            {"grupo": "Cereal", "cantidad": 6},
-            {"grupo": "Leguminosa", "cantidad": 1},
-            {"grupo": "Verdura", "cantidad": 5},
-            {"grupo": "Aceite c/p", "cantidad": 1},
-            {"grupo": "Aceite s/p", "cantidad": 3},
-            {"grupo": "Fruta", "cantidad": 3},
-        ],
-    },
-]
+# Nombres reales y objetivos diarios NO viven en este archivo (repo público) -- viven en
+# data/personas_y_objetivos.json (gitignored, ver CLAUDE.md nota de privacidad y SETUP.md para
+# cómo conseguirlo). Formato esperado: {"vigente_desde": "...", "personas": [{"persona": ...,
+# "equivalentes_diarios": [...]}, ...]}.
+PERSONAS_Y_OBJETIVOS_PATH = DATA_DIR / "personas_y_objetivos.json"
 
 
 def _normalizar_grupo(grupo: str) -> str:
@@ -105,17 +77,31 @@ def importar_recetas(db: Database, force: bool = False) -> int:
     return len(docs)
 
 
-def importar_personas(db: Database) -> int:
-    docs = [{"persona": "Dan"}, {"persona": "Pau"}]
+def importar_personas_y_objetivos(db: Database) -> tuple[int, int]:
+    if not PERSONAS_Y_OBJETIVOS_PATH.exists():
+        print(
+            f"  ({PERSONAS_Y_OBJETIVOS_PATH.name} no encontrado -- se omite personas/objetivos, "
+            "ver SETUP.md para conseguirlo)"
+        )
+        return db.personas.count_documents({}), db.objetivos.count_documents({})
+
+    contenido = json.loads(PERSONAS_Y_OBJETIVOS_PATH.read_text(encoding="utf-8"))
+    vigente_desde = contenido["vigente_desde"]
+    personas_docs = [{"persona": p["persona"]} for p in contenido["personas"]]
+    objetivos_docs = [
+        {
+            "persona": p["persona"],
+            "vigente_desde": vigente_desde,
+            "equivalentes_diarios": p["equivalentes_diarios"],
+        }
+        for p in contenido["personas"]
+    ]
+
     db.personas.delete_many({})
-    db.personas.insert_many(docs)
-    return len(docs)
-
-
-def importar_objetivos(db: Database) -> int:
+    db.personas.insert_many(personas_docs)
     db.objetivos.delete_many({})
-    db.objetivos.insert_many(OBJETIVOS_CONFIRMADOS)
-    return len(OBJETIVOS_CONFIRMADOS)
+    db.objetivos.insert_many(objetivos_docs)
+    return len(personas_docs), len(objetivos_docs)
 
 
 def main() -> None:
@@ -131,8 +117,7 @@ def main() -> None:
     n_catalogo = importar_catalogo(db)
     n_menus = importar_menus(db)
     n_recetas = importar_recetas(db, force=args.force_recetas)
-    n_personas = importar_personas(db)
-    n_objetivos = importar_objetivos(db)
+    n_personas, n_objetivos = importar_personas_y_objetivos(db)
 
     print("Import completo:")
     print(f"  catalogo_alimentos: {n_catalogo}")
