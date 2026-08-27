@@ -1,4 +1,4 @@
-"""EquiVale — punto de entrada. Navegación lateral entre "Build your menu" y el editor de recetas.
+"""EquiVale — punto de entrada. Navegación lateral entre las páginas de la app.
 
 Ver UI-BUILD-YOUR-MENU.md para la especificación de cada página.
 """
@@ -11,6 +11,7 @@ pagina = st.navigation(
     [
         st.Page("views/build_your_menu.py", title="Build your menu", icon="🥗"),
         st.Page("views/editor_recetas.py", title="Editor de recetas", icon="🧑‍🍳"),
+        st.Page("views/personas.py", title="Personas", icon="🧑‍🤝‍🧑"),
     ]
 )
 pagina.run()

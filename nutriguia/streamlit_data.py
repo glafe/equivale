@@ -45,3 +45,8 @@ def cargar_nombres_alimentos() -> list[str]:
 
 def invalidar_cache_recetas() -> None:
     cargar_recetas.clear()
+
+
+def invalidar_cache_personas() -> None:
+    cargar_personas.clear()
+    cargar_objetivo.clear()
