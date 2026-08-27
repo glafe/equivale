@@ -149,6 +149,6 @@ retomar solo después de que la Fase 4 (o 5) esté en uso real y se sienta bien.
 - [x] Fase 2 — 34/34 tests de validación en verde
 - [x] Fase 3 — MVP de un tiempo funcionando
 - [x] Fase 3.5 — editor de recetas + convención de colores
-- [ ] Fase 3.6 — página Personas (crear/editar objetivos)
+- [x] Fase 3.6 — página Personas (crear/editar objetivos)
 - [ ] Fase 4 — día completo + guardado + historial funcionando
 - [ ] Fase 5 — pulido (solo tras uso real)
