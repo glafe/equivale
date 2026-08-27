@@ -44,8 +44,33 @@ equivalente, nunca slider libre**, y la UI debe mostrar en vivo si falta o sobra
       cubrir") antes de confirmar, no bloquear silenciosamente.
 4. **Resumen del día** (fuera de los tabs, siempre visible — `st.sidebar` o sección fija arriba):
    objetivo diario vs. suma de los tiempos guardados, mismo esquema de color.
-5. Botón "Guardar menú del día" — persiste el documento completo en `menus_construidos` (ver
-   `schema.md`).
+5. **Selector de fecha** (`st.date_input`, default hoy) — el plan que se arma es "el plan de la
+   persona X para la fecha Y". Botón "Guardar menú del día" hace upsert por `(persona, fecha)` en
+   `menus_construidos` (ver `schema.md`) — si ya existe un plan guardado para esa persona+fecha, lo
+   sobreescribe (no crea un duplicado). `estado` se infiere solo: `"completo"` si el delta diario
+   total es exacto en todos los grupos, si no `"en_progreso"`.
+6. **Historial** (2026-08-27, a pedido del usuario: una persona puede tener varios planes
+   guardados, uno por fecha, y poder volver a verlos): sección/expander que lista los
+   `menus_construidos` ya guardados de la persona seleccionada, ordenados por `fecha` descendente
+   (mostrar fecha + `estado`). Elegir uno de la lista carga ese plan completo de vuelta a
+   `st.session_state` (mismo mecanismo de round-trip que abrir cualquier día ya guardado) — no
+   hace falta un buscador elaborado, un `st.selectbox`/lista simple basta para el volumen esperado
+   (uso personal, no cientos de planes).
+
+## Página "Personas" (2026-08-27, a pedido del usuario)
+
+Página nueva en la barra lateral (mismo patrón que el Editor de recetas — selector "— Nueva
+persona —" / persona existente).
+
+- **Crear**: nombre (persona_id, texto libre — validar que no choque con uno ya existente) +
+  objetivo diario: un `number_input` por cada uno de los 7 grupos SMAE canónicos (default 0 = ese
+  grupo no aplica para esta persona). Guardar hace `insert` en `personas` y en `objetivos` (con
+  `vigente_desde` = hoy, y `equivalentes_diarios` solo con los grupos que quedaron > 0).
+- **Editar**: igual formulario pre-cargado con el objetivo vigente de esa persona. Guardar
+  sobreescribe el único `objetivos` de esa persona (upsert por `persona` — NO se lleva historial de
+  versiones anteriores en esta fase, ver "Ideas para más adelante" en `BUILD-PLAN.md`).
+- No hay botón de eliminar persona en esta fase — borrar una persona dejaría huérfanas referencias
+  en `menus`/`recetas.personas_vistas`/`menus_construidos`, fuera de alcance por ahora.
 
 ## Qué NO hacer
 

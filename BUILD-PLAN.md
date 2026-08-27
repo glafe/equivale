@@ -85,12 +85,32 @@ ambas pasadas). Ver
 `CLAUDE.md` regla 9 y `scripts/migraciones/2026-08-25-unificar-recetas-similares.py` para el detalle
 completo de qué se fusionó y qué se dejó igual a propósito (ej. "filete de pescado").
 
-## Fase 4 — Día completo + guardar
+## Fase 3.6 — Página "Personas" (adelantada a pedido del usuario, 2026-08-27)
+
+Nueva página en la barra lateral (mismo patrón que el Editor de recetas): crear una persona nueva
+con su objetivo diario, o editar el objetivo de una existente. Ver `UI-BUILD-YOUR-MENU.md` →
+"Página Personas" para el detalle. Resumen:
+- Selector "— Nueva persona —" / persona existente, igual que el Editor de recetas.
+- Un `number_input` por cada uno de los 7 grupos SMAE canónicos para `equivalentes_diarios` (0 =
+  ese grupo no aplica para esta persona, se omite al guardar).
+- Guardar hace upsert de UN solo `objetivos` por persona (no se llevó historial de versiones del
+  objetivo en esta fase — ver "Ideas para más adelante" si hace falta después) y upsert de
+  `personas`.
+
+**Hecho cuando**: se puede crear una persona nueva con su objetivo, verla aparecer en el selector
+de persona de "Build your menu", y editar el objetivo de una existente y ver el cambio reflejado
+ahí — todo probado en navegador real.
+
+## Fase 4 — Día completo + guardar + historial
 
 Extender a los `st.tabs` de todos los tiempos (punto 2-3 completo de `UI-BUILD-YOUR-MENU.md`),
-agregar el resumen del día (punto 4), y el guardado real a `menus_construidos` (punto 5).
-**Hecho cuando**: se puede armar un día completo para cualquiera de las dos personas, guardarlo, y
-volver a abrirlo mostrando lo mismo que se guardó (round-trip correcto).
+agregar el resumen del día (punto 4), y el guardado real a `menus_construidos` (punto 5) —
+identificado por `(persona, fecha)`, con un selector de fecha. A pedido del usuario (2026-08-27):
+una persona puede tener varios planes guardados (uno por fecha) y debe poder ver un **historial**
+de los ya guardados para volver a abrirlos, no solo guardar hacia adelante.
+**Hecho cuando**: se puede armar un día completo para cualquiera de las personas, guardarlo bajo
+una fecha, verlo aparecer en el historial de esa persona, y volver a abrirlo desde ahí mostrando lo
+mismo que se guardó (round-trip correcto) — todo probado en navegador real.
 
 ## Fase 5 — Pulido (solo si el flujo básico ya se siente bien de usar)
 
@@ -109,12 +129,10 @@ la pena pulir primero.
 Notas del usuario para no perderlas de vista, pero fuera de alcance de las Fases 0-5 de arriba —
 retomar solo después de que la Fase 4 (o 5) esté en uso real y se sienta bien.
 
-- **Objetivos editables por persona, con perfiles** — hoy `objetivos` se siembra una sola vez en
-  Fase 1 y solo se actualiza insertando un documento nuevo directamente en Mongo. El usuario quiere
-  poder editar el objetivo diario de cada persona desde la propia UI, como parte de un
-  perfil por persona — no tener que tocar la base de datos a mano cada vez que cambie el objetivo
-  con el nutriólogo. Ver nota de diseño en `schema.md` → `objetivos` (el objetivo ya es solo
-  diario, no por tiempo, lo cual simplifica esta futura pantalla de edición).
+- **Historial de versiones del objetivo por persona** — la Fase 3.6 (página "Personas") solo
+  mantiene UN objetivo vigente por persona (lo edita in-place); no lleva historial de cómo cambió
+  el objetivo a lo largo del tiempo aunque `schema.md` ya deja `vigente_desde` listo para eso.
+  Retomar solo si hace falta ver "qué objetivo tenía esta persona en tal fecha".
 - **"EquiVale Chef" — integración con `SMAE_CONSULTA.csv`** (la primera versión del editor de
   recetas ya se construyó el 2026-08-24, ver Fase 3.5 abajo y `UI-BUILD-YOUR-MENU.md` → "Editor de
   recetas"; esto es lo que falta para la versión completa de la idea original): si un alimento
@@ -131,5 +149,6 @@ retomar solo después de que la Fase 4 (o 5) esté en uso real y se sienta bien.
 - [x] Fase 2 — 34/34 tests de validación en verde
 - [x] Fase 3 — MVP de un tiempo funcionando
 - [x] Fase 3.5 — editor de recetas + convención de colores
-- [ ] Fase 4 — día completo + guardado funcionando
+- [ ] Fase 3.6 — página Personas (crear/editar objetivos)
+- [ ] Fase 4 — día completo + guardado + historial funcionando
 - [ ] Fase 5 — pulido (solo tras uso real)
