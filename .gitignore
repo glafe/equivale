@@ -10,3 +10,25 @@ __pycache__/
 # Editor/tooling local
 .claude/
 .~lock.*#
+.pytest_cache/
+
+# Referencia externa (no es parte del proyecto)
+Prompt-Coding_Best_Practices-main/
+
+# Capturas de red (pueden traer datos reales de la app en vivo)
+Hars/
+*.har
+
+# --- Datos reales: el repo es público, esto NUNCA se commitea (ver README/SETUP) ---
+# Nutrición/menús/recetas reales de personas reales -- viven solo en Mongo y en copias locales
+# fuera de git. Quien clone el repo necesita conseguir estos archivos aparte para correr
+# import_data.py o los tests de regresión (ver SETUP.md).
+data/
+Legacy_confirmados/
+scripts/migraciones/
+*.xlsx
+*.ods
+*.pdf
+SMAE_CONSULTA.csv
+menu-*.csv
+pau-junio-marzo-julio-a-confirmar.json
