@@ -178,7 +178,10 @@ Colecciones: `personas`, `catalogo_alimentos`, `recetas`, `menus`, `objetivos`,
 `menus_construidos`. Ver `schema.md` para la forma exacta de cada documento — incluye las dos
 colecciones nuevas de esta fase (`objetivos` y `menus_construidos`, para la app "build your
 menu"). Índices recomendados: `menus` → compuesto `(persona, periodo, menu_id)`; `recetas` →
-`tiempo_tipico` y `vector_equivalentes.<grupo>`; `catalogo_alimentos` → único sobre `alimento`.
+`tiempo_tipico` y `vector_equivalentes.<grupo>`; `catalogo_alimentos` → único sobre `alimento`;
+`menus_construidos` → único compuesto `(persona, fecha)` (una persona no puede tener dos planes
+guardados para la misma fecha — se sobreescribe, no se duplica; el índice se crea perezosamente
+desde `views/build_your_menu.py` al primer guardado, no desde `import_data.py`).
 
 No commitear credenciales de conexión a Mongo — usar `.env` fuera de git (ver `SETUP.md`).
 

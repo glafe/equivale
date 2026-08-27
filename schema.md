@@ -202,11 +202,21 @@ insertando un nuevo documento con `vigente_desde` más reciente directamente en 
 
 ## Colección `menus_construidos` — lo que arma el usuario en la UI
 
+**Actualizado en Fase 4 (2026-08-27)** respecto al diseño original de este documento — ver notas
+inline abajo de qué cambió y por qué (priorizando que el round-trip guardar→volver a abrir sea
+exacto, criterio de "hecho" explícito de `BUILD-PLAN.md` → Fase 4).
+
 ```
 {
   "persona": string,
-  "fecha": string,                  // fecha ISO del día que se está armando, o null si es "borrador libre"
-  "estado": string,                 // "en_progreso" | "completo"
+  "fecha": string,                  // fecha ISO del día -- ya NO es opcional en Fase 4 (a pedido
+                                     // del usuario: varios planes por persona, uno por fecha, con
+                                     // historial). Único índice recomendado: (persona, fecha).
+  "estado": string,                 // "completo" si delta_diario da todo cero, si no "en_progreso"
+  "objetivo_diario": { grupo: int, ... },  // snapshot del objetivo vigente al momento de guardar
+                                            // (por si el objetivo de la persona cambia después)
+  "actual_diario": { grupo: int, ... },    // suma de todos los tiempos, cacheado al guardar
+  "delta_diario": { grupo: int, ... },     // delta_objetivo(objetivo_diario, actual_diario)
   "tiempos": {
     "desayuno"?: TiempoConstruido,
     "comida"?: TiempoConstruido,
@@ -221,19 +231,29 @@ insertando un nuevo documento con `vigente_desde` más reciente directamente en 
 ```
 {
   "seleccion": [ RecetaInstancia, ... ],
-  "actual": { grupo: int, ... },     // = sumar_por_grupo() de todas las RecetaInstancia, cacheado al guardar
-  "delta": { grupo: int, ... }       // = delta_objetivo(objetivo_de_ese_tiempo, actual), cacheado al guardar
+  "actual": { grupo: int, ... }     // = sumar_por_grupo() de los ingredientes incluidos, cacheado
 }
 ```
+Ya NO trae `delta` por tiempo — con el objetivo rediseñado como diario (no por tiempo, ver más
+arriba), un "delta de este tiempo" no tiene un significado fijo por sí solo; el `delta_diario` a
+nivel del documento es lo que sí se valida. El presupuesto restante por tiempo que se muestra en
+vivo en la UI (objetivo diario menos lo ya usado en otros tiempos) es una vista calculada al vuelo,
+no algo que se persiste.
 
-**RecetaInstancia** — una receta del banco tal como quedó tras los ajustes +/- del usuario:
+**RecetaInstancia** — snapshot completo de la receta tal como quedó tras los ajustes del usuario
+(ya NO delta-encoded contra la receta base — se cambió a guardar el estado completo para garantizar
+un round-trip exacto sin tener que re-resolver `receta_id` contra el banco al reabrir, que pudo
+haber cambiado desde entonces):
 ```
 {
-  "receta_id": string,               // referencia a `recetas.receta_id`
-  "ajustes": [                       // solo los ingredientes que el usuario movió del valor base
-    { "alimento": string, "equivalentes_delta": int }   // ej. +1 o -2 respecto al vector_equivalentes original
-  ],
-  "vector_resultante": { grupo: int, ... }  // vector_equivalentes de la receta + ajustes aplicados, ya calculado
+  "receta_id": string,               // referencia informativa a `recetas.receta_id`
+  "nombre": string,
+  "ingredientes": [                  // mismo shape que Ingrediente (schema.md arriba), + estos dos:
+    { "alimento": string, "grupo_smae": string | null, "equivalentes": int,
+      "bloqueado"?: bool, "opcional"?: bool,
+      "incluido": bool               // solo relevante si opcional=true -- si el usuario lo excluyó
+    }
+  ]
 }
 ```
 
