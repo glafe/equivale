@@ -16,6 +16,7 @@ from nutriguia.streamlit_data import (
     invalidar_cache_catalogo,
     invalidar_cache_recetas,
 )
+from nutriguia.texto import normalizar_busqueda
 
 GRUPOS_CANONICOS = ["AOA", "Cereal", "Verdura", "Fruta", "Aceite s/p", "Aceite c/p", "Leguminosa"]
 LIBRE = "(libre, sin grupo)"
@@ -84,10 +85,11 @@ def render() -> None:
     busqueda = c_buscar.text_input("Buscar por nombre", placeholder="ej. pollo", key="ing_busqueda")
     grupo_filtro = c_grupo.selectbox("Grupo", [TODOS] + GRUPOS_CANONICOS + [LIBRE], key="ing_grupo_filtro")
 
+    busqueda_norm = normalizar_busqueda(busqueda)
     nombres_filtrados = []
     filas_tabla = []
     for alimento, datos in sorted(catalogo.items()):
-        if busqueda and busqueda.lower() not in alimento.lower():
+        if busqueda_norm and busqueda_norm not in normalizar_busqueda(alimento):
             continue
         grupo = datos.get("grupo")
         if grupo_filtro == LIBRE and grupo is not None:
@@ -205,11 +207,12 @@ def render() -> None:
             "alimento aparece con más de una preparación/unidad (ej. crudo vs cocido), cada una "
             "sale como una opción separada -- elige la que corresponda."
         )
-        busqueda_smae = st.text_input("Buscar en SMAE", placeholder="ej. atún", key="smae_busqueda")
-        if busqueda_smae.strip():
+        busqueda_smae = st.text_input("Buscar en SMAE", placeholder="ej. atun", key="smae_busqueda")
+        busqueda_smae_norm = normalizar_busqueda(busqueda_smae)
+        if busqueda_smae_norm:
             filas_smae = cargar_filas_smae()
             coincidencias = [
-                f for f in filas_smae if busqueda_smae.lower() in f["alimento"].lower()
+                f for f in filas_smae if busqueda_smae_norm in normalizar_busqueda(f["alimento"])
             ][:40]
             if not coincidencias:
                 st.caption("Sin resultados (o la categoría SMAE de ese alimento no está soportada -- ver nota abajo).")

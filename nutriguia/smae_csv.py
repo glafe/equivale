@@ -14,25 +14,20 @@ filas -- no se persiguió exhaustivamente, mismo criterio que la regla 9 de CLAU
 """
 
 import csv
-import unicodedata
 from pathlib import Path
 
 from nutriguia.cantidades import formatear_decimal_como_fraccion
+from nutriguia.texto import normalizar_busqueda
 
 SMAE_CSV_PATH = Path(__file__).resolve().parent.parent / "SMAE_CONSULTA.csv"
 
 NO_SOPORTADO = "no_soportado"  # Azúcares / Leche / Alcohol -- sin grupo canónico equivalente
 
 
-def _normalizar(texto: str) -> str:
-    sin_acentos = unicodedata.normalize("NFKD", texto).encode("ascii", "ignore").decode("ascii")
-    return sin_acentos.strip().lower()
-
-
 def _grupo_desde_tipo_equivalente(tipo: str) -> str | None:
     """None = libre (sin grupo, ej. especias/agua). NO_SOPORTADO = categoría SMAE sin equivalente
     entre los 7 grupos canónicos de este proyecto (Azúcares, Leche, Alcohol)."""
-    t = _normalizar(tipo)
+    t = normalizar_busqueda(tipo)
     if t.startswith("cereales"):
         return "Cereal"
     if t.startswith("a.o.a") or t.startswith("aoa"):

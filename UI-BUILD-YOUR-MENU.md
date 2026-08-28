@@ -222,7 +222,8 @@ alimentos nuevos sin escribirlos a mano. Esto es la parte de "EquiVale Chef" que
 - **Tabla** (`st.dataframe`, de solo lectura): todo `catalogo_alimentos`, filtrable por texto y
   por grupo (incluye "(libre, sin grupo)"). Columnas: Alimento, Grupo, Cantidad por equivalente,
   Asunción, **Usado en recetas** (cuántas recetas distintas lo referencian — contexto antes de
-  tocarlo, no una restricción).
+  tocarlo, no una restricción). La búsqueda (acá y en "Agregar de SMAE") es insensible a acentos
+  vía `nutriguia/texto.py::normalizar_busqueda()` — escribir "atun" sí encuentra "Atún".
 - **Editar/eliminar**: un `st.selectbox` (mismo patrón que el editor de recetas y "Personas", NO
   `st.form` — ver nota abajo) para elegir un alimento y mostrar sus campos (nombre, grupo,
   cantidad) en widgets sueltos con botones "Guardar cambios" y "Eliminar" (este último detrás de

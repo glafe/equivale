@@ -83,6 +83,7 @@ nutri-guia/
                                     #   inyecta una vez desde app.py, ver UI-BUILD-YOUR-MENU.md
     smae_csv.py                    # lee SMAE_CONSULTA.csv, clasifica a los 7 grupos canónicos
                                     #   (UI, no aritmética -- usado por el editor de ingredientes)
+    texto.py                       # normalizar_busqueda(): quita acentos/mayúsculas para buscar
     streamlit_data.py              # loaders cacheados compartidos entre páginas de Streamlit
     import_data.py                 # script: carga catalogo/recetas/menus/objetivos a Mongo
   app.py                           # entrypoint Streamlit: st.navigation entre las páginas de views/
@@ -96,6 +97,7 @@ nutri-guia/
     test_validation_samples.py     # mismo contrato, contra data/samples/ -- siempre corre, incluso en un clon público fresco
     test_cantidades.py             # formatear_decimal_como_fraccion()
     test_smae_csv.py               # lectura/clasificación de SMAE_CONSULTA.csv (commiteado, corre en cualquier clon)
+    test_texto.py                  # normalizar_busqueda()
 ```
 
 ## Decisiones de diseño ya tomadas (no re-derivar)
