@@ -20,6 +20,12 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.5.1] - 2026-08-27
+
+### Fixed
+- Búsqueda del editor de ingredientes ("Buscar por nombre" y "Buscar en SMAE") era sensible a
+  acentos — "atun" no encontraba "Atún". Nuevo `nutriguia/texto.py::normalizar_busqueda()`.
+
 ## [0.5.0] - 2026-08-27
 
 ### Added
