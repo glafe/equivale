@@ -125,11 +125,51 @@ de una referencia visual del usuario; ajustar si no calzan exactamente:
 | Aceite s/p      | `#3D4A1E` | Aceites s/proteína     |
 | Aceite c/p      | `#6D6E71` | Aceite c/proteína      |
 
-Texto blanco, negrita, itálica sobre el color de fondo (chip/badge). Esto es la identidad visual
-del GRUPO — es independiente del color de ESTADO (verde/amarillo/rojo de exacto/falta/excedido);
-el estado se muestra aparte (ej. un ícono o texto junto al chip), no reemplazando el color del
-grupo. Vive en `nutriguia/colores.py` como single source of truth para no repetir hex en cada
-página.
+Pastilla (`border-radius: 999px`) con texto oscuro o claro elegido automáticamente según la
+luminancia del color de fondo (`_luminancia_relativa()` en `colores.py`) — así un color claro
+como Fruta no queda con texto blanco ilegible sin tener que listar excepciones a mano. Esto es la
+identidad visual del GRUPO — es independiente del color de ESTADO (✅/🔺/🔻ícono de
+exacto/falta/excedido); el estado se muestra aparte, no reemplazando el color del grupo. Vive en
+`nutriguia/colores.py` como single source of truth para no repetir hex en cada página.
+
+## Identidad visual "Barro" y responsividad (2026-08-27, a pedido del usuario)
+
+El usuario pidió mejorar el diseño general (referencia: sitio `getdesign.md`, estilo "Clay") y
+que la app fuera usable desde el teléfono, no solo escritorio. Antes de tocar código se propuso
+una maqueta HTML interactiva (artefacto, fuera del repo) con una traducción del estilo "Clay" al
+tema real de la app — superficies de barro sin cocer, tarjetas de receta como fichas, los chips
+de grupo SMAE como fichas de conteo — y el usuario la aprobó. Resumen de lo implementado:
+
+- **Paleta y tipografía**: fondo/superficie/tinta/acento en `.streamlit/config.toml` (colores
+  base, aplicados nativamente por Streamlit a botones/inputs/sidebar) + Google Fonts (Fraunces
+  para títulos, Figtree para interfaz, Space Mono para fechas/cantidades) y radios/sombras
+  inyectados como CSS desde `nutriguia/estilo.py`, cargado una sola vez en `app.py` antes de
+  `pagina.run()` (se aplica a todas las páginas porque `app.py` se re-ejecuta completo en cada
+  navegación). Los 7 colores de grupo SMAE de la tabla de arriba **no cambiaron** — son
+  funcionales, no decorativos.
+- **Acento nuevo** (`#3C6E68`, un verde-azulado tipo esmalte de cerámica): elegido a propósito
+  para no parecerse a ninguno de los 7 colores de grupo, así un botón primario no se confunde con
+  un chip de grupo.
+- **Convención de `key=` para CSS dirigido** (ver comentario en `nutriguia/estilo.py`): Streamlit
+  agrega una clase `st-key-<key>` a cualquier widget/contenedor con `key=` explícito — más
+  estable que apuntar a las clases `st-emotion-cache-*` (hashes que cambian entre builds de
+  Streamlit). Prefijos ya usados y a los que el CSS apunta: `menos_`/`mas_` (botones -/+ de un
+  stepper), `receta_card_` (contenedor de una receta agregada), `status_` (panel de estado por
+  tiempo o del día). Si agregas un nuevo stepper o tarjeta, sigue el mismo prefijo o el CSS no lo
+  alcanzará.
+- **Responsividad**: Streamlit apila automáticamente cualquier `st.columns(...)` en pantallas
+  angostas (por debajo de ~640px) — no se intentó pelear contra eso con CSS de media queries
+  (frágil, depende de internals de Streamlit). En vez de eso, las filas con muchas columnas se
+  reestructuraron en 2 filas más cortas y agrupadas lógicamente: en "Build your menu", cada
+  ingrediente ahora es "etiqueta" (fila 1) + "stepper -/cantidad/+" (fila 2) en vez de un solo
+  renglón de 4-5 columnas; en el Editor de recetas, "alimento + quitar" (fila 1) + "grupo/
+  cantidad/equivalentes/bloqueado/opcional" (fila 2) en vez de 7 columnas en una sola fila. En
+  escritorio se ve igual que antes (columnas en línea); en móvil, cada fila corta se apila en
+  pocos bloques en vez de muchos, y los botones +/- (estilizados como cuadrados táctiles vía
+  `st-key-menos_`/`st-key-mas_`) se ven intencionales apilados a ancho completo.
+- **No se intentó**: un tema oscuro nativo (Streamlit permite un solo tema "custom" a la vez vía
+  `config.toml`; el usuario puede seguir alternando Light/Dark/Custom desde el menú de Streamlit,
+  pero Dark no tiene la paleta Barro aplicada) — retomar solo si hace falta.
 
 ## Editor de recetas ("EquiVale Chef") — promovido desde "Ideas para más adelante"
 

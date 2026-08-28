@@ -127,7 +127,9 @@ la pena pulir primero.
 ## Ideas para más adelante (no implementar todavía)
 
 Notas del usuario para no perderlas de vista, pero fuera de alcance de las Fases 0-5 de arriba —
-retomar solo después de que la Fase 4 (o 5) esté en uso real y se sienta bien.
+retomar solo después de que la Fase 4 (o 5) esté en uso real y se sienta bien. **Desde 2026-08-27
+la versión canónica y detallada de estas ideas vive en `BUGS.md`** (FR-001, FR-002, FR-003) —lo
+de abajo es el resumen histórico, no lo dupliques al actualizar una de las dos.
 
 - **Historial de versiones del objetivo por persona** — la Fase 3.6 (página "Personas") solo
   mantiene UN objetivo vigente por persona (lo edita in-place); no lleva historial de cómo cambió

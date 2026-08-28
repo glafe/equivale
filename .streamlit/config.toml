@@ -1,0 +1,10 @@
+# Tema "Barro" -- ver la propuesta de diseño y nutriguia/estilo.py para el resto (fuentes,
+# radios, sombras). Solo las claves de tema estables/clásicas de Streamlit van aquí; todo lo
+# que necesita más control fino (radios, sombras, tipografía) se inyecta como CSS en
+# nutriguia/estilo.py, importado una sola vez desde app.py.
+[theme]
+base = "light"
+primaryColor = "#3C6E68"
+backgroundColor = "#EAE6DB"
+secondaryBackgroundColor = "#F7F4EE"
+textColor = "#2B2621"

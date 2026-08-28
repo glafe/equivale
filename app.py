@@ -5,7 +5,10 @@ Ver UI-BUILD-YOUR-MENU.md para la especificación de cada página.
 
 import streamlit as st
 
+from nutriguia.estilo import inyectar_css
+
 st.set_page_config(page_title="EquiVale", page_icon="🥗", layout="wide")
+st.markdown(inyectar_css(), unsafe_allow_html=True)
 
 pagina = st.navigation(
     [

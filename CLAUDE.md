@@ -16,12 +16,28 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
+**Versión:** `0.4.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+`git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
+
 Al 2026-08-27: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
-datos importados, `nutriguia/validation.py` con 35/35 tests en verde, app Streamlit multipágina
-("Build your menu", "Editor de recetas", "Personas") corriendo en producción. "Build your menu"
-ya cubre el día completo (los 5 tiempos vía tabs), guarda por `(persona, fecha)` en
-`menus_construidos`, y tiene historial de planes guardados con round-trip verificado. Falta
-Fase 5 (pulido) — no empezarla sin haber usado la Fase 4 unos días en la vida real.
+datos importados, `nutriguia/validation.py` con 35/35 tests en verde (más una suite adicional
+sobre datos sintéticos en `tests/test_validation_samples.py`, siempre disponible aunque no se
+tengan los datos reales — ver más abajo), app Streamlit multipágina ("Build your menu", "Editor
+de recetas", "Personas") corriendo en producción. "Build your menu" ya cubre el día completo (los
+5 tiempos vía tabs), guarda por `(persona, fecha)` en `menus_construidos`, y tiene historial de
+planes guardados con round-trip verificado. Falta Fase 5 (pulido) — no empezarla sin haber usado
+la Fase 4 unos días en la vida real.
+
+**Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
+cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,
+templates en `Prompt-Coding_Best_Practices-main/practices-and-principles.md` — carpeta de
+referencia externa, fuera de git). Mensajes de commit desde esa fecha usan prefijo
+`feat:`/`fix:`/`docs:`/`refactor:`/`test:`/`chore:`; los commits anteriores no se reescriben.
+Al cerrar un bug o feature, agregar una línea a `CHANGELOG.md` con el ID de `BUGS.md`. No se
+adoptó un `AGENTS.md` separado ni el layout `src/` de esa referencia — este repo ya tiene un
+único asistente (Claude Code) y una documentación de dominio (`CLAUDE.md` + los `.md` listados
+abajo) que cumple el mismo rol; reestructurar carpetas en un repo ya desplegado (rutas de
+systemd, `SETUP.md`, etc.) no se justificaba solo por seguir la convención al pie de la letra.
 
 El repo se hizo público el 2026-08-27 — se reescribió toda la historia de git para purgar datos
 reales (ver nota de privacidad arriba); `data/` y `scripts/migraciones/` ya no viajan con
@@ -51,6 +67,9 @@ algo desde cero, revisar si ya existe y solo necesita un redeploy.
 6. **`UI-BUILD-YOUR-MENU.md`** — especificación de interacción de la app Streamlit.
 7. **`BUILD-PLAN.md`** — orden de ejecución por fases, con criterio de "hecho" en cada una. **Este
    es el punto de entrada para empezar a trabajar** — sigue sus fases en orden.
+8. **`CHANGELOG.md`** — qué cambió y cuándo, por versión (formato Keep a Changelog).
+9. **`BUGS.md`** — bugs/caveats/feature requests con detalle técnico (bugs ya resueltos, límites
+   conocidos que no son bugs, e ideas pendientes con su justificación).
 
 ## Personas (canónico)
 

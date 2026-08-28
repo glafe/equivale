@@ -1,3 +1,8 @@
+"""Regresión de validar_menu() contra datos 100% ficticios, committeados en el repo.
+
+A diferencia de test_validation.py (que necesita los 17 menús históricos reales, fuera de git),
+este archivo siempre corre en un clon fresco del repo público -- ver data/samples/.
+"""
 import json
 from pathlib import Path
 
@@ -5,21 +10,8 @@ import pytest
 
 from nutriguia.validation import validar_menu
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "Json-outputs-sin-notas"
-DATOS_REALES_DISPONIBLES = DATA_DIR.is_dir()
-ARCHIVOS = (
-    sorted(p for p in DATA_DIR.glob("*.json") if p.name != "catalogo-alimentos.json")
-    if DATOS_REALES_DISPONIBLES
-    else []
-)
-
-pytestmark = pytest.mark.skipif(
-    not DATOS_REALES_DISPONIBLES,
-    reason=(
-        "data/Json-outputs-sin-notas/ no está presente (datos reales, fuera de git -- ver "
-        "SETUP.md). La regresión contra datos sintéticos vive en test_validation_samples.py."
-    ),
-)
+DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "samples"
+ARCHIVOS = sorted(DATA_DIR.glob("*.json"))
 
 
 def _casos():
@@ -33,7 +25,7 @@ def _casos():
 
 
 @pytest.mark.parametrize("nombre_archivo,persona,variante", _casos())
-def test_menu_historico_valido(nombre_archivo, persona, variante):
+def test_menu_sintetico_valido(nombre_archivo, persona, variante):
     es_valido_dia, delta_diario, tiempos_invalidos = validar_menu(variante)
     assert es_valido_dia, (
         f"{nombre_archivo} ({persona}, menu_id={variante['menu_id']}): "
@@ -45,5 +37,5 @@ def test_menu_historico_valido(nombre_archivo, persona, variante):
     )
 
 
-def test_se_encontraron_17_archivos():
-    assert len(ARCHIVOS) == 17
+def test_hay_al_menos_un_archivo_de_muestra():
+    assert len(ARCHIVOS) >= 1

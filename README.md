@@ -1,5 +1,7 @@
 # EquiVale
 
+**Versión actual: `0.4.0`** (ver [`CHANGELOG.md`](CHANGELOG.md) — [Versionado Semántico](https://semver.org/lang/es/))
+
 Sistema personal de planeación de menús basado en **Equivalentes SMAE** (Sistema Mexicano de
 Alimentos Equivalentes), para dos personas. La app ("Build your menu") arma el día eligiendo
 recetas de un banco reutilizable y ajustando porciones en pasos de equivalente completo, con
@@ -12,10 +14,12 @@ la nota de privacidad en `CLAUDE.md`.
 
 ## Estado actual
 
-**Fases 0 a 3.5 completas** — Mongo corriendo, datos importados, `nutriguia/validation.py` con
-34/34 tests en verde, app Streamlit multipágina ("Build your menu" + "Editor de recetas")
-desplegada y corriendo en producción como servicio systemd. Sigue la Fase 4 (día completo +
-guardado a `menus_construidos`). Ver el checklist completo en `BUILD-PLAN.md`.
+**Fases 0 a 4 completas** — Mongo corriendo, datos importados, `nutriguia/validation.py` con
+35/35 tests en verde (más una suite adicional sobre datos sintéticos, `tests/test_validation_samples.py`,
+que corre incluso en un clon fresco del repo sin los datos reales), app Streamlit multipágina
+("Build your menu", "Editor de recetas", "Personas") desplegada y corriendo en producción como
+servicio systemd, con día completo + guardado por fecha + historial. Sigue la Fase 5 (pulido,
+solo tras uso real). Ver el checklist completo en `BUILD-PLAN.md`.
 
 ## Documentación — leer en este orden
 
@@ -28,6 +32,8 @@ guardado a `menus_construidos`). Ver el checklist completo en `BUILD-PLAN.md`.
 | [`VALIDATION.md`](VALIDATION.md) | Contrato exacto de `nutriguia/validation.py` (toda la aritmética de equivalentes) |
 | [`UI-BUILD-YOUR-MENU.md`](UI-BUILD-YOUR-MENU.md) | Especificación de interacción de la app Streamlit |
 | [`BUILD-PLAN.md`](BUILD-PLAN.md) | Orden de ejecución por fases, con criterio de "hecho" en cada una |
+| [`CHANGELOG.md`](CHANGELOG.md) | Qué cambió y cuándo, por versión |
+| [`BUGS.md`](BUGS.md) | Bugs, límites conocidos y feature requests, con detalle técnico |
 
 ## Stack
 
@@ -48,7 +54,8 @@ pip install -r requirements.txt
 cp .env.example .env   # editar MONGO_URI con las credenciales reales
 
 python -m nutriguia.import_data   # carga catálogo, recetas, menús históricos y objetivos
-pytest tests/ -v                  # 34/34 menús históricos deben validar en verde
+pytest tests/ -v                  # 35/35 en verde con datos reales; sin ellos, test_validation.py
+                                   # se salta y solo corre test_validation_samples.py (datos ficticios)
 
 streamlit run app.py
 ```

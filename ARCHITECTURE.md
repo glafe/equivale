@@ -59,27 +59,36 @@ nutri-guia/
   VALIDATION.md
   UI-BUILD-YOUR-MENU.md
   BUILD-PLAN.md
+  CHANGELOG.md                     # qué cambió y cuándo, por versión (Keep a Changelog)
+  BUGS.md                          # bugs/caveats/feature requests con detalle técnico
   schema.md
   .env.example
   requirements.txt
+  .streamlit/
+    config.toml                    # tema "Barro" (colores base) -- ver UI-BUILD-YOUR-MENU.md
   data/
     catalogo-alimentos.json
     recetas.json
-    Json-outputs-sin-notas/        # menús históricos, solo para import/referencia
+    Json-outputs-sin-notas/        # menús históricos, solo para import/referencia (real, fuera de git)
+    samples/                       # datos 100% ficticios, SÍ van en git — ver tests/test_validation_samples.py
   nutriguia/                       # paquete Python compartido (sin UI)
-    __init__.py
+    __init__.py                    # __version__ (SemVer, ver CHANGELOG.md)
     db.py                          # conexión a Mongo (lee MONGO_URI de .env)
     validation.py                  # ver VALIDATION.md — contrato exacto
     colores.py                     # paleta fija por grupo SMAE (UI, no aritmética)
     cantidades.py                  # escalar_cantidad(): "30 g" x3 -> "90 g" (UI, no aritmética)
+    estilo.py                      # CSS compartido "Barro" (fuentes, radios, sombras) -- se
+                                    #   inyecta una vez desde app.py, ver UI-BUILD-YOUR-MENU.md
     streamlit_data.py              # loaders cacheados compartidos entre páginas de Streamlit
     import_data.py                 # script: carga catalogo/recetas/menus/objetivos a Mongo
   app.py                           # entrypoint Streamlit: st.navigation entre las páginas de views/
   views/                           # páginas de la app multipágina (NO llamarla "pages/" — Streamlit
     build_your_menu.py             #   auto-detecta esa carpeta para su mecanismo viejo de MPA y
     editor_recetas.py              #   choca con st.navigation/st.Page, ver ARCHITECTURE.md abajo)
+    personas.py
   tests/
-    test_validation.py             # corre validation.py contra los menús históricos
+    test_validation.py             # corre validation.py contra los menús históricos (skip si no hay datos reales)
+    test_validation_samples.py     # mismo contrato, contra data/samples/ -- siempre corre, incluso en un clon público fresco
 ```
 
 ## Decisiones de diseño ya tomadas (no re-derivar)

@@ -137,8 +137,13 @@ def render() -> None:
     opciones_grupo = [LIBRE] + GRUPOS_CANONICOS
 
     for fila in list(draft["ingredientes"]):
-        with st.container(border=True):
-            c1, c2, c_cant, c3, c4, c_opc, c5 = st.columns([3, 2, 2, 1, 1, 1, 1])
+        with st.container(border=True, key=f"ingrediente_card_{fila['fila_id']}"):
+            # Dos filas en vez de una sola de 7 columnas: en un teléfono cada `st.columns(...)`
+            # se apila completo, así que 7 columnas serían 7 bloques sueltos uno debajo del
+            # otro -- agrupar "qué alimento" en su propia fila y "cómo se mide" en la siguiente
+            # se lee mejor apilado (y no cambia nada en escritorio, sigue viéndose en línea).
+            c1, c5 = st.columns([5, 1])
+            c2, c_cant, c3, c4, c_opc = st.columns([2, 2, 1, 1, 1])
 
             alimento_anterior = fila["alimento"]
             en_catalogo = fila["alimento"] in alimentos_catalogo

@@ -22,8 +22,11 @@ Hars/
 # --- Datos reales: el repo es público, esto NUNCA se commitea (ver README/SETUP) ---
 # Nutrición/menús/recetas reales de personas reales -- viven solo en Mongo y en copias locales
 # fuera de git. Quien clone el repo necesita conseguir estos archivos aparte para correr
-# import_data.py o los tests de regresión (ver SETUP.md).
-data/
+# import_data.py o los tests de regresión contra datos reales (ver SETUP.md).
+data/*
+# data/samples/ es la excepción: datos 100% ficticios committeados para que `pytest` corra en
+# un clon fresco del repo público sin necesitar los datos reales (ver tests/test_validation_samples.py).
+!data/samples/
 Legacy_confirmados/
 scripts/migraciones/
 *.xlsx

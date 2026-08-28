@@ -130,65 +130,79 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
 
     seleccion = dia["tiempos"][tiempo]
     for instancia in list(seleccion):
-        with st.container(border=True):
+        with st.container(border=True, key=f"receta_card_{instancia['instancia_id']}"):
             top_l, top_r = st.columns([4, 1])
             top_l.markdown(f"**{instancia['nombre']}**")
             if top_r.button("quitar", key=f"quitar_{tiempo}_{instancia['instancia_id']}"):
                 seleccion.remove(instancia)
                 st.rerun()
 
-            for ing in instancia["ingredientes"]:
-                if ing.get("opcional"):
-                    c0, c1, c2, c3, c4 = st.columns([1, 2, 1, 3, 1])
-                    ing["incluido"] = c0.checkbox(
+            for i, ing in enumerate(instancia["ingredientes"]):
+                if i > 0:
+                    st.markdown(
+                        '<hr style="margin:.5rem 0;opacity:.35;">', unsafe_allow_html=True
+                    )
+
+                # Fila 1: etiqueta (+ checkbox "Incluir" si es opcional) -- en pantallas angostas
+                # cada `st.columns(...)` se apila completo, así que separar la etiqueta del
+                # stepper en dos filas cortas se ve mejor en un teléfono que un solo renglón de
+                # 4-5 columnas apilándose una por una.
+                opcional = ing.get("opcional", False)
+                if opcional:
+                    c_incl, c_etq = st.columns([1, 6])
+                    ing["incluido"] = c_incl.checkbox(
                         "Incluir",
                         value=ing.get("incluido", True),
                         key=f"incluir_{tiempo}_{instancia['instancia_id']}_{ing['alimento']}",
                         label_visibility="collapsed",
                         help="Ingrediente opcional de esta receta",
                     )
+                    c_etq.markdown(f"{ing['alimento']} *(opcional)*")
                 else:
-                    c1, c2, c3, c4 = st.columns([3, 1, 3, 1])
+                    st.markdown(ing["alimento"])
 
-                etiqueta = ing["alimento"] + (" *(opcional)*" if ing.get("opcional") else "")
-                c1.markdown(etiqueta)
-
-                if ing.get("opcional") and not ing.get("incluido", True):
-                    c3.write("(no incluido)")
+                if opcional and not ing.get("incluido", True):
+                    st.caption("No incluido en este platillo.")
                     continue
 
                 paso = paso_equivalente(ing["alimento"], catalogo)
                 ajustable = paso is not None and not ing.get("bloqueado", False)
                 if not ajustable:
                     motivo = "bloqueado" if ing.get("bloqueado") else "no ajustable"
-                    c3.write(f"({motivo})")
+                    st.caption(f"({motivo})")
                     continue
-                if c2.button(
+
+                # Fila 2: stepper -/cantidad/+ en 3 columnas (antes eran 4-5) -- menos bloques
+                # cuando se apilan en móvil, y visualmente quedan agrupados con la etiqueta de
+                # arriba en vez de mezclados con la del ingrediente siguiente.
+                c_menos, c_cant, c_mas = st.columns([1, 3, 1])
+                if c_menos.button(
                     "-", key=f"menos_{tiempo}_{instancia['instancia_id']}_{ing['alimento']}",
                     disabled=ing["equivalentes"] <= 1,
                 ):
                     ing["equivalentes"] -= 1
                     st.rerun()
-                c3.write(f"{escalar_cantidad(paso, ing['equivalentes'])} ({ing['equivalentes']} equivalentes)")
-                if c4.button("+", key=f"mas_{tiempo}_{instancia['instancia_id']}_{ing['alimento']}"):
+                c_cant.write(f"{escalar_cantidad(paso, ing['equivalentes'])} ({ing['equivalentes']} equivalentes)")
+                if c_mas.button("+", key=f"mas_{tiempo}_{instancia['instancia_id']}_{ing['alimento']}"):
                     ing["equivalentes"] += 1
                     st.rerun()
 
-    st.markdown("**Estado de este tiempo** (contra lo que queda del presupuesto diario)")
-    actual_tiempo = _actual_de(seleccion)
-    delta_tiempo = delta_objetivo(restante, actual_tiempo)
-    estado = estado_por_grupo(delta_tiempo)
-    grupos = sorted(set(restante) | set(actual_tiempo))
-    if not grupos:
-        st.caption("Sin actividad todavía en este tiempo.")
-    for grupo in grupos:
-        icono = ICONO_POR_ESTADO[estado[grupo]]
-        st.markdown(
-            chip_html(grupo, GRUPO_ETIQUETA.get(grupo, grupo))
-            + f" &nbsp; {icono} presupuesto {restante.get(grupo, 0)} · "
-            f"usado aquí {actual_tiempo.get(grupo, 0)} · delta {delta_tiempo[grupo]:+d}",
-            unsafe_allow_html=True,
-        )
+    with st.container(border=True, key=f"status_{tiempo}"):
+        st.markdown("**Estado de este tiempo** (contra lo que queda del presupuesto diario)")
+        actual_tiempo = _actual_de(seleccion)
+        delta_tiempo = delta_objetivo(restante, actual_tiempo)
+        estado = estado_por_grupo(delta_tiempo)
+        grupos = sorted(set(restante) | set(actual_tiempo))
+        if not grupos:
+            st.caption("Sin actividad todavía en este tiempo.")
+        for grupo in grupos:
+            icono = ICONO_POR_ESTADO[estado[grupo]]
+            st.markdown(
+                chip_html(grupo, GRUPO_ETIQUETA.get(grupo, grupo))
+                + f" &nbsp; {icono} presupuesto {restante.get(grupo, 0)} · "
+                f"usado aquí {actual_tiempo.get(grupo, 0)} · delta {delta_tiempo[grupo]:+d}",
+                unsafe_allow_html=True,
+            )
 
 
 def render() -> None:
@@ -233,14 +247,15 @@ def render() -> None:
     actual_diario = _sumar_dicts([_actual_de(instancias) for instancias in dia["tiempos"].values()])
     delta_diario = delta_objetivo(objetivo_diario, actual_diario)
     estado_diario = estado_por_grupo(delta_diario)
-    for grupo in sorted(set(objetivo_diario) | set(actual_diario)):
-        icono = ICONO_POR_ESTADO[estado_diario[grupo]]
-        st.markdown(
-            chip_html(grupo, GRUPO_ETIQUETA.get(grupo, grupo))
-            + f" &nbsp; {icono} objetivo {objetivo_diario.get(grupo, 0)} · "
-            f"actual {actual_diario.get(grupo, 0)} · delta {delta_diario[grupo]:+d}",
-            unsafe_allow_html=True,
-        )
+    with st.container(border=True, key="status_dia"):
+        for grupo in sorted(set(objetivo_diario) | set(actual_diario)):
+            icono = ICONO_POR_ESTADO[estado_diario[grupo]]
+            st.markdown(
+                chip_html(grupo, GRUPO_ETIQUETA.get(grupo, grupo))
+                + f" &nbsp; {icono} objetivo {objetivo_diario.get(grupo, 0)} · "
+                f"actual {actual_diario.get(grupo, 0)} · delta {delta_diario[grupo]:+d}",
+                unsafe_allow_html=True,
+            )
 
     dia_completo = bool(delta_diario) and all(v == 0 for v in delta_diario.values())
     if not dia_completo and any(v != 0 for v in delta_diario.values()):

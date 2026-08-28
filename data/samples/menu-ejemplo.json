@@ -1,0 +1,70 @@
+{
+  "persona": "Persona Ejemplo",
+  "periodo": "2026-01",
+  "tab_origen": "Ejemplo",
+  "sistema_referencia": "SMAE",
+  "fase": "ejemplo",
+  "menus": [
+    {
+      "menu_id": 1,
+      "dias": ["lunes", "miercoles", "viernes"],
+      "equivalentes_diarios": [
+        { "grupo": "Cereal", "cantidad": 2 },
+        { "grupo": "AOA", "cantidad": 1 },
+        { "grupo": "Fruta", "cantidad": 1 }
+      ],
+      "tiempos": [
+        {
+          "tiempo": "desayuno",
+          "icono": "🍳",
+          "equivalentes": [
+            { "grupo": "Cereal", "cantidad": 2 },
+            { "grupo": "AOA", "cantidad": 1 },
+            { "grupo": "Fruta", "cantidad": 1 }
+          ],
+          "platillos": [
+            {
+              "nombre": "Desayuno de ejemplo",
+              "ingredientes": [
+                { "cantidad": "2 piezas", "alimento": "Pan integral (ejemplo)", "grupo_smae": "Cereal", "equivalentes": 2 },
+                { "cantidad": "1 pieza", "alimento": "Huevo (ejemplo)", "grupo_smae": "AOA", "equivalentes": 1 },
+                { "cantidad": "1 pieza", "alimento": "Manzana (ejemplo)", "grupo_smae": "Fruta", "equivalentes": 1 }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "menu_id": 2,
+      "dias": ["martes", "jueves"],
+      "equivalentes_diarios": [
+        { "grupo": "Cereal", "cantidad": 2 },
+        { "grupo": "AOA", "cantidad": 1 },
+        { "grupo": "Fruta", "cantidad": 1 }
+      ],
+      "tiempos": [
+        {
+          "tiempo": "desayuno",
+          "icono": "🍳",
+          "equivalentes": [
+            { "grupo": "Cereal", "cantidad": 2 },
+            { "grupo": "AOA", "cantidad": 1 },
+            { "grupo": "Fruta", "cantidad": 1 }
+          ],
+          "platillos": [
+            {
+              "nombre": "Avena con fruta (ejemplo)",
+              "ingredientes": [
+                { "cantidad": "1/2 taza", "alimento": "Avena (ejemplo)", "grupo_smae": "Cereal", "equivalentes": 1 },
+                { "cantidad": "2 cucharadas", "alimento": "Proteína en polvo (ejemplo)", "grupo_smae": "Cereal", "equivalentes": 1 },
+                { "cantidad": "1 pieza", "alimento": "Huevo (ejemplo)", "grupo_smae": "AOA", "equivalentes": 1 },
+                { "cantidad": "1 pieza", "alimento": "Plátano (ejemplo)", "grupo_smae": "Fruta", "equivalentes": 1 }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
