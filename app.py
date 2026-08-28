@@ -8,7 +8,7 @@ import streamlit as st
 from nutriguia.estilo import inyectar_css
 
 st.set_page_config(page_title="EquiVale", page_icon="🥗", layout="wide")
-st.markdown(inyectar_css(), unsafe_allow_html=True)
+inyectar_css()
 
 pagina = st.navigation(
     [

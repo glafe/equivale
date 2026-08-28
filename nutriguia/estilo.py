@@ -17,6 +17,8 @@ Convención de `key=` para que este CSS los alcance (ver views/build_your_menu.p
 - contenedor del panel de estado (por tiempo o del día): key que empieza con "status_"
 """
 
+import streamlit as st
+
 GOOGLE_FONTS_LINK = (
     '<link rel="preconnect" href="https://fonts.googleapis.com">'
     '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>'
@@ -114,6 +116,15 @@ a[data-testid="stSidebarNavLink"][aria-current="page"] {
 """
 
 
-def inyectar_css() -> str:
-    """HTML completo (fuentes + <style>) listo para st.markdown(..., unsafe_allow_html=True)."""
-    return GOOGLE_FONTS_LINK + CSS
+def inyectar_css() -> None:
+    """Inyecta fuentes + <style> en la página actual. Dos st.markdown() separados a propósito:
+    concatenar todo en una sola llamada rompía el CSS -- el parser de Markdown de Streamlit
+    detecta un bloque HTML "tipo 6" (lista fija de tags, incluye <link>) que termina en la
+    primera línea en blanco, así que cualquier línea en blanco DENTRO del <style> (que sí van
+    todas juntas si <style> queda pegado a los <link> sin blanco de por medio) cortaba el bloque
+    a la mitad y el resto del CSS se mostraba como texto plano en la página. Al separar, el
+    <style> empieza su propia línea desde el carácter 0 y Streamlit lo reconoce como bloque HTML
+    "tipo 1" (script/pre/style/textarea), que sí tolera líneas en blanco adentro.
+    """
+    st.markdown(GOOGLE_FONTS_LINK, unsafe_allow_html=True)
+    st.markdown(CSS, unsafe_allow_html=True)
