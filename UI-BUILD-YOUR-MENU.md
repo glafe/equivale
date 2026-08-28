@@ -237,10 +237,18 @@ alimentos nuevos sin escribirlos a mano. Esto es la parte de "EquiVale Chef" que
     criterio que la regla 9 de `CLAUDE.md`): se borra el registro viejo, se conserva el que ya
     existía tal cual, y las recetas se re-apuntan al nombre que sobrevive. Pensado explícitamente
     para casos como el KC-001 de `BUGS.md` ("Aceite de oliva" vs "Aceite oliva").
-  - **Eliminar** no toca las recetas que lo usaban (mismo efecto que un alimento nunca
-    catalogado: el ingrediente sigue en la receta, pero deja de ser ajustable con el stepper). El
-    conteo de "usado en N recetas" se muestra en el mensaje de confirmación para que la decisión
-    sea informada, no un bloqueo duro.
+  - **Eliminar** por default no toca las recetas que lo usaban (mismo efecto que un alimento
+    nunca catalogado: el ingrediente sigue en la receta, pero deja de ser ajustable con el
+    stepper). El conteo de "usado en N recetas" se muestra en el mensaje de confirmación para que
+    la decisión sea informada, no un bloqueo duro.
+  - **Checkbox opt-in "También quitarlo de las N receta(s) que lo usan"** (2026-08-27): si se
+    marca, `_quitar_de_recetas()` borra ese ingrediente de `ingredientes[]` en cada receta
+    afectada y recalcula su `vector_equivalentes` — para cuando el alimento de verdad no debería
+    seguir en esas recetas (ej. se catalogó por error), no solo para el caso de "se volvió no
+    ajustable pero sigue siendo parte del platillo". Sin marcarlo, el comportamiento es el de
+    siempre (arriba). No confundir con `BUGS.md` KC-001 (ingrediente con ortografía duplicada
+    *dentro* de una misma receta) — ese caso sigue sin una herramienta dedicada, se corrige a mano
+    desde el Editor de recetas.
   - **`menus` (histórico) nunca se toca** — ni por renombrar ni por fusionar. Es de solo lectura
     por diseño (ver `ARCHITECTURE.md` decisión #2); esta herramienta no reescribe el pasado.
 - **"Agregar de SMAE"**: expander con buscador de texto libre sobre `SMAE_CONSULTA.csv` (ahora

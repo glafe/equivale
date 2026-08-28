@@ -20,6 +20,14 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.5.2] - 2026-08-27
+
+### Added
+- Editor de ingredientes: al eliminar un alimento usado en recetas, checkbox opt-in "También
+  quitarlo de las N receta(s) que lo usan" (`_quitar_de_recetas()`). Antes solo quedaba como
+  ingrediente "no ajustable" para siempre; ahora se puede limpiar también de las recetas si de
+  verdad no debería seguir ahí. Sin marcar el checkbox, el comportamiento es igual que antes.
+
 ## [0.5.1] - 2026-08-27
 
 ### Fixed

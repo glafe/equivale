@@ -17,6 +17,7 @@ from nutriguia.streamlit_data import (
     invalidar_cache_recetas,
 )
 from nutriguia.texto import normalizar_busqueda
+from nutriguia.validation import sumar_por_grupo
 
 GRUPOS_CANONICOS = ["AOA", "Cereal", "Verdura", "Fruta", "Aceite s/p", "Aceite c/p", "Leguminosa"]
 LIBRE = "(libre, sin grupo)"
@@ -57,6 +58,28 @@ def _renombrar_en_recetas(nombre_viejo: str, nombre_nuevo: str) -> int:
                 {"receta_id": receta["receta_id"]}, {"$set": {"ingredientes": ingredientes}}
             )
             tocadas += 1
+    if tocadas:
+        invalidar_cache_recetas()
+    return tocadas
+
+
+def _quitar_de_recetas(nombre: str) -> int:
+    """Quita el ingrediente `nombre` de `ingredientes[]` en todas las recetas que lo usaban y
+    recalcula su `vector_equivalentes`. Devuelve cuántas recetas se tocaron. Alternativa a dejarlo
+    como ingrediente "no ajustable" (comportamiento por default al eliminar del catálogo, ver
+    UI-BUILD-YOUR-MENU.md) -- útil cuando el alimento de verdad no debería seguir en esas recetas
+    (ej. se catalogó por error, o se está limpiando el banco a fondo)."""
+    tocadas = 0
+    for receta in db().recetas.find({"ingredientes.alimento": nombre}):
+        ingredientes = [ing for ing in receta["ingredientes"] if ing["alimento"] != nombre]
+        if len(ingredientes) == len(receta["ingredientes"]):
+            continue
+        vector = sumar_por_grupo(ingredientes, "grupo_smae", "equivalentes")
+        db().recetas.update_one(
+            {"receta_id": receta["receta_id"]},
+            {"$set": {"ingredientes": ingredientes, "vector_equivalentes": vector}},
+        )
+        tocadas += 1
     if tocadas:
         invalidar_cache_recetas()
     return tocadas
@@ -142,6 +165,16 @@ def render() -> None:
         c_guardar, c_eliminar = st.columns(2)
         guardar = c_guardar.button("💾 Guardar cambios", type="primary", key=f"guardar_{elegido}")
         confirmar_eliminar = c_eliminar.checkbox("Confirmo eliminar", key=f"confirmar_{elegido}")
+        quitar_de_recetas = False
+        if usos:
+            quitar_de_recetas = c_eliminar.checkbox(
+                f"También quitarlo de las {usos} receta(s) que lo usan",
+                key=f"quitar_de_recetas_{elegido}",
+                help=(
+                    "Si no lo marcas, el ingrediente se queda en esas recetas pero deja de tener "
+                    "stepper (ver caption de arriba). Márcalo si de verdad no debería seguir ahí."
+                ),
+            )
         eliminar = c_eliminar.button(
             "🗑️ Eliminar", disabled=not confirmar_eliminar, key=f"eliminar_{elegido}"
         )
@@ -191,13 +224,17 @@ def render() -> None:
         if eliminar:
             db().catalogo_alimentos.delete_one({"alimento": elegido})
             invalidar_cache_catalogo()
+            mensaje = f"'{elegido}' eliminado del catálogo."
+            if usos and quitar_de_recetas:
+                tocadas = _quitar_de_recetas(elegido)
+                mensaje += f" Se quitó de {tocadas} receta(s) que lo usaban."
+            elif usos:
+                mensaje += (
+                    f" Seguía usado en {usos} receta(s) -- esos ingredientes ahora son "
+                    "'no ajustable' en vez de tener stepper, pero no se borraron de la receta."
+                )
             st.session_state["_pendiente_ing_editar_selector"] = SIN_SELECCION
-            st.session_state["_flash_ingredientes"] = (
-                f"'{elegido}' eliminado del catálogo."
-                + (f" Seguía usado en {usos} receta(s) -- esos ingredientes ahora son "
-                   "'no ajustable' en vez de tener stepper, pero no se borraron de la receta."
-                   if usos else "")
-            )
+            st.session_state["_flash_ingredientes"] = mensaje
             st.rerun()
 
     st.divider()
