@@ -107,7 +107,7 @@ def render() -> None:
             }
         )
 
-    st.dataframe(filas_tabla, use_container_width=True, hide_index=True)
+    st.dataframe(filas_tabla, width="stretch", hide_index=True)
 
     st.divider()
     st.subheader("Editar o eliminar un alimento")
