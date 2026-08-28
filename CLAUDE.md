@@ -16,8 +16,12 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.5.1` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.5.2` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
+**Nota:** `0.5.2` (checkbox opt-in en el editor de ingredientes para también quitar un alimento
+eliminado de las recetas que lo usaban, no solo del catálogo — ver `CHANGELOG.md`) se hizo desde
+otra sesión/interfaz en paralelo a esta misma — ya está commiteada, pusheada y desplegada; no es
+un cambio pendiente de esta sesión.
 
 Al 2026-08-27: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
 datos importados, `nutriguia/validation.py` con 35/35 tests en verde (más suites adicionales
