@@ -20,6 +20,13 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.4.2] - 2026-08-27
+
+### Fixed
+- El CSS de la identidad "Barro" se mostraba como texto plano visible en la página en vez de
+  aplicarse (ver `BUGS.md` BUG-005). `inyectar_css()` ahora hace dos `st.markdown()` separados en
+  vez de uno solo.
+
 ## [0.4.1] - 2026-08-27
 
 ### Added

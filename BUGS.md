@@ -10,7 +10,7 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 
 ### Bugs
 - Resueltos: [BUG-001](#bug-001--status-rv), [BUG-002](#bug-002--status-rv),
-  [BUG-003](#bug-003--status-rv), [BUG-004](#bug-004--status-rv)
+  [BUG-003](#bug-003--status-rv), [BUG-004](#bug-004--status-rv), [BUG-005](#bug-005--status-rv)
 
 ### Known Caveats
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002)
@@ -34,6 +34,44 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 ## Bugs
 
 ### Detailed Entries
+
+#### BUG-005 · [STATUS: RV]
+**Title:** El CSS de la identidad "Barro" se mostraba como texto plano en vez de aplicarse
+**Severity:** High
+**Reported Date:** 2026-08-27
+**Release Fixed:** 0.4.2
+
+##### Observable Problem
+Al desplegar la identidad visual "Barro", el bloque completo de reglas CSS aparecía como texto
+literal visible arriba del título de cada página, en vez de aplicarse silenciosamente. El resto
+del estilo (colores, tipografía de encabezados, chips) sí se aplicaba — solo la sección final del
+CSS se veía como texto.
+
+##### Steps to Reproduce
+1. Cargar cualquier página de la app tras desplegar `nutriguia/estilo.py`.
+2. Esperado: sin texto visible de CSS, solo la app estilizada. Actual: el CSS completo aparece
+   como un párrafo de texto plano antes del título.
+
+##### Fix Explanation (Exec Level — No Code)
+El código que inyecta el estilo visual mandaba las etiquetas de fuentes (Google Fonts) y el
+bloque de estilos juntos en una sola instrucción. El intérprete de texto de Streamlit cortó ese
+bloque a la mitad en la primera línea en blanco que encontró dentro del CSS, y mostró el resto
+como texto normal en vez de aplicarlo como estilo.
+
+##### Fix Details (Technical)
+Streamlit renderiza `st.markdown(..., unsafe_allow_html=True)` pasando el contenido por un
+parser tipo CommonMark antes de insertarlo en el DOM. Los tags `<link>` en `GOOGLE_FONTS_LINK`
+califican como bloque HTML "tipo 6" (lista fija de tags), que termina en la primera línea en
+blanco; al concatenarlos con `<style>...</style>` en la misma llamada sin una línea en blanco de
+separación, el parser seguía dentro de ese bloque tipo 6 al llegar a `<style>` (en vez de
+reconocerlo como el inicio de un bloque tipo 1 -- script/pre/style/textarea -- que sí tolera
+líneas en blanco adentro), y la primera línea en blanco DENTRO del CSS cortaba el bloque a la
+mitad. `nutriguia/estilo.py::inyectar_css()` ahora hace dos `st.markdown()` separados: uno para
+los `<link>` de fuentes y otro, empezando limpio en su propia línea, para el `<style>`.
+
+##### Workaround
+Ninguno necesario tras el fix — no se detectó en producción real (encontrado en QA visual con
+Playwright antes de anunciar el cambio como terminado).
 
 #### BUG-004 · [STATUS: RV]
 **Title:** El grupo SMAE no se auto-llenaba al elegir un alimento del catálogo en el editor
