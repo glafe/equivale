@@ -5,6 +5,7 @@ editor_recetas). No contiene lógica de negocio — eso vive en nutriguia/valida
 import streamlit as st
 
 from nutriguia.db import get_db
+from nutriguia.smae_csv import cargar_filas_smae as _cargar_filas_smae
 from nutriguia.validation import sumar_por_grupo
 
 
@@ -43,6 +44,12 @@ def cargar_nombres_alimentos() -> list[str]:
     return sorted(cargar_catalogo().keys())
 
 
+@st.cache_data
+def cargar_filas_smae() -> list[dict]:
+    """Sin ttl: el CSV no cambia mientras el servidor corre (a diferencia de Mongo)."""
+    return _cargar_filas_smae()
+
+
 def invalidar_cache_recetas() -> None:
     cargar_recetas.clear()
 
@@ -50,3 +57,8 @@ def invalidar_cache_recetas() -> None:
 def invalidar_cache_personas() -> None:
     cargar_personas.clear()
     cargar_objetivo.clear()
+
+
+def invalidar_cache_catalogo() -> None:
+    cargar_catalogo.clear()
+    cargar_nombres_alimentos.clear()

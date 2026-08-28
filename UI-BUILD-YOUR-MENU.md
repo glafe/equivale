@@ -211,6 +211,58 @@ corregirse. Alcance actual (más acotado que la idea original — sin integraci�
 - **Eliminar**: requiere un checkbox de confirmación explícito antes de habilitar el botón —
   eliminar una receta usada en el banco es una acción difícil de revertir.
 
+## Editor de ingredientes (2026-08-27, a pedido del usuario) — cierra FR-002
+
+El usuario necesitaba limpiar el catálogo de alimentos (79 entradas, algunas mal escritas o
+duplicadas) antes de seguir agregando más, y tener acceso a la tabla oficial SMAE para agregar
+alimentos nuevos sin escribirlos a mano. Esto es la parte de "EquiVale Chef" que faltaba
+(`SMAE_CONSULTA.csv`, ver FR-002 en `BUGS.md` — ahora Shipped). Nueva página en la barra lateral,
+`views/editor_ingredientes.py`:
+
+- **Tabla** (`st.dataframe`, de solo lectura): todo `catalogo_alimentos`, filtrable por texto y
+  por grupo (incluye "(libre, sin grupo)"). Columnas: Alimento, Grupo, Cantidad por equivalente,
+  Asunción, **Usado en recetas** (cuántas recetas distintas lo referencian — contexto antes de
+  tocarlo, no una restricción).
+- **Editar/eliminar**: un `st.selectbox` (mismo patrón que el editor de recetas y "Personas", NO
+  `st.form` — ver nota abajo) para elegir un alimento y mostrar sus campos (nombre, grupo,
+  cantidad) en widgets sueltos con botones "Guardar cambios" y "Eliminar" (este último detrás de
+  un checkbox de confirmación, mismo patrón que eliminar una receta).
+  - **Renombrar hace cascada a `recetas`**: las recetas referencian un alimento por *nombre*, no
+    por id (ver `schema.md`) — si el editor solo cambiara el catálogo, cualquier receta que ya
+    usara ese alimento quedaría apuntando a un nombre inexistente y ese ingrediente se volvería
+    silenciosamente "no ajustable". `_renombrar_en_recetas()` actualiza `ingredientes[].alimento`
+    en todas las recetas afectadas y lo reporta ("se renombró en N receta(s)").
+  - **Si el nuevo nombre ya existe en el catálogo, se trata como fusión de duplicados** (mismo
+    criterio que la regla 9 de `CLAUDE.md`): se borra el registro viejo, se conserva el que ya
+    existía tal cual, y las recetas se re-apuntan al nombre que sobrevive. Pensado explícitamente
+    para casos como el KC-001 de `BUGS.md` ("Aceite de oliva" vs "Aceite oliva").
+  - **Eliminar** no toca las recetas que lo usaban (mismo efecto que un alimento nunca
+    catalogado: el ingrediente sigue en la receta, pero deja de ser ajustable con el stepper). El
+    conteo de "usado en N recetas" se muestra en el mensaje de confirmación para que la decisión
+    sea informada, no un bloqueo duro.
+  - **`menus` (histórico) nunca se toca** — ni por renombrar ni por fusionar. Es de solo lectura
+    por diseño (ver `ARCHITECTURE.md` decisión #2); esta herramienta no reescribe el pasado.
+- **"Agregar de SMAE"**: expander con buscador de texto libre sobre `SMAE_CONSULTA.csv` (ahora
+  commiteado al repo — es la tabla oficial pública, sin datos de personas, ver nota de privacidad
+  en `CLAUDE.md`). Cada fila del CSV ya es una combinación específica de alimento + preparación +
+  cantidad + unidad (ej. "Champiñon cocido entero" vs "crudo rebanado" son filas distintas), así
+  que mostrar cada fila como una opción del buscador resuelve directamente "elegir una unidad de
+  medición" sin necesitar un segundo paso. Alimentos ya existentes en el catálogo se bloquean con
+  un aviso ("edítalo arriba") en vez de crear un duplicado.
+  - **Categorías SMAE sin equivalente entre los 7 grupos canónicos** (Azúcares, Leche, Bebidas
+    alcohólicas) **no aparecen** en el buscador — no hay dónde clasificarlas sin antes decidir si
+    se extienden los 7 grupos, y esa es una decisión aparte, no algo para improvisar en este
+    editor. Ver `nutriguia/smae_csv.py` para la clasificación exacta.
+  - El CSV mezcla más de una codificación de caracteres entre secciones (parte viene en Latin-1,
+    el resto no) — se decodifica como Latin-1 (correcto para la gran mayoría de los ~2000 nombres
+    soportados) y un puñado puede salir con acentos mal formados; no se persiguió exhaustivamente,
+    mismo criterio que la regla 9 de `CLAUDE.md` para nombres de ingrediente parecidos.
+- **Por qué widgets sueltos y no `st.form`**: un checkbox "Confirmo eliminar" adentro de un
+  `st.form` no puede des-habilitar su propio botón de submit en la misma interacción — los forms
+  de Streamlit solo reenvían sus valores al hacer submit, así que el botón quedaría deshabilitado
+  sin forma de que el usuario lo vuelva a habilitar con un clic. Mismo patrón ya usado (sin
+  `st.form`) en el editor de recetas para su botón de eliminar.
+
 ## Notas de implementación Streamlit
 
 - Guardar el estado del menú en construcción en `st.session_state` (por persona+tiempo), no en

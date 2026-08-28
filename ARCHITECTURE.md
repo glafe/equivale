@@ -64,6 +64,8 @@ nutri-guia/
   schema.md
   .env.example
   requirements.txt
+  SMAE_CONSULTA.csv                # tabla oficial SMAE (pública, sin datos de personas) --
+                                    #   fuente de "Agregar de SMAE" en el editor de ingredientes
   .streamlit/
     config.toml                    # tema "Barro" (colores base) -- ver UI-BUILD-YOUR-MENU.md
   data/
@@ -79,16 +81,21 @@ nutri-guia/
     cantidades.py                  # escalar_cantidad(): "30 g" x3 -> "90 g" (UI, no aritmética)
     estilo.py                      # CSS compartido "Barro" (fuentes, radios, sombras) -- se
                                     #   inyecta una vez desde app.py, ver UI-BUILD-YOUR-MENU.md
+    smae_csv.py                    # lee SMAE_CONSULTA.csv, clasifica a los 7 grupos canónicos
+                                    #   (UI, no aritmética -- usado por el editor de ingredientes)
     streamlit_data.py              # loaders cacheados compartidos entre páginas de Streamlit
     import_data.py                 # script: carga catalogo/recetas/menus/objetivos a Mongo
   app.py                           # entrypoint Streamlit: st.navigation entre las páginas de views/
   views/                           # páginas de la app multipágina (NO llamarla "pages/" — Streamlit
     build_your_menu.py             #   auto-detecta esa carpeta para su mecanismo viejo de MPA y
     editor_recetas.py              #   choca con st.navigation/st.Page, ver ARCHITECTURE.md abajo)
+    editor_ingredientes.py         # catálogo de alimentos: tabla + editar/eliminar + "Agregar de SMAE"
     personas.py
   tests/
     test_validation.py             # corre validation.py contra los menús históricos (skip si no hay datos reales)
     test_validation_samples.py     # mismo contrato, contra data/samples/ -- siempre corre, incluso en un clon público fresco
+    test_cantidades.py             # formatear_decimal_como_fraccion()
+    test_smae_csv.py               # lectura/clasificación de SMAE_CONSULTA.csv (commiteado, corre en cualquier clon)
 ```
 
 ## Decisiones de diseño ya tomadas (no re-derivar)

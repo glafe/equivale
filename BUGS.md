@@ -16,7 +16,8 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002)
 
 ### Feature Requests
-- Propuestos: [FR-001](#fr-001), [FR-002](#fr-002), [FR-003](#fr-003)
+- Propuestos: [FR-001](#fr-001), [FR-003](#fr-003)
+- Shipped: [FR-002](#fr-002)
 
 ## Severity guide
 
@@ -223,11 +224,17 @@ en la vida real — puede cambiar qué vale la pena pulir primero.
 ##### Dependencies
 Fase 4 (día completo + guardado + historial) — completa desde 2026-08-27.
 
-#### FR-002
+#### FR-002 · [STATUS: Shipped 0.5.0]
+> **Shipped en 0.5.0** — implementado como página nueva "Editor de ingredientes"
+> (`views/editor_ingredientes.py`) en vez de dentro del editor de recetas: tabla del catálogo
+> completo con edición/eliminación (con cascada de renombrado a `recetas`, ver
+> `UI-BUILD-YOUR-MENU.md`), más el buscador "Agregar de SMAE" descrito abajo.
+> `SMAE_CONSULTA.csv` se commiteó al repo (es información pública, ver nota de privacidad en
+> `CLAUDE.md`) en vez de depender de que cada quien lo consiga aparte.
+
 **Title:** "EquiVale Chef" — integración con `SMAE_CONSULTA.csv` para agregar alimentos nuevos al
 catálogo desde el propio editor
 **Date Requested:** 2026-08-24
-**Status:** Proposed
 
 ##### Exec Description
 Cuando un alimento nuevo no está en `catalogo_alimentos`, poder buscarlo en la tabla oficial SMAE

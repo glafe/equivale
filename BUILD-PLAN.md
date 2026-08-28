@@ -135,14 +135,8 @@ de abajo es el resumen histórico, no lo dupliques al actualizar una de las dos.
   mantiene UN objetivo vigente por persona (lo edita in-place); no lleva historial de cómo cambió
   el objetivo a lo largo del tiempo aunque `schema.md` ya deja `vigente_desde` listo para eso.
   Retomar solo si hace falta ver "qué objetivo tenía esta persona en tal fecha".
-- **"EquiVale Chef" — integración con `SMAE_CONSULTA.csv`** (la primera versión del editor de
-  recetas ya se construyó el 2026-08-24, ver Fase 3.5 abajo y `UI-BUILD-YOUR-MENU.md` → "Editor de
-  recetas"; esto es lo que falta para la versión completa de la idea original): si un alimento
-  nuevo no está en `catalogo_alimentos`, permitir buscarlo en `SMAE_CONSULTA.csv` (la tabla oficial
-  SMAE) y preguntar la unidad de medida a usar para fijar su `cantidad_por_equivalente` — mismo
-  criterio que la regla 5 de `CLAUDE.md` (si tampoco está ahí, marcar `asuncion: true` y pedir
-  confirmación). Esto permite crecer `catalogo_alimentos` desde el propio editor, no solo elegir
-  entre lo que ya existe.
+- ~~**"EquiVale Chef" — integración con `SMAE_CONSULTA.csv`**~~ — **Shipped 2026-08-27** como
+  página "Editor de ingredientes" (ver `UI-BUILD-YOUR-MENU.md` y `BUGS.md` FR-002).
 
 ## Checklist rápido
 

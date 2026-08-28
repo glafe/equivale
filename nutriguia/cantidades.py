@@ -33,3 +33,16 @@ def escalar_cantidad(paso: str, n: int) -> str:
         texto = str(int(valor)) if valor == int(valor) else str(valor)
         return f"{texto} {resto}".strip()
     return f"{paso} × {n}"
+
+
+def formatear_decimal_como_fraccion(valor: float) -> str:
+    """Convierte un decimal (ej. 0.333333333333333, 1.5, 2.0) a la notación de fracción mixta que
+    usa el catálogo (ej. '1/3', '1 1/2', '2'). Usado al importar una fila de SMAE_CONSULTA.csv,
+    donde 'Cantidad sugerida' viene como decimal de Excel en vez de fracción legible."""
+    frac = Fraction(valor).limit_denominator(100)
+    entero, resto = divmod(frac.numerator, frac.denominator)
+    if resto == 0:
+        return str(entero)
+    if entero == 0:
+        return f"{resto}/{frac.denominator}"
+    return f"{entero} {resto}/{frac.denominator}"

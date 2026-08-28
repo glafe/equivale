@@ -32,6 +32,9 @@ scripts/migraciones/
 *.xlsx
 *.ods
 *.pdf
-SMAE_CONSULTA.csv
 menu-*.csv
 pau-junio-marzo-julio-a-confirmar.json
+# SMAE_CONSULTA.csv es EXCEPCIÓN a propósito (2026-08-27): tabla oficial pública del sistema
+# SMAE, sin datos de personas reales -- sí se commitea (usada por "Agregar de SMAE" en el editor
+# de ingredientes, ver nutriguia/smae_csv.py). El .xlsx gemelo sigue ignorado por *.xlsx arriba;
+# no hace falta el binario si ya está el CSV.

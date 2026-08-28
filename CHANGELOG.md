@@ -20,6 +20,26 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.5.0] - 2026-08-27
+
+### Added
+- Página "Editor de ingredientes" (`views/editor_ingredientes.py`): tabla filtrable de todo
+  `catalogo_alimentos` con conteo de uso en recetas, edición (con cascada de renombrado a
+  `recetas` y fusión automática si el nuevo nombre ya existe) y eliminación con confirmación.
+  Cierra `BUGS.md` FR-002.
+- "Agregar de SMAE": buscador sobre `SMAE_CONSULTA.csv` (tabla oficial SMAE) para sumar alimentos
+  nuevos al catálogo eligiendo la fila exacta (alimento + preparación + cantidad + unidad).
+  `nutriguia/smae_csv.py` clasifica cada fila a uno de los 7 grupos canónicos (o libre); Azúcares/
+  Leche/Alcohol no tienen equivalente y se excluyen.
+- `SMAE_CONSULTA.csv` ahora vive en el repo (información pública, sin datos de personas reales —
+  ver nota de privacidad en `CLAUDE.md`).
+- `nutriguia/cantidades.py::formatear_decimal_como_fraccion()` + `tests/test_cantidades.py`,
+  `tests/test_smae_csv.py` (corren en cualquier clon, el CSV ya no es dato privado).
+
+### Changed
+- `catalogo_alimentos.grupo` ahora puede ser `null` (alimento libre) — antes esos alimentos vivían
+  fuera de la colección. Ver nota de diseño en `schema.md`.
+
 ## [0.4.2] - 2026-08-27
 
 ### Fixed

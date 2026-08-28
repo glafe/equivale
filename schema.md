@@ -16,12 +16,22 @@ Forma del documento en Mongo (colección `catalogo_alimentos`):
 ```
 {
   "alimento": string,                  // nombre canónico, ej. "Pollo"
-  "grupo": string,                     // uno de los 7 grupos canónicos (ver abajo)
+  "grupo": string | null,              // uno de los 7 grupos canónicos (ver abajo), o null = libre
   "cantidad_por_equivalente": string,  // ej. "1/2 taza", "30 g", "10 piezas"
   "asuncion"?: bool                    // true = sin dato exacto confirmado, se infirió
 }
 ```
 Índice recomendado: único sobre `alimento`.
+
+**`grupo: null` (agregado 2026-08-27, editor de ingredientes)**: la importación original (Fase 1)
+solo traía alimentos CON grupo — los "libres" (agua, especias, alimentos sin equivalente) vivían
+separados, fuera de esta colección, según el archivo fuente `catalogo-alimentos.json`. El editor
+de ingredientes (`views/editor_ingredientes.py`) permite agregar/editar alimentos con
+`grupo: null` directamente en Mongo (ej. al importar uno de los 213 "Alimentos libres en energía"
+de `SMAE_CONSULTA.csv`) — esto es válido y no rompe nada: `sumar_por_grupo()` ya ignora items sin
+grupo (ver `VALIDATION.md`), y tenerlos en el catálogo simplemente les da un
+`cantidad_por_equivalente` para que el stepper +/- funcione y el editor de recetas auto-llene
+`grupo_smae: null` al elegirlos, en vez de tener que escribirlos a mano cada vez.
 
 Forma del archivo fuente (`catalogo-alimentos.json`, tal como llega, antes de aplanar):
 ```

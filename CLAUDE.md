@@ -16,17 +16,21 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.4.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.5.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-27: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
-datos importados, `nutriguia/validation.py` con 35/35 tests en verde (más una suite adicional
-sobre datos sintéticos en `tests/test_validation_samples.py`, siempre disponible aunque no se
-tengan los datos reales — ver más abajo), app Streamlit multipágina ("Build your menu", "Editor
-de recetas", "Personas") corriendo en producción. "Build your menu" ya cubre el día completo (los
-5 tiempos vía tabs), guarda por `(persona, fecha)` en `menus_construidos`, y tiene historial de
-planes guardados con round-trip verificado. Falta Fase 5 (pulido) — no empezarla sin haber usado
-la Fase 4 unos días en la vida real.
+datos importados, `nutriguia/validation.py` con 35/35 tests en verde (más suites adicionales
+sobre datos sintéticos/públicos que corren en cualquier clon del repo — `tests/
+test_validation_samples.py`, `test_cantidades.py`, `test_smae_csv.py`, ver más abajo), app
+Streamlit multipágina ("Build your menu", "Editor de recetas", "Editor de ingredientes",
+"Personas") corriendo en producción. "Build your menu" ya cubre el día completo (los 5 tiempos
+vía tabs), guarda por `(persona, fecha)` en `menus_construidos`, y tiene historial de planes
+guardados con round-trip verificado. El "Editor de ingredientes" (2026-08-27) permite limpiar/
+fusionar el catálogo de alimentos (con cascada de renombrado a `recetas`) y agregar alimentos
+nuevos desde `SMAE_CONSULTA.csv` (commiteado al repo — ver "Editor de ingredientes" en
+`UI-BUILD-YOUR-MENU.md`). Falta Fase 5 (pulido) — no empezarla sin haber usado la Fase 4 unos
+días en la vida real.
 
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,
@@ -92,6 +96,11 @@ estos documentos de diseño — viven solo en Mongo (privado) y en archivos fuer
 esa persona") a propósito. Si haces un cambio que involucre valores reales, ponlos en Mongo/el
 `.env`/un archivo ignorado — no en un `.md` que se commitea.
 
+**Excepción explícita — `SMAE_CONSULTA.csv`**: es la tabla oficial pública del sistema SMAE
+(equivalentes nutricionales genéricos por alimento), sin ningún dato de las personas que usan
+esta app — sí vive en git a propósito desde 2026-08-27 (ver `.gitignore`). No confundir con los
+archivos de `data/` (menús/recetas/objetivos reales), que siguen fuera de git.
+
 ## Los 7 grupos SMAE (canónico)
 
 `AOA`, `Cereal`, `Verdura`, `Fruta`, `Aceite s/p`, `Aceite c/p`, `Leguminosa`.
@@ -141,9 +150,11 @@ generar un platillo nuevo desde el catálogo — y ahí sí aplican las reglas d
    ver `dias` en cada uno). Ambos menús normalmente apuntan a los mismos objetivos diarios totales,
    aunque no es una regla estricta (revisar el periodo específico).
 5. Antes de fijar la cantidad de un alimento, buscarlo en `catalogo-alimentos.json`. Si no está,
-   buscar en `SMAE_CONSULTA.csv` (tabla oficial SMAE completa) si ese archivo está disponible en el
-   repo. Si tampoco está ahí, marcar `"asuncion": true` y explicar en `"nota"` el criterio usado
-   (no inventar sin dejarlo señalado).
+   buscar en `SMAE_CONSULTA.csv` (tabla oficial SMAE completa, commiteada al repo desde
+   2026-08-27 — es información pública, no de personas reales, ver nota de privacidad; también
+   disponible desde la app en "Editor de ingredientes" → "Agregar de SMAE"). Si tampoco está ahí,
+   marcar `"asuncion": true` y explicar en `"nota"` el criterio usado (no inventar sin dejarlo
+   señalado).
 6. Placeholder literal: un ingrediente `"Fruta"` o `"Fruta suelta"` con `cantidad: "1"` y sin
    alimento específico = 1 Fruta libre a elección de la persona. No tratarlo como si le faltara
    nombre.
