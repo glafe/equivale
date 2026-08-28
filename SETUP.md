@@ -204,3 +204,13 @@ sudo systemctl restart equivale   # systemd no hace hot-reload del código
 Si el cambio afecta `requirements.txt`, correr `source .venv/bin/activate && pip install -r
 requirements.txt` antes del restart. Verificar que levantó bien:
 `curl -sf http://localhost:8501/_stcore/health` debe regresar `ok`.
+
+**Desde 2026-08-27, `sudo systemctl restart|status equivale` no pide contraseña** (regla
+`NOPASSWD` agregada a propósito en `visudo` para agilizar el ciclo editar→probar en vivo durante
+una sesión de trabajo — acotada a esos dos comandos sobre ese único servicio, no sudo genérico).
+Si se reinstala el servidor desde cero, agregar de nuevo algo como:
+```
+<usuario> ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart equivale, /usr/bin/systemctl status equivale
+```
+`journalctl -u equivale` (sin sudo) también funciona para ver logs/warnings de la app sin pedir
+contraseña, salvo que el sistema tenga journald configurado para requerir privilegios de lectura.

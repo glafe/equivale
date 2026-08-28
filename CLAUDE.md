@@ -16,21 +16,35 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.5.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.5.1` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-27: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
 datos importados, `nutriguia/validation.py` con 35/35 tests en verde (más suites adicionales
 sobre datos sintéticos/públicos que corren en cualquier clon del repo — `tests/
-test_validation_samples.py`, `test_cantidades.py`, `test_smae_csv.py`, ver más abajo), app
-Streamlit multipágina ("Build your menu", "Editor de recetas", "Editor de ingredientes",
-"Personas") corriendo en producción. "Build your menu" ya cubre el día completo (los 5 tiempos
-vía tabs), guarda por `(persona, fecha)` en `menus_construidos`, y tiene historial de planes
-guardados con round-trip verificado. El "Editor de ingredientes" (2026-08-27) permite limpiar/
-fusionar el catálogo de alimentos (con cascada de renombrado a `recetas`) y agregar alimentos
-nuevos desde `SMAE_CONSULTA.csv` (commiteado al repo — ver "Editor de ingredientes" en
+test_validation_samples.py`, `test_cantidades.py`, `test_smae_csv.py`, `test_texto.py`, 51/51 en
+total, ver más abajo), app Streamlit multipágina ("Build your menu", "Editor de recetas", "Editor
+de ingredientes", "Personas") corriendo en producción. "Build your menu" ya cubre el día completo
+(los 5 tiempos vía tabs), guarda por `(persona, fecha)` en `menus_construidos`, y tiene historial
+de planes guardados con round-trip verificado. El "Editor de ingredientes" (2026-08-27) permite
+limpiar/fusionar el catálogo de alimentos (con cascada de renombrado a `recetas`) y agregar
+alimentos nuevos desde `SMAE_CONSULTA.csv` (commiteado al repo — ver "Editor de ingredientes" en
 `UI-BUILD-YOUR-MENU.md`). Falta Fase 5 (pulido) — no empezarla sin haber usado la Fase 4 unos
 días en la vida real.
+
+**Identidad visual "Barro" (2026-08-27)**: paleta/tipografía/radios propios sobre los 7 colores
+de grupo SMAE (que NO cambiaron — son funcionales). Aprobada primero como maqueta interactiva
+(artefacto fuera del repo) antes de tocar código. Implementada en `.streamlit/config.toml` +
+`nutriguia/estilo.py` (inyectado una vez desde `app.py`), con las filas de ingrediente
+reestructuradas en `views/build_your_menu.py` y `views/editor_recetas.py` para verse bien también
+en teléfono (Streamlit apila `st.columns` bajo ~640px). Detalle completo, incluida la convención
+de `key=` para CSS dirigido (`menos_`/`mas_`/`receta_card_`/`status_`), en `UI-BUILD-YOUR-MENU.md`
+→ "Identidad visual Barro y responsividad". Verificado en vivo (escritorio + viewport de
+teléfono) vía Playwright contra el servidor — ver [[feedback-playwright-fullpage]] en memoria si
+vuelves a hacer esto: `full_page=True` de Playwright NO captura toda la página en esta app
+(`document.body.scrollHeight` da 0, el scroll real es de un contenedor interno) — hay que hacer
+`scroll_into_view_if_needed()` al elemento que te interesa antes de la captura, o vas a
+"encontrar" bugs que en realidad solo están fuera del viewport.
 
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,
