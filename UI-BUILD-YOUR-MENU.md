@@ -104,6 +104,44 @@ hacía falta poder configurar y **ver de un vistazo** ese ciclo — de ahí esta
   una fecha dada es una extensión natural, pero no se pidió en esta pasada — anotarlo si hace
   falta después.
 
+## Página "Configuración" (2026-08-29, a pedido del usuario)
+
+El usuario sigue encontrando datos inconsistentes/repetidos a nivel práctico mientras usa la app
+(ver regla 9 de `CLAUDE.md`) y pidió una herramienta dedicada a **identificar y corregir
+relaciones rotas entre colecciones** — Mongo no las valida solo, son referencias por
+nombre/id sueltas, no llaves foráneas (`recetas.ingredientes[].alimento` -> `catalogo_alimentos`,
+`*.receta_id` -> `recetas`, `asignacion_semanal.dias.*` -> `plantillas_semana`). Página nueva al
+final de la barra lateral (ícono de engrane), pensada como punto de entrada para más herramientas
+de administración a futuro, no solo limpieza de datos.
+
+- **Buscar relaciones** (lookup manual, dos columnas):
+  - "¿En qué recetas se usa un ingrediente?" — selectbox de `catalogo_alimentos`, lista las
+    recetas que lo referencian (con sus equivalentes y si está bloqueado/opcional en esa receta).
+  - "¿Dónde se usa una receta?" — selectbox de `recetas`, lista los días guardados de "Menú del
+    día" y los menús de "Menú semanal" que la incluyen.
+- **Chequeos automáticos** (cada uno independiente, con éxito en verde si no hay problemas):
+  - **Ingredientes huérfanos**: un `ingrediente.alimento` de alguna receta que ya no está en
+    `catalogo_alimentos`. Se pueden catalogar ahí mismo (nombre + grupo ya vienen de la receta,
+    solo falta la cantidad por equivalente) — arregla todas las recetas que usan ese alimento a
+    la vez, no una por una.
+  - **Referencias a recetas eliminadas**: un `receta_id` en `plantillas_semana` o
+    `menus_construidos` que ya no existe en `recetas`. Los menús semanales se pueden limpiar
+    directo (botón "Quitar"); los días guardados de "Menú del día" son bitácora histórica y solo
+    se listan, no se editan (mismo criterio que `menus` — ver `ARCHITECTURE.md` decisión #2).
+  - **Vector de equivalentes desincronizado**: el `vector_equivalentes` guardado de una receta no
+    coincide con la suma real de sus ingredientes — botón "Recalcular y guardar".
+  - **Posibles duplicados en el catálogo**: pares de nombres con similitud alta (`difflib`,
+    umbral 0.82 sobre el nombre normalizado) — no fusiona automático, un botón "Fusionar" hace
+    `st.switch_page()` al Editor de ingredientes con ese alimento pre-seleccionado para que el
+    usuario decida y confirme el renombrado (que ya dispara la fusión si el nombre destino
+    coincide con uno existente, ver sección "Editor de ingredientes" arriba).
+  - **Personas sin objetivo diario** y **asignación semanal apuntando a un menú eliminado** —
+    chequeos más chicos, mismo patrón de aviso + acción corta.
+- **Por qué "detectar y enlazar a la corrección" en vez de arreglar todo automático**: varias de
+  estas situaciones (duplicados, ingredientes huérfanos) requieren criterio humano para decidir
+  si de verdad son el mismo dato o no — automatizar el diagnóstico ahorra tiempo, automatizar la
+  corrección a ciegas arriesga fusionar/borrar cosas que no debían tocarse.
+
 ## Qué NO hacer
 
 - No usar `st.slider` para ajustar porciones — el usuario pidió explícitamente pasos +/- de

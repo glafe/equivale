@@ -1,6 +1,6 @@
 # EquiVale
 
-**Versión actual: `0.6.0`** (ver [`CHANGELOG.md`](CHANGELOG.md) — [Versionado Semántico](https://semver.org/lang/es/))
+**Versión actual: `0.7.0`** (ver [`CHANGELOG.md`](CHANGELOG.md) — [Versionado Semántico](https://semver.org/lang/es/))
 
 Sistema personal de planeación de menús basado en **Equivalentes SMAE** (Sistema Mexicano de
 Alimentos Equivalentes), para dos personas. La app ("Menú del día") arma el día eligiendo
@@ -17,10 +17,11 @@ la nota de privacidad en `CLAUDE.md`.
 **Fases 0 a 4 completas** — Mongo corriendo, datos importados, `nutriguia/validation.py` con
 35/35 tests en verde (más suites adicionales sobre datos sintéticos/públicos que corren en
 cualquier clon del repo, ver `tests/`), app Streamlit multipágina ("Menú del día", "Menú
-semanal", "Editor de recetas", "Editor de ingredientes", "Personas") desplegada y corriendo en
-producción como servicio systemd. "Menú del día" arma y guarda un día por fecha con historial;
-"Menú semanal" define menús reutilizables y su asignación a los días de la semana. Sigue la
-Fase 5 (pulido, solo tras uso real). Ver el checklist completo en `BUILD-PLAN.md`.
+semanal", "Editor de recetas", "Editor de ingredientes", "Personas", "Configuración") desplegada
+y corriendo en producción como servicio systemd. "Menú del día" arma y guarda un día por fecha
+con historial; "Menú semanal" define menús reutilizables y su asignación a los días de la semana;
+"Configuración" junta herramientas de limpieza/integridad de datos. Sigue la Fase 5 (pulido, solo
+tras uso real). Ver el checklist completo en `BUILD-PLAN.md`.
 
 ## Documentación — leer en este orden
 

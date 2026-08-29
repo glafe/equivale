@@ -20,6 +20,19 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.7.0] - 2026-08-29
+
+### Added
+- Página "Configuración" (`views/configuracion.py`, ícono de engrane al final de la barra
+  lateral): herramientas de administración/limpieza de datos.
+  - Buscar relaciones: qué recetas usan un ingrediente, dónde se usa una receta (días guardados
+    y menús semanales).
+  - Chequeos automáticos, cada uno con su propia acción de arreglo: ingredientes huérfanos (se
+    pueden catalogar ahí mismo), referencias a recetas eliminadas en menús semanales, vector de
+    equivalentes desincronizado, posibles duplicados en el catálogo (enlaza al Editor de
+    ingredientes con el alimento pre-seleccionado), personas sin objetivo, asignación semanal
+    rota.
+
 ## [0.6.1] - 2026-08-29
 
 ### Fixed

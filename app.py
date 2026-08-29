@@ -17,6 +17,7 @@ pagina = st.navigation(
         st.Page("views/editor_recetas.py", title="Editor de recetas", icon="🧑‍🍳"),
         st.Page("views/editor_ingredientes.py", title="Editor de ingredientes", icon="🥕"),
         st.Page("views/personas.py", title="Personas", icon="🧑‍🤝‍🧑"),
+        st.Page("views/configuracion.py", title="Configuración", icon="⚙️"),
     ]
 )
 pagina.run()

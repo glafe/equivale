@@ -149,4 +149,5 @@ de abajo es el resumen histórico, no lo dupliques al actualizar una de las dos.
 - [x] Fase 4 — día completo + guardado + historial funcionando
 - [x] Editor de ingredientes + "Agregar de SMAE" (2026-08-27, ver `BUGS.md` FR-002)
 - [x] Menú semanal — ciclo de menús reutilizables + cobertura por día (2026-08-29)
+- [x] Configuración — buscar relaciones + chequeos de integridad de datos (2026-08-29)
 - [ ] Fase 5 — pulido (solo tras uso real)
