@@ -10,7 +10,8 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 
 ### Bugs
 - Resueltos: [BUG-001](#bug-001--status-rv), [BUG-002](#bug-002--status-rv),
-  [BUG-003](#bug-003--status-rv), [BUG-004](#bug-004--status-rv), [BUG-005](#bug-005--status-rv)
+  [BUG-003](#bug-003--status-rv), [BUG-004](#bug-004--status-rv), [BUG-005](#bug-005--status-rv),
+  [BUG-006](#bug-006--status-rv)
 
 ### Known Caveats
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002)
@@ -35,6 +36,24 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 ## Bugs
 
 ### Detailed Entries
+
+#### BUG-006 · [STATUS: RV]
+**Title:** "Total de este tiempo" en Menú semanal mostraba el HTML del chip como texto plano
+**Severity:** Low
+**Reported Date:** 2026-08-29
+**Release Fixed:** 0.6.1
+
+##### Observable Problem
+En el editor de "Menú semanal", debajo de las recetas de un tiempo, la línea "Total de este
+tiempo" mostraba el `<span style="...">` completo como texto literal en vez de la pastilla de
+color esperada.
+
+##### Fix Details (Technical)
+`views/menu_semanal.py` usaba `st.caption(texto + _chips(...))` en vez de
+`st.markdown(..., unsafe_allow_html=True)` para esa línea en particular -- el resto de los usos
+de `_chips()` en el mismo archivo sí pasaban por `st.markdown` con `unsafe_allow_html=True` y se
+veían bien; encontrado en QA visual con Playwright antes de anunciar el cambio como terminado
+(mismo hábito que descubrió `BUG-005`).
 
 #### BUG-005 · [STATUS: RV]
 **Title:** El CSS de la identidad "Barro" se mostraba como texto plano en vez de aplicarse

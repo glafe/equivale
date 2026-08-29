@@ -20,6 +20,12 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.6.1] - 2026-08-29
+
+### Fixed
+- "Total de este tiempo" en Menú semanal mostraba el HTML del chip como texto plano en vez de
+  la pastilla de color (ver `BUGS.md` BUG-006).
+
 ## [0.6.0] - 2026-08-29
 
 ### Added

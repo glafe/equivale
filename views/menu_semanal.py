@@ -219,7 +219,7 @@ def render() -> None:
 
             vector_tiempo = _sumar_dicts([r["vector_equivalentes"] for r in draft["tiempos"][tiempo]])
             if vector_tiempo:
-                st.caption("Total de este tiempo: " + _chips(vector_tiempo))
+                st.markdown("Total de este tiempo: " + _chips(vector_tiempo), unsafe_allow_html=True)
 
     vector_total = _sumar_dicts([
         r["vector_equivalentes"] for recetas in draft["tiempos"].values() for r in recetas
