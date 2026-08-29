@@ -98,6 +98,7 @@ nutri-guia/
     editor_ingredientes.py         # catálogo de alimentos: tabla + editar/eliminar + "Agregar de SMAE"
     personas.py
     configuracion.py               # admin: buscar relaciones + chequeos de integridad entre colecciones
+    guia.py                        # ayuda: diagrama interactivo de relaciones + pasos para armar un menú
   tests/
     test_validation.py             # corre validation.py contra los menús históricos (skip si no hay datos reales)
     test_validation_samples.py     # mismo contrato, contra data/samples/ -- siempre corre, incluso en un clon público fresco

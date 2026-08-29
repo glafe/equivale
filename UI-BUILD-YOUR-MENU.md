@@ -3,6 +3,32 @@
 Especificación de interacción de `app.py`. Confirmado con el usuario: **picker +/- en enteros de
 equivalente, nunca slider libre**, y la UI debe mostrar en vivo si falta o sobra algún equivalente.
 
+## Navegación (reorganizada 2026-08-29, a pedido del usuario)
+
+`app.py` usa la forma de diccionario de `st.navigation()` (secciones con encabezado en la barra
+lateral) en vez de una lista plana — a pedido explícito del usuario de que el menú se sintiera
+"orgánico e intuitivo para usuarios comunes", agrupado por lo que alguien busca, no por cómo está
+hecho por dentro:
+
+```
+Guía          -> Cómo funciona
+Tu día a día  -> Menú del día (default=True), Menú semanal
+Tus recetas   -> Recetas, Ingredientes
+Cuenta        -> Personas
+Ajustes       -> Configuración
+```
+
+- **"Menú del día" sigue siendo la página de entrada** (`default=True`) aunque "Guía" aparezca
+  primero en la lista — alguien que ya sabe usar la app no debería ver la guía forzada cada vez
+  que abre la app, pero sí debe poder encontrarla fácil si la necesita.
+- **Los títulos de nav son más cortos que los `st.title()` de cada página** a propósito
+  ("Recetas" en el menú vs. "🧑‍🍳 EquiVale Chef — Editor de recetas" como encabezado): el menú se
+  lee de un vistazo, la página ya da el contexto completo una vez adentro. Los nombres de archivo
+  (`editor_recetas.py`, `editor_ingredientes.py`) no cambiaron, solo el `title=` visible.
+- **Sin menciones a "Mongo"/MongoDB en texto que ve el usuario** (a pedido explícito) — los
+  docstrings/comentarios de código sí pueden nombrar la base de datos real, eso es documentación
+  para quien mantiene el código, no algo que el usuario final llega a leer.
+
 ## Flujo principal
 
 1. **Selector de persona**: dropdown arriba de todo con las personas de la colección `personas`,
@@ -151,6 +177,40 @@ de administración a futuro, no solo limpieza de datos.
   estas situaciones (duplicados, ingredientes huérfanos) requieren criterio humano para decidir
   si de verdad son el mismo dato o no — automatizar el diagnóstico ahorra tiempo, automatizar la
   corrección a ciegas arriesga fusionar/borrar cosas que no debían tocarse.
+
+## Página "Guía" (2026-08-29, a pedido del usuario)
+
+Página de ayuda muy corta (`views/guia.py`) para alguien que no conoce la app — el usuario pidió
+explícitamente que lo primero fuera "una relación gráfica de cómo se relaciona cada objeto" para
+entender cómo se construye un Menú semanal, con enlaces y resaltado.
+
+- **Diagrama** (`<div>` con `st.markdown(..., unsafe_allow_html=True)`, dos llamadas separadas
+  para el `<style>` y el HTML — ver nota de `BUG-005` en el docstring del archivo): 5 nodos
+  (Personas, Ingredientes, Recetas, Menú semanal, Menú del día) conectados con flechas de texto
+  (→/↓) en un `grid-template-areas` de CSS. Cada nodo es un `<a href="/slug_de_la_pagina">` real
+  — navegación normal del navegador (recarga completa), no `st.switch_page()`, porque el
+  `<div>` vive directo en la página (no en un iframe de `st.components.v1.html`), así que un
+  `<a>` normal ya funciona sin necesitar puente de JS.
+  - **Resaltado al pasar el cursor**: CSS puro con el selector `:has()` (ej.
+    `.diagrama:has(#n-recetas:hover) #n-semanal { ... }`) — sin JavaScript. Se evitó `<script>`
+    a propósito: un `<script>` insertado vía `unsafe_allow_html` generalmente NO se ejecuta,
+    porque Streamlit inserta ese HTML con una asignación a `innerHTML`, y los navegadores no
+    corren `<script>` insertado así (comportamiento estándar del DOM, no un bug de Streamlit).
+    En un navegador sin soporte de `:has()` simplemente no resalta nada — los enlaces y el
+    `:hover` individual de cada nodo siguen funcionando igual.
+  - **Responsivo**: el diagrama tiene un ancho mínimo fijo (`min-width`) dentro de un contenedor
+    con `overflow-x:auto` — en vez de reacomodar las 5 cajas en una sola columna para teléfono
+    (que requeriría "linealizar" una rama real del grafo -- Recetas alimenta tanto a Menú
+    semanal como a Menú del día -- y forzosamente sugeriría una relación que no es exacta), en
+    pantallas angostas se desliza horizontalmente. Coherente con la regla general de la app: el
+    body nunca escrolea de lado, el contenedor ancho sí puede.
+- **Pasos numerados debajo del diagrama**: una guía corta en Markdown plano para armar el primer
+  Menú semanal (Personas → Ingredientes → Recetas → Menú semanal → Menú del día para un día
+  suelto → Configuración si algo se ve mal), más una nota corta aclarando la diferencia entre
+  "Menú semanal" (el ciclo que se repite) y "Menú del día" (lo que de verdad se guardó para una
+  fecha).
+- **No es la página de entrada** — `default=True` sigue en "Menú del día" (ver sección
+  "Navegación" arriba); la Guía está para consultarse, no para interponerse en el uso diario.
 
 ## Qué NO hacer
 

@@ -265,8 +265,8 @@ def _check_recetas_huerfanas():
 def _check_vector_desincronizado():
     with st.expander("🧮 Vector de equivalentes desincronizado en una receta"):
         st.caption(
-            "El `vector_equivalentes` guardado debería ser siempre la suma de los ingredientes -- "
-            "si no coincide, quedó de una edición directa en Mongo o un bug viejo."
+            "Los equivalentes guardados de una receta deberían ser siempre la suma de sus "
+            "ingredientes -- si no coincide, quedó de una edición manual o un bug viejo."
         )
         problemas = []
         for r in cargar_recetas():
@@ -405,9 +405,9 @@ def render() -> None:
     st.divider()
     st.header("Chequeos automáticos")
     st.caption(
-        "Cada uno es independiente -- revisa una sola relación entre colecciones. Mongo no las "
-        "valida solo (son referencias por nombre/id, no llaves foráneas), así que nada más avisa "
-        "cuando una se rompe."
+        "Cada uno revisa una sola cosa, de forma independiente. Nada los corre automáticamente "
+        "por su cuenta, así que si algo se desordena en otra parte de la app puede no notarse "
+        "hasta que se abre esta página."
     )
     _check_ingredientes_huerfanos()
     _check_recetas_huerfanas()

@@ -16,15 +16,17 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.7.1` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.8.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
 datos importados, `nutriguia/validation.py` con 35/35 tests en verde (más suites adicionales
 sobre datos sintéticos/públicos que corren en cualquier clon del repo — `tests/
 test_validation_samples.py`, `test_cantidades.py`, `test_smae_csv.py`, `test_texto.py`, ver más
-abajo), app Streamlit multipágina ("Menú del día", "Menú semanal", "Editor de recetas", "Editor
-de ingredientes", "Personas", "Configuración") corriendo en producción. "Menú del día" (renombrado
+abajo), app Streamlit multipágina ("Guía", "Menú del día", "Menú semanal", "Recetas",
+"Ingredientes", "Personas", "Configuración") corriendo en producción, con la barra lateral
+reorganizada en secciones desde 2026-08-29 (ver "Navegación" en `UI-BUILD-YOUR-MENU.md`) — sin
+menciones a "Mongo" en texto que ve el usuario. "Menú del día" (renombrado
 desde "Build your menu" el 2026-08-29 para homologar el idioma de toda la app) ya cubre el día
 completo (los 5 tiempos vía tabs), guarda por `(persona, fecha)` en `menus_construidos`, y tiene
 historial de planes guardados con round-trip verificado. El "Editor de ingredientes" (2026-08-27)
@@ -39,7 +41,12 @@ administración: buscar en qué recetas se usa un ingrediente o dónde se usa un
 automáticos de integridad entre colecciones (ingredientes huérfanos, referencias a recetas
 eliminadas, vector de equivalentes desincronizado, posibles duplicados en el catálogo, personas
 sin objetivo, asignación semanal rota) — ver "Página Configuración" en `UI-BUILD-YOUR-MENU.md`.
-Falta Fase 5 (pulido) — no empezarla sin haber usado la Fase 4 unos días en la vida real.
+"Guía" (2026-08-29, primera en la barra lateral pero NO la página de entrada — esa sigue siendo
+"Menú del día") trae un diagrama interactivo de cómo se relacionan Personas/Ingredientes/Recetas/
+Menú semanal/Menú del día (enlaces reales + resaltado por CSS puro con `:has()`, sin JavaScript
+— ver nota de `BUG-005` sobre por qué no usar `<script>` con `unsafe_allow_html`) más una guía
+corta en pasos. Falta Fase 5 (pulido) — no empezarla sin haber usado la Fase 4 unos días en la
+vida real.
 
 **Identidad visual "Barro" (2026-08-27)**: paleta/tipografía/radios propios sobre los 7 colores
 de grupo SMAE (que NO cambiaron — son funcionales). Aprobada primero como maqueta interactiva

@@ -20,6 +20,22 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.8.0] - 2026-08-29
+
+### Added
+- Página "Guía" (`views/guia.py`, icono 📖): diagrama interactivo (CSS puro, sin JS) de cómo se
+  relacionan Personas/Ingredientes/Recetas/Menú semanal/Menú del día, con enlaces reales a cada
+  página y resaltado al pasar el cursor (`:has()`), más una guía corta en pasos para armar el
+  primer Menú semanal.
+
+### Changed
+- Barra lateral reorganizada en secciones ("Guía", "Tu día a día", "Tus recetas", "Cuenta",
+  "Ajustes") en vez de una lista plana, con títulos de nav más cortos ("Recetas" en vez de
+  "Editor de recetas", etc.) — a pedido del usuario, para que se sienta más orgánica/intuitiva.
+  "Menú del día" sigue siendo la página de entrada.
+- Quitadas las menciones a "Mongo" en texto visible para el usuario (quedan solo en
+  docstrings/comentarios de código, no en `st.caption`/`st.warning`/etc.).
+
 ## [0.7.1] - 2026-08-29
 
 ### Added

@@ -94,7 +94,7 @@ def _draft_desde_receta(receta: dict | None) -> dict:
 
 def render() -> None:
     st.title("🧑‍🍳 EquiVale Chef — Editor de recetas")
-    st.caption("Crea, corrige o elimina recetas del banco. Los cambios se guardan directo a Mongo.")
+    st.caption("Crea, corrige o elimina recetas del banco. Los cambios se guardan al instante.")
 
     recetas = cargar_recetas()
     personas = cargar_personas()
