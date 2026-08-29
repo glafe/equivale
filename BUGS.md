@@ -11,7 +11,7 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 ### Bugs
 - Resueltos: [BUG-001](#bug-001--status-rv), [BUG-002](#bug-002--status-rv),
   [BUG-003](#bug-003--status-rv), [BUG-004](#bug-004--status-rv), [BUG-005](#bug-005--status-rv),
-  [BUG-006](#bug-006--status-rv)
+  [BUG-006](#bug-006--status-rv), [BUG-007](#bug-007--status-rv)
 
 ### Known Caveats
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002)
@@ -36,6 +36,25 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 ## Bugs
 
 ### Detailed Entries
+
+#### BUG-007 · [STATUS: RV]
+**Title:** Los nodos del diagrama de "Guía" se veían como enlaces azules subrayados, no como tarjetas
+**Severity:** Low
+**Reported Date:** 2026-08-29
+**Release Fixed:** 0.8.1
+
+##### Observable Problem
+En la página "Guía", el texto dentro de cada cuadro del diagrama (ej. "Personas", "Recetas")
+salía en azul y subrayado -- el estilo de enlace por default del navegador, no el diseño de
+tarjeta pensado (fondo, borde, texto oscuro sin subrayado).
+
+##### Fix Details (Technical)
+Streamlit aplica su propio color/subrayado a los `<a>` dentro de contenido markdown con un
+selector más específico que una sola clase CSS (`.eqv-node`) -- por eso no le ganaba. Cambiado a
+`a.eqv-node` (selector más específico) + `!important` en `color`/`text-decoration`, mismo
+recurso que ya usa `nutriguia/estilo.py` para pelear contra estilos nativos de Streamlit.
+Encontrado en QA visual con Playwright antes de anunciar el cambio como terminado (mismo hábito
+que descubrió `BUG-005`/`BUG-006`).
 
 #### BUG-006 · [STATUS: RV]
 **Title:** "Total de este tiempo" en Menú semanal mostraba el HTML del chip como texto plano

@@ -20,6 +20,12 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.8.1] - 2026-08-29
+
+### Fixed
+- Nodos del diagrama de "Guía" se veían como enlaces azules subrayados en vez de tarjetas (ver
+  `BUGS.md` BUG-007).
+
 ## [0.8.0] - 2026-08-29
 
 ### Added

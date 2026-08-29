@@ -36,10 +36,14 @@ DIAGRAMA_CSS = """
   border:1px solid var(--border, #DAD3C4);
   border-radius:22px;
 }
-.eqv-node{
+/* Streamlit aplica su propio color/subrayado a <a> dentro de contenido markdown con un selector
+   más específico que una sola clase -- .eqv-node solo no alcanza a ganarle. De ahí el
+   `a.eqv-node` (más específico) + !important en color/subrayado, mismo recurso que ya usa
+   nutriguia/estilo.py para pelear contra estilos nativos de Streamlit. */
+a.eqv-node, a.eqv-node:visited{
   display:flex; flex-direction:column; align-items:center; gap:.15rem;
-  text-decoration:none;
-  color:var(--ink, #2B2621);
+  text-decoration:none !important;
+  color:var(--ink, #2B2621) !important;
   background:var(--surface, #F7F4EE);
   border:1.5px solid var(--border, #DAD3C4);
   border-radius:16px;
@@ -52,7 +56,7 @@ DIAGRAMA_CSS = """
   transition:transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
 }
 .eqv-node .ico{ font-size:1.5rem; line-height:1; }
-.eqv-node .sub{ font-size:.72rem; font-weight:400; color:var(--ink-faint, #97897A); }
+.eqv-node .sub{ font-size:.72rem; font-weight:400; color:var(--ink-faint, #97897A) !important; text-decoration:none !important; }
 .eqv-node:hover{
   transform:translateY(-3px);
   border-color:var(--accent, #3C6E68);
