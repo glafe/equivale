@@ -11,7 +11,7 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 ### Bugs
 - Resueltos: [BUG-001](#bug-001--status-rv), [BUG-002](#bug-002--status-rv),
   [BUG-003](#bug-003--status-rv), [BUG-004](#bug-004--status-rv), [BUG-005](#bug-005--status-rv),
-  [BUG-006](#bug-006--status-rv), [BUG-007](#bug-007--status-rv)
+  [BUG-006](#bug-006--status-rv), [BUG-007](#bug-007--status-rv), [BUG-008](#bug-008--status-rv)
 
 ### Known Caveats
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002)
@@ -36,6 +36,37 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 ## Bugs
 
 ### Detailed Entries
+
+#### BUG-008 · [STATUS: RV]
+**Title:** Los enlaces `<a href>` del diagrama de "Guía" no navegaban al hacer clic
+**Severity:** Medium
+**Reported Date:** 2026-08-29
+**Release Fixed:** 0.8.2
+
+##### Observable Problem
+Cada nodo del diagrama de "Guía" es un `<a href="/slug">` con la URL correcta (confirmado
+leyendo el atributo `href` en el DOM), pero hacer clic no navegaba a ninguna parte — la URL se
+quedaba en `/guia`.
+
+##### Steps to Reproduce
+1. Abrir "Guía".
+2. Hacer clic en el nodo "Menú semanal".
+3. Esperado: navegar a `/menu_semanal`. Actual: no pasa nada, sigue en `/guia`.
+
+##### Fix Explanation (Exec Level — No Code)
+Algo en la propia aplicación (Streamlit) intercepta el clic antes de que el navegador llegue a
+seguir el enlace por su cuenta — no se investigó a fondo la causa exacta, solo se confirmó el
+síntoma en pruebas visuales automatizadas.
+
+##### Fix Details (Technical)
+Se agregó `onclick="window.location.href=this.getAttribute('href'); return false;"` a cada
+`<a>` del diagrama — un atributo HTML de evento sí se evalúa aunque el elemento se haya
+insertado vía `innerHTML` (a diferencia de un tag `<script>`, que no se ejecuta así — ver
+`BUG-005`/docstring de `views/guia.py`), así que la navegación ya no depende del comportamiento
+por default del `<a>`, que algo en el shell de Streamlit está suprimiendo.
+
+##### Workaround
+Ninguno necesario tras el fix.
 
 #### BUG-007 · [STATUS: RV]
 **Title:** Los nodos del diagrama de "Guía" se veían como enlaces azules subrayados, no como tarjetas

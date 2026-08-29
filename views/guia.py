@@ -1,13 +1,22 @@
 """EquiVale — "Guía": página de ayuda muy simple para usuarios que no conocen la app (2026-08-29,
 a pedido del usuario). Lo primero que se ve es un diagrama de cómo se relacionan los objetos del
 sistema (Ingredientes -> Recetas -> Menú semanal / Menú del día, con Personas como quién y su
-objetivo) -- interactivo con enlaces reales (`<a href>`, navegación normal del navegador, no hace
-falta `st.switch_page`) y resaltado por CSS puro (`:has()`) al pasar el cursor.
+objetivo) -- interactivo, con enlaces a cada página y resaltado por CSS puro (`:has()`) al pasar
+el cursor.
 
 CSS y HTML van en llamadas a st.markdown SEPARADAS a propósito (una para el <style>, otra para el
 <div> del diagrama) -- ver BUGS.md BUG-005: concatenar <style> con otro contenido en una sola
 llamada rompió el CSS de la identidad Barro (el parser de Markdown de Streamlit corta el bloque en
 la primera línea en blanco si el <style> no empieza su propia línea desde el carácter 0).
+
+Los nodos son `<a href="...">` pero un `<a>` normal insertado vía `unsafe_allow_html` NO navega
+al hacer clic dentro de esta app (el shell de Streamlit intercepta el click en algún punto antes
+de que llegue el navegador a seguir el `href` -- no investigado a fondo por qué, solo confirmado
+en QA visual que el clic no hacía nada; ver BUGS.md BUG-008). Cada nodo trae además
+`onclick="window.location.href=this.getAttribute('href'); return false;"` -- un atributo HTML
+normal SÍ se evalúa aunque el elemento se haya insertado vía `innerHTML` (a diferencia de un tag
+`<script>`, que no se ejecuta así -- ver más abajo), así que esto navega de verdad sin depender
+del comportamiento por default del `<a>`.
 
 Ver UI-BUILD-YOUR-MENU.md -> "Guía" para la especificación completa.
 """
@@ -103,26 +112,28 @@ a.eqv-node, a.eqv-node:visited{
 </style>
 """
 
-DIAGRAMA_HTML = """
+_IR = "window.location.href=this.getAttribute('href'); return false;"
+
+DIAGRAMA_HTML = f"""
 <div class="eqv-guia-wrap">
   <div class="eqv-guia-diagrama">
-    <a id="n-personas" class="eqv-node" href="/personas">
+    <a id="n-personas" class="eqv-node" href="/personas" onclick="{_IR}">
       <span class="ico">🧑‍🤝‍🧑</span>Personas<span class="sub">quién, y su objetivo diario</span>
     </a>
     <div id="a-pv" class="eqv-arrow"></div>
-    <a id="n-ing" class="eqv-node" href="/editor_ingredientes">
+    <a id="n-ing" class="eqv-node" href="/editor_ingredientes" onclick="{_IR}">
       <span class="ico">🥕</span>Ingredientes<span class="sub">el catálogo base</span>
     </a>
     <div id="a-1" class="eqv-arrow"></div>
-    <a id="n-recetas" class="eqv-node" href="/editor_recetas">
+    <a id="n-recetas" class="eqv-node" href="/editor_recetas" onclick="{_IR}">
       <span class="ico">🧑‍🍳</span>Recetas<span class="sub">platillos armados con ingredientes</span>
     </a>
     <div id="a-2" class="eqv-arrow"></div>
-    <a id="n-semanal" class="eqv-node" href="/menu_semanal">
+    <a id="n-semanal" class="eqv-node" href="/menu_semanal" onclick="{_IR}">
       <span class="ico">🗓️</span>Menú semanal<span class="sub">ciclo de menús por día</span>
     </a>
     <div id="a-rd" class="eqv-arrow"></div>
-    <a id="n-diario" class="eqv-node" href="/menu_del_dia">
+    <a id="n-diario" class="eqv-node" href="/menu_del_dia" onclick="{_IR}">
       <span class="ico">🥗</span>Menú del día<span class="sub">un día suelto, por fecha</span>
     </a>
   </div>

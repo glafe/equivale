@@ -20,6 +20,11 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.8.2] - 2026-08-29
+
+### Fixed
+- Los enlaces del diagrama de "Guía" no navegaban al hacer clic (ver `BUGS.md` BUG-008).
+
 ## [0.8.1] - 2026-08-29
 
 ### Fixed
