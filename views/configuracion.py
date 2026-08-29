@@ -48,6 +48,36 @@ def _chips(vector: dict) -> str:
     return " ".join(chip_html(g, f"{GRUPO_ETIQUETA.get(g, g)} {c}") for g, c in sorted(vector.items()))
 
 
+def _renombrar_en_recetas(nombre_viejo: str, nombre_nuevo: str) -> int:
+    """Mismo mecanismo que en editor_ingredientes.py: las recetas referencian un alimento por
+    nombre, no por id -- reemplazar acá evita dejar una receta apuntando a un nombre que ya no
+    existe en ningún lado (ni el orfanado ni uno nuevo)."""
+    tocadas = 0
+    for receta in db().recetas.find({"ingredientes.alimento": nombre_viejo}):
+        ingredientes = receta["ingredientes"]
+        cambio = False
+        for ing in ingredientes:
+            if ing["alimento"] == nombre_viejo:
+                ing["alimento"] = nombre_nuevo
+                cambio = True
+        if cambio:
+            db().recetas.update_one(
+                {"receta_id": receta["receta_id"]}, {"$set": {"ingredientes": ingredientes}}
+            )
+            tocadas += 1
+    if tocadas:
+        invalidar_cache_recetas()
+    return tocadas
+
+
+def _normalizar_par(a: str, b: str) -> tuple[str, str]:
+    return tuple(sorted((a, b)))
+
+
+def _pares_descartados() -> set[tuple[str, str]]:
+    return {_normalizar_par(d["a"], d["b"]) for d in db().duplicados_descartados.find({}, {"_id": 0})}
+
+
 # ---------------------------------------------------------------------------
 # Sección A: buscar relaciones (lookup manual)
 # ---------------------------------------------------------------------------
@@ -142,23 +172,42 @@ def _check_ingredientes_huerfanos():
 
         total_recetas = len({nombre for info in por_alimento.values() for nombre in info["recetas"]})
         st.warning(f"{len(por_alimento)} alimento(s) sin catalogar, en {total_recetas} receta(s) en total.")
+        opciones_existentes = [SIN_SELECCION] + sorted(catalogo.keys())
         for alimento, info in sorted(por_alimento.items()):
             with st.container(border=True):
                 grupo_txt = GRUPO_ETIQUETA.get(info["grupo"], info["grupo"]) if info["grupo"] else "(libre)"
                 st.markdown(f"**{alimento}** — grupo declarado: {grupo_txt}")
                 st.caption("En: " + ", ".join(sorted(info["recetas"])))
+
+                st.caption("Opción A — catalogarlo como alimento nuevo:")
                 c1, c2 = st.columns([3, 1])
                 cantidad = c1.text_input(
                     "Cantidad por equivalente", key=f"cant_huerfano_{alimento}",
                     placeholder="ej. 1/2 taza, 30 g", label_visibility="collapsed",
                 )
-                if c2.button("+ Catalogar", key=f"catalogar_{alimento}", disabled=not cantidad.strip()):
+                if c2.button("+ Catalogar nuevo", key=f"catalogar_{alimento}", disabled=not cantidad.strip()):
                     db().catalogo_alimentos.insert_one({
                         "alimento": alimento, "grupo": info["grupo"],
                         "cantidad_por_equivalente": cantidad.strip(),
                     })
                     invalidar_cache_catalogo()
                     st.session_state["_flash_config"] = f"'{alimento}' agregado al catálogo."
+                    st.rerun()
+
+                st.caption("Opción B — ya es lo mismo que un alimento que ya tienes catalogado:")
+                c3, c4 = st.columns([3, 1])
+                elegido_existente = c3.selectbox(
+                    "Reemplazar por", opciones_existentes, key=f"reemplazar_sel_{alimento}",
+                    label_visibility="collapsed",
+                )
+                if c4.button(
+                    "🔗 Usar este", key=f"reemplazar_btn_{alimento}",
+                    disabled=elegido_existente == SIN_SELECCION,
+                ):
+                    tocadas = _renombrar_en_recetas(alimento, elegido_existente)
+                    st.session_state["_flash_config"] = (
+                        f"'{alimento}' reemplazado por '{elegido_existente}' en {tocadas} receta(s)."
+                    )
                     st.rerun()
 
 
@@ -245,15 +294,22 @@ def _check_vector_desincronizado():
 def _check_duplicados_catalogo():
     with st.expander("🔎 Posibles duplicados en el catálogo de ingredientes"):
         st.caption(
-            "Compara nombres por similitud (no exacta) -- ej. \"Aceite de oliva\" vs \"Aceite "
-            "oliva\". No son necesariamente el mismo alimento: revisa cada par antes de fusionar "
-            "(ver regla 9 de CLAUDE.md)."
+            "Compara nombres por similitud de texto (no exacta -- sin regex ni IA, solo "
+            "`difflib` comparando letra por letra), ej. \"Aceite de oliva\" vs \"Aceite oliva\". "
+            "No son necesariamente el mismo alimento: revisa cada par antes de fusionar (ver "
+            "regla 9 de CLAUDE.md). Ojo con la cantidad por equivalente de cada lado -- fusionar "
+            "no ajusta los equivalentes ya guardados en recetas, así que si de verdad es el "
+            "mismo alimento pero con medidas distintas, revisa esas recetas después de fusionar."
         )
-        nombres = sorted(cargar_catalogo().keys())
+        catalogo = cargar_catalogo()
+        nombres = sorted(catalogo.keys())
+        descartados = _pares_descartados()
         pares = []
         for i, a in enumerate(nombres):
             norm_a = normalizar_busqueda(a)
             for b in nombres[i + 1:]:
+                if _normalizar_par(a, b) in descartados:
+                    continue
                 ratio = difflib.SequenceMatcher(None, norm_a, normalizar_busqueda(b)).ratio()
                 if ratio >= 0.82:
                     pares.append((a, b, ratio))
@@ -261,15 +317,37 @@ def _check_duplicados_catalogo():
 
         if not pares:
             st.success("Sin pares sospechosos.")
-            return
+        else:
+            st.info(f"{len(pares)} par(es) parecido(s), el más parecido primero:")
+            for a, b, ratio in pares[:30]:
+                cant_a = catalogo[a]["cantidad_por_equivalente"]
+                cant_b = catalogo[b]["cantidad_por_equivalente"]
+                c1, c2, c3 = st.columns([3, 1, 1])
+                c1.markdown(
+                    f"**{a}** _( {cant_a} )_ ↔ **{b}** _( {cant_b} )_ — similitud {ratio:.0%}"
+                )
+                if c2.button("Fusionar", key=f"ir_fusionar_{a}_{b}"):
+                    st.session_state["_pendiente_ing_editar_selector"] = a
+                    st.switch_page("views/editor_ingredientes.py")
+                if c3.button("Son diferentes", key=f"descartar_{a}_{b}"):
+                    x, y = _normalizar_par(a, b)
+                    db().duplicados_descartados.create_index([("a", 1), ("b", 1)], unique=True)
+                    db().duplicados_descartados.update_one(
+                        {"a": x, "b": y}, {"$setOnInsert": {"a": x, "b": y}}, upsert=True
+                    )
+                    st.session_state["_flash_config"] = f"'{a}' y '{b}' marcados como diferentes -- no se vuelven a sugerir."
+                    st.rerun()
 
-        st.info(f"{len(pares)} par(es) parecido(s), el más parecido primero:")
-        for a, b, ratio in pares[:30]:
-            c1, c2 = st.columns([3, 1])
-            c1.markdown(f"**{a}** ↔ **{b}** _(similitud {ratio:.0%})_")
-            if c2.button("Fusionar", key=f"ir_fusionar_{a}_{b}"):
-                st.session_state["_pendiente_ing_editar_selector"] = a
-                st.switch_page("views/editor_ingredientes.py")
+        descartados_docs = list(db().duplicados_descartados.find({}, {"_id": 0}))
+        if descartados_docs:
+            with st.expander(f"Pares marcados como diferentes ({len(descartados_docs)})"):
+                for d in descartados_docs:
+                    c1, c2 = st.columns([3, 1])
+                    c1.markdown(f"{d['a']} ↔ {d['b']}")
+                    if c2.button("Deshacer", key=f"deshacer_desc_{d['a']}_{d['b']}"):
+                        db().duplicados_descartados.delete_one({"a": d["a"], "b": d["b"]})
+                        st.session_state["_flash_config"] = f"Se vuelve a sugerir: {d['a']} ↔ {d['b']}."
+                        st.rerun()
 
 
 def _check_personas_sin_objetivo():

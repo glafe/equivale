@@ -121,9 +121,13 @@ de administración a futuro, no solo limpieza de datos.
     día" y los menús de "Menú semanal" que la incluyen.
 - **Chequeos automáticos** (cada uno independiente, con éxito en verde si no hay problemas):
   - **Ingredientes huérfanos**: un `ingrediente.alimento` de alguna receta que ya no está en
-    `catalogo_alimentos`. Se pueden catalogar ahí mismo (nombre + grupo ya vienen de la receta,
-    solo falta la cantidad por equivalente) — arregla todas las recetas que usan ese alimento a
-    la vez, no una por una.
+    `catalogo_alimentos`. Dos opciones por alimento (2026-08-29, a pedido del usuario):
+    **Opción A** catalogarlo como alimento nuevo (nombre + grupo ya vienen de la receta, solo
+    falta la cantidad por equivalente) — arregla todas las recetas que lo usan a la vez; **Opción
+    B** declarar que ya es el mismo que un alimento existente (`_renombrar_en_recetas()`, mismo
+    mecanismo que la fusión del Editor de ingredientes) — para cuando el ingrediente huérfano es
+    solo una variante de escritura de algo que ya tienes catalogado, en vez de crear un
+    duplicado.
   - **Referencias a recetas eliminadas**: un `receta_id` en `plantillas_semana` o
     `menus_construidos` que ya no existe en `recetas`. Los menús semanales se pueden limpiar
     directo (botón "Quitar"); los días guardados de "Menú del día" son bitácora histórica y solo
@@ -131,10 +135,16 @@ de administración a futuro, no solo limpieza de datos.
   - **Vector de equivalentes desincronizado**: el `vector_equivalentes` guardado de una receta no
     coincide con la suma real de sus ingredientes — botón "Recalcular y guardar".
   - **Posibles duplicados en el catálogo**: pares de nombres con similitud alta (`difflib`,
-    umbral 0.82 sobre el nombre normalizado) — no fusiona automático, un botón "Fusionar" hace
-    `st.switch_page()` al Editor de ingredientes con ese alimento pre-seleccionado para que el
-    usuario decida y confirme el renombrado (que ya dispara la fusión si el nombre destino
-    coincide con uno existente, ver sección "Editor de ingredientes" arriba).
+    umbral 0.82 sobre el nombre normalizado — sin regex ni IA) — no fusiona automático, un botón
+    "Fusionar" hace `st.switch_page()` al Editor de ingredientes con ese alimento pre-seleccionado
+    para que el usuario decida y confirme el renombrado (que ya dispara la fusión si el nombre
+    destino coincide con uno existente, ver sección "Editor de ingredientes" arriba). La lista
+    muestra la `cantidad_por_equivalente` de cada lado — fusionar solo cambia el nombre en las
+    recetas, no reconcilia `equivalentes` ya guardados si las dos medidas eran distintas, así que
+    hay que revisar esas recetas después si de verdad importa la diferencia. Un botón aparte
+    **"Son diferentes"** guarda el par en `duplicados_descartados` (2026-08-29, a pedido del
+    usuario) para que no se vuelva a sugerir — reversible desde un expander "Pares marcados como
+    diferentes" en la misma sección.
   - **Personas sin objetivo diario** y **asignación semanal apuntando a un menú eliminado** —
     chequeos más chicos, mismo patrón de aviso + acción corta.
 - **Por qué "detectar y enlazar a la corrección" en vez de arreglar todo automático**: varias de

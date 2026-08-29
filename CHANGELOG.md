@@ -20,6 +20,15 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.7.1] - 2026-08-29
+
+### Added
+- Configuración → Ingredientes huérfanos: opción B para reemplazar un huérfano por un alimento
+  ya existente en el catálogo (no solo catalogarlo como nuevo).
+- Configuración → Posibles duplicados: botón "Son diferentes" para descartar un par sugerido
+  (nueva colección `duplicados_descartados`, reversible desde la misma sección); la lista ahora
+  muestra la `cantidad_por_equivalente` de cada lado del par.
+
 ## [0.7.0] - 2026-08-29
 
 ### Added

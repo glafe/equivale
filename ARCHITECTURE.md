@@ -12,7 +12,7 @@ optimizadas para simplicidad de mantenimiento, no para escalar a muchos usuarios
 ┌─────────────────────┐
 │   MongoDB (local)    │  ← fuente de verdad: catalogo_alimentos, recetas, menus,
 │                       │     objetivos, menus_construidos, plantillas_semana,
-│                       │     asignacion_semanal
+│                       │     asignacion_semanal, duplicados_descartados
 └──────────┬───────────┘
            │ pymongo
 ┌──────────┴───────────┐
@@ -35,7 +35,7 @@ exactamente el tipo de bug silencioso que ya vimos en el histórico (declarados 
 
 - **MongoDB** — ya era el plan original del usuario, encaja bien porque cada colección
   (`catalogo_alimentos`, `recetas`, `menus`, `objetivos`, `menus_construidos`,
-  `plantillas_semana`, `asignacion_semanal`) es un documento
+  `plantillas_semana`, `asignacion_semanal`, `duplicados_descartados`) es un documento
   anidado autocontenido — no hay necesidad real de joins relacionales.
 - **Python + pymongo** — mismo lenguaje que ya se usó para construir/validar todos los JSON
   históricos; reutilizar esa lógica es directo.

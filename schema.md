@@ -329,6 +329,21 @@ Ajustar un ingrediente con el stepper +/- SIEMPRE se hace en pasos de 1 equivale
 ingredientes compuestos como "Nopal y Pimiento") no es ajustable por stepper — se agrega/quita
 completo.
 
+## Colección `duplicados_descartados` — pares de alimentos marcados "son diferentes" (2026-08-29)
+
+Usada por la página "Configuración" → "Posibles duplicados en el catálogo": cuando el usuario
+revisa un par sugerido por similitud de texto y decide que en realidad son alimentos distintos
+(ej. "Papa cocida" vs "Pasta cocida" — parecidos en texto, no en receta), este documento evita
+que el chequeo lo vuelva a sugerir.
+
+```
+{
+  "a": string,   // los dos nombres, siempre en orden alfabético (a < b) para no
+  "b": string    // duplicar la entrada si el par se vuelve a marcar en el otro orden
+}
+```
+Índice recomendado: único compuesto `(a, b)`. Reversible desde la misma página ("Deshacer").
+
 ## Validación (aplica al generar, al importar, y a lo construido en la UI)
 
 Para cada `tiempo`: `sum(ingrediente.equivalentes agrupado por grupo_smae) == tiempo.equivalentes`
