@@ -20,6 +20,20 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.6.0] - 2026-08-29
+
+### Added
+- Página "Menú semanal" (`views/menu_semanal.py`): menús reutilizables por persona (solo
+  selección de recetas por tiempo, sin ajuste de ingredientes) y su asignación a los 7 días de la
+  semana, con un resumen de cobertura ("¿mi ciclo de menús cubre toda la semana?"). Nuevas
+  colecciones `plantillas_semana` y `asignacion_semanal` (ver `schema.md`). Renombrar o eliminar
+  un menú hace cascada a la asignación, mismo criterio que el editor de ingredientes con recetas.
+
+### Changed
+- **"Build your menu" se renombró a "Menú del día"** (título, archivo `views/menu_del_dia.py`, y
+  todas las menciones en código/docs) para homologar el idioma de la app — ya no queda ninguna
+  página con nombre en inglés.
+
 ## [0.5.2] - 2026-08-27
 
 ### Added

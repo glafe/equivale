@@ -57,7 +57,7 @@ se adelanta esta herramienta (originalmente en "Ideas para más adelante") antes
 Ver `UI-BUILD-YOUR-MENU.md` → "Convención de colores por grupo SMAE" y "Editor de recetas" para el
 detalle completo. Resumen:
 - `nutriguia/colores.py`: paleta fija por grupo SMAE, reutilizada en toda la app.
-- App pasa a multipágina (`st.navigation`/`st.Page`) con barra lateral: "Build your menu" +
+- App pasa a multipágina (`st.navigation`/`st.Page`) con barra lateral: "Menú del día" +
   "Editor de recetas".
 - Editor: crear/editar/eliminar recetas; agregar/quitar ingredientes; checkbox para
   bloquear/desbloquear un ingrediente como ajustable (`Ingrediente.bloqueado`, ver `schema.md`);
@@ -98,7 +98,7 @@ con su objetivo diario, o editar el objetivo de una existente. Ver `UI-BUILD-YOU
   `personas`.
 
 **Hecho cuando**: se puede crear una persona nueva con su objetivo, verla aparecer en el selector
-de persona de "Build your menu", y editar el objetivo de una existente y ver el cambio reflejado
+de persona de "Menú del día", y editar el objetivo de una existente y ver el cambio reflejado
 ahí — todo probado en navegador real.
 
 ## Fase 4 — Día completo + guardar + historial
@@ -147,4 +147,6 @@ de abajo es el resumen histórico, no lo dupliques al actualizar una de las dos.
 - [x] Fase 3.5 — editor de recetas + convención de colores
 - [x] Fase 3.6 — página Personas (crear/editar objetivos)
 - [x] Fase 4 — día completo + guardado + historial funcionando
+- [x] Editor de ingredientes + "Agregar de SMAE" (2026-08-27, ver `BUGS.md` FR-002)
+- [x] Menú semanal — ciclo de menús reutilizables + cobertura por día (2026-08-29)
 - [ ] Fase 5 — pulido (solo tras uso real)

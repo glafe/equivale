@@ -11,7 +11,8 @@ optimizadas para simplicidad de mantenimiento, no para escalar a muchos usuarios
 ```
 ┌─────────────────────┐
 │   MongoDB (local)    │  ← fuente de verdad: catalogo_alimentos, recetas, menus,
-│                       │     objetivos, menus_construidos
+│                       │     objetivos, menus_construidos, plantillas_semana,
+│                       │     asignacion_semanal
 └──────────┬───────────┘
            │ pymongo
 ┌──────────┴───────────┐
@@ -20,7 +21,7 @@ optimizadas para simplicidad de mantenimiento, no para escalar a muchos usuarios
 └──────────┬───────────┘
            │ import
 ┌──────────┴───────────┐
-│  app.py (Streamlit)   │  ← "Build your menu": picker de recetas + stepper +/- por
+│  app.py (Streamlit)   │  ← "Menú del día": picker de recetas + stepper +/- por
 │                       │     ingrediente + validación en vivo (verde/rojo por grupo)
 └───────────────────────┘
 ```
@@ -33,7 +34,8 @@ exactamente el tipo de bug silencioso que ya vimos en el histórico (declarados 
 ## Stack elegido y por qué
 
 - **MongoDB** — ya era el plan original del usuario, encaja bien porque cada colección
-  (`catalogo_alimentos`, `recetas`, `menus`, `objetivos`, `menus_construidos`) es un documento
+  (`catalogo_alimentos`, `recetas`, `menus`, `objetivos`, `menus_construidos`,
+  `plantillas_semana`, `asignacion_semanal`) es un documento
   anidado autocontenido — no hay necesidad real de joins relacionales.
 - **Python + pymongo** — mismo lenguaje que ya se usó para construir/validar todos los JSON
   históricos; reutilizar esa lógica es directo.
@@ -88,8 +90,11 @@ nutri-guia/
     import_data.py                 # script: carga catalogo/recetas/menus/objetivos a Mongo
   app.py                           # entrypoint Streamlit: st.navigation entre las páginas de views/
   views/                           # páginas de la app multipágina (NO llamarla "pages/" — Streamlit
-    build_your_menu.py             #   auto-detecta esa carpeta para su mecanismo viejo de MPA y
-    editor_recetas.py              #   choca con st.navigation/st.Page, ver ARCHITECTURE.md abajo)
+                                    #   auto-detecta esa carpeta para su mecanismo viejo de MPA y
+                                    #   choca con st.navigation/st.Page, ver ARCHITECTURE.md abajo)
+    menu_del_dia.py                # bitácora real: arma y guarda un día por fecha, con historial
+    menu_semanal.py                # plantillas reutilizables por día de la semana + cobertura
+    editor_recetas.py
     editor_ingredientes.py         # catálogo de alimentos: tabla + editar/eliminar + "Agregar de SMAE"
     personas.py
   tests/

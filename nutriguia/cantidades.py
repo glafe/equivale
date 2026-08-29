@@ -1,6 +1,6 @@
 """Escalar una 'cantidad_por_equivalente' del catálogo por N equivalentes (ej. '30 g' x3 -> '90
 g'). Lógica de presentación (parseo de texto libre), no aritmética de equivalentes -- eso vive en
-validation.py. Compartido entre views/build_your_menu.py y views/editor_recetas.py.
+validation.py. Compartido entre views/menu_del_dia.py y views/editor_recetas.py.
 """
 
 import re

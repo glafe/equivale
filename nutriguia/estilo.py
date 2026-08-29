@@ -10,7 +10,7 @@ elementos concretos vía la clase `st-key-<key>` que Streamlit agrega a cualquie
 con un `key=` explícito (mecanismo oficial para CSS dirigido, ver docs de Streamlit -- más estable
 que apuntar a las clases `st-emotion-cache-*`, que son hashes que cambian entre builds).
 
-Convención de `key=` para que este CSS los alcance (ver views/build_your_menu.py):
+Convención de `key=` para que este CSS los alcance (ver views/menu_del_dia.py):
 - botones "-" de un stepper: key que empieza con "menos_"
 - botones "+" de un stepper: key que empieza con "mas_"
 - contenedor de una receta agregada: key que empieza con "receta_card_"
@@ -61,7 +61,7 @@ CSS = """
 }
 .stButton button:active { transform: scale(.97); }
 
-/* Steppers +/- de "Build your menu": cuadrados pequeños, no pastillas alargadas
+/* Steppers +/- de "Menú del día": cuadrados pequeños, no pastillas alargadas
    (ver convención de `key=` arriba: menos_* / mas_*) */
 div[class*="st-key-menos_"] .stButton button,
 div[class*="st-key-mas_"] .stButton button {

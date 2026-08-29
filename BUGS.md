@@ -16,7 +16,7 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002)
 
 ### Feature Requests
-- Propuestos: [FR-001](#fr-001), [FR-003](#fr-003)
+- Propuestos: [FR-001](#fr-001), [FR-003](#fr-003), [FR-004](#fr-004), [FR-005](#fr-005), [FR-006](#fr-006)
 - Shipped: [FR-002](#fr-002)
 
 ## Severity guide
@@ -206,6 +206,63 @@ del banco (86 recetas).
 ## Feature Requests
 
 ### Detailed Entries
+
+#### FR-006
+**Title:** Detector de posibles duplicados en el catálogo de ingredientes
+**Date Requested:** 2026-08-29
+**Status:** Proposed
+
+##### Exec Description
+En el Editor de ingredientes, un botón que compare los nombres del catálogo por similitud (no
+exacta) y muestre pares sospechosos para revisar y fusionar con un clic, en vez de encontrarlos a
+ojo mientras se usa la app.
+
+##### Eng Description
+Cierra `KC-001` de raíz (ej. "Aceite de oliva" vs "Aceite oliva"). La fusión ya existe en
+`views/editor_ingredientes.py` (ver el flujo de colisión de nombre al renombrar) — esto solo
+automatiza encontrar los candidatos, probablemente con una distancia de edición simple
+(Levenshtein) sobre los nombres normalizados de `nutriguia/texto.py`.
+
+##### Dependencies
+Editor de ingredientes (Shipped en `FR-002`).
+
+#### FR-005
+**Title:** Duplicar un día ya guardado como punto de partida
+**Date Requested:** 2026-08-29
+**Status:** Proposed
+
+##### Exec Description
+Un botón "Duplicar" junto a "Abrir" en el historial de "Menú del día" (o "Empezar como ayer" al
+abrir la página) que clona un día ya guardado en vez de armar todo desde cero.
+
+##### Eng Description
+Reutiliza casi tal cual `_instancia_desde_guardado()` de `views/menu_del_dia.py` — la pieza más
+barata identificada en la revisión de producto de 2026-08-29 (ver historial de conversación; no
+hay un documento aparte, este es el registro canónico).
+
+##### Dependencies
+Ninguna.
+
+#### FR-004
+**Title:** Lista de súper generada
+**Date Requested:** 2026-08-29
+**Status:** Proposed
+
+##### Exec Description
+Un botón que suma los ingredientes de un día o de una semana planeada en una lista consolidada de
+compras (ej. "Pollo: 90 g", "Tortilla: 6 piezas"), en vez de tener que releer cada receta.
+
+##### Eng Description
+Con `plantillas_semana` + `asignacion_semanal` (ver `schema.md`, 2026-08-29) ya existe de dónde
+sacar "qué se come toda la semana": multiplicar el `vector`/ingredientes de cada plantilla por
+cuántos días de la semana se le asignaron, sumar por alimento (no solo por grupo — hace falta una
+función nueva tipo `sumar_por_alimento`, ver `nutriguia/validation.py` si se generaliza), y
+formatear la cantidad total con `escalar_cantidad()`. También podría operar solo sobre un día de
+`menus_construidos` sin esperar a tener una semana completa armada.
+
+##### Dependencies
+`plantillas_semana`/`asignacion_semanal` (Shipped 2026-08-29) para la versión semanal; ninguna
+para una versión que solo opere sobre un día de `menus_construidos`.
 
 #### FR-003
 **Title:** Fase 5 — pulido (semana completa, exportar imprimible, sugerencia automática de hueco)

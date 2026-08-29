@@ -239,11 +239,11 @@ def render() -> None:
                 )
             fila["bloqueado"] = c4.checkbox(
                 "🔒", value=fila["bloqueado"], key=f"bloqueado_{fila['fila_id']}",
-                help="Bloquear: no ajustable con +/- en Build your menu",
+                help="Bloquear: no ajustable con +/- en Menú del día",
             )
             fila["opcional"] = c_opc.checkbox(
                 "Opc.", value=fila["opcional"], key=f"opcional_{fila['fila_id']}",
-                help="Opcional: en Build your menu se puede incluir o excluir con un checkbox, "
+                help="Opcional: en Menú del día se puede incluir o excluir con un checkbox, "
                      "sin necesidad de quitarlo de la receta ni crear una receta aparte.",
             )
             if c5.button("quitar", key=f"quitar_ing_{fila['fila_id']}"):

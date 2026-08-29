@@ -1,4 +1,4 @@
-# UI — "Build your menu" (Streamlit)
+# UI — "Menú del día" (Streamlit)
 
 Especificación de interacción de `app.py`. Confirmado con el usuario: **picker +/- en enteros de
 equivalente, nunca slider libre**, y la UI debe mostrar en vivo si falta o sobra algún equivalente.
@@ -71,6 +71,38 @@ persona —" / persona existente).
   versiones anteriores en esta fase, ver "Ideas para más adelante" en `BUILD-PLAN.md`).
 - No hay botón de eliminar persona en esta fase — borrar una persona dejaría huérfanas referencias
   en `menus`/`recetas.personas_vistas`/`menus_construidos`, fuera de alcance por ahora.
+
+## Página "Menú semanal" (2026-08-29, a pedido del usuario)
+
+El usuario en la vida real no arma un día distinto cada vez — alterna entre un ciclo fijo de
+menús (ej. "Menú 1" lunes/miércoles/viernes, "Menú 2" martes/jueves/sábado, domingo libre/"cheat
+day"). Antes de construir la lista de súper (ver "Ideas para más adelante" en `BUILD-PLAN.md`)
+hacía falta poder configurar y **ver de un vistazo** ese ciclo — de ahí esta página, separada de
+"Menú del día" (que sigue siendo la bitácora real de "qué se guardó para tal fecha", ver
+`schema.md` → `menus_construidos`).
+
+- **Cobertura de la semana** (arriba de todo, es la pregunta que motivó la página): 7 columnas
+  Lun-Dom, cada una mostrando el nombre del menú asignado o "Libre". Un expander aparte
+  ("Ver equivalentes totales por menú") lista el vector agregado de cada menú, para comparar a
+  ojo contra el objetivo diario de la persona.
+- **Asignar menús a los días**: un `st.selectbox` por día (Lun-Dom) con las plantillas de esa
+  persona + "Libre/descanso"; un solo botón "Guardar asignación" para los 7 a la vez.
+- **Editor de menús** (selector "— Nuevo menú —" / uno existente, mismo patrón que el Editor de
+  recetas): nombre + tabs por tiempo (`al_despertar`/`desayuno`/`colacion`/`comida`/`cena`), cada
+  tab con un buscador de recetas (`ver_todas` como en "Menú del día") y un botón "+ Agregar".
+  **A propósito NO tiene steppers de ajuste de ingrediente ni checkbox de "incluir" para
+  opcionales** (a diferencia de "Menú del día") — el usuario pidió explícitamente una versión más
+  simple para esta primera pasada; una receta agregada cuenta con su `vector_equivalentes` base tal
+  cual. Si hace falta ajustar una porción específica, eso se sigue haciendo en "Menú del día" el
+  día que corresponda, no aquí.
+- **Renombrar un menú hace cascada a la asignación** (mismo criterio que el editor de ingredientes
+  con `recetas`): si el nuevo nombre ya lo usaba algún día de la semana, se actualiza esa
+  referencia; si se elimina un menú, los días que lo tenían asignado pasan a "Libre".
+- **Por qué es una colección aparte de `menus_construidos`, no una integración directa todavía**:
+  mantiene la primera versión simple y de bajo riesgo (no toca código de "Menú del día" que ya
+  está en producción). Cargar automáticamente la plantilla del día al abrir "Menú del día" para
+  una fecha dada es una extensión natural, pero no se pidió en esta pasada — anotarlo si hace
+  falta después.
 
 ## Qué NO hacer
 
@@ -160,7 +192,7 @@ de grupo SMAE como fichas de conteo — y el usuario la aprobó. Resumen de lo i
 - **Responsividad**: Streamlit apila automáticamente cualquier `st.columns(...)` en pantallas
   angostas (por debajo de ~640px) — no se intentó pelear contra eso con CSS de media queries
   (frágil, depende de internals de Streamlit). En vez de eso, las filas con muchas columnas se
-  reestructuraron en 2 filas más cortas y agrupadas lógicamente: en "Build your menu", cada
+  reestructuraron en 2 filas más cortas y agrupadas lógicamente: en "Menú del día", cada
   ingrediente ahora es "etiqueta" (fila 1) + "stepper -/cantidad/+" (fila 2) en vez de un solo
   renglón de 4-5 columnas; en el Editor de recetas, "alimento + quitar" (fila 1) + "grupo/
   cantidad/equivalentes/bloqueado/opcional" (fila 2) en vez de 7 columnas en una sola fila. En
@@ -174,12 +206,12 @@ de grupo SMAE como fichas de conteo — y el usuario la aprobó. Resumen de lo i
 ## Editor de recetas ("EquiVale Chef") — promovido desde "Ideas para más adelante"
 
 El usuario pidió adelantar esta herramienta (ver nota original en `BUILD-PLAN.md`) porque al usar
-"Build your menu" encontró recetas del banco duplicadas o con ingredientes que deberían poder
+"Menú del día" encontró recetas del banco duplicadas o con ingredientes que deberían poder
 corregirse. Alcance actual (más acotado que la idea original — sin integración a
 `SMAE_CONSULTA.csv` todavía, eso sigue en "Ideas para más adelante"):
 
 - **Navegación**: la app pasa a ser multipágina con `st.navigation`/`st.Page` — barra lateral
-  izquierda con "Build your menu" y "Editor de recetas".
+  izquierda con "Menú del día" y "Editor de recetas".
 - **Listado**: seleccionar una receta existente (buscador por nombre) para editarla, o crear una
   nueva desde cero.
 - **Campos editables de la receta**: `nombre`, `tiempo_tipico` (multi-select), `personas_vistas`
@@ -188,7 +220,7 @@ corregirse. Alcance actual (más acotado que la idea original — sin integraci�
   `catalogo_alimentos` o escribir uno libre/nuevo), `grupo_smae` (de los 7 canónicos, o "ninguno"
   para libre), `cantidad`, `equivalentes` (entero), y un checkbox **bloquear edición** que fija
   `Ingrediente.bloqueado` (ver `schema.md`) — evita que ese ingrediente sea ajustable con el
-  stepper en "Build your menu" aunque el catálogo sí resuelva un paso.
+  stepper en "Menú del día" aunque el catálogo sí resuelva un paso.
   - **Al elegir/cambiar el alimento de una fila** (2026-08-25, para evitar inconsistencias tipo
     "Pollo, 200 g, 5 equivalentes" arrastradas de un alimento anterior en la misma fila): si el
     alimento está en `catalogo_alimentos`, se sobreescribe `grupo_smae` (según el catálogo) y se

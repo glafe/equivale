@@ -124,14 +124,14 @@ clave, NO usar un dict/objeto que sobreescriba duplicados (ver `sumar_por_grupo(
 **`bloqueado`** (agregado 2026-08-24 para el editor de recetas — solo relevante en la colección
 `recetas`, los `Ingrediente` de `menus` son histórico de solo lectura y lo ignoran): por default,
 si un `alimento` tiene `cantidad_por_equivalente` en `catalogo_alimentos` es ajustable con el
-stepper +/- en "Build your menu" (ver `paso_equivalente()` en `VALIDATION.md`). `bloqueado: true`
+stepper +/- en "Menú del día" (ver `paso_equivalente()` en `VALIDATION.md`). `bloqueado: true`
 fuerza a que NO sea ajustable aunque el catálogo sí resuelva un paso — para ingredientes que el
 usuario decide fijos en una receta concreta (ej. una guarnición base que no debería tocarse).
 Ausente o `false` = se comporta según el catálogo (default, sin cambios).
 
 **`opcional`** (agregado 2026-08-24, mismo alcance que `bloqueado` — solo `recetas`): marca un
 ingrediente que no siempre forma parte del platillo — ej. un extra de queso que algunas veces se
-agrega y otras no. En "Build your menu", un ingrediente `opcional: true` se agrega con un checkbox
+agrega y otras no. En "Menú del día", un ingrediente `opcional: true` se agrega con un checkbox
 **Incluir** (default: incluido, para que la receta reproduzca su versión más completa salvo que el
 usuario decida quitarlo) — si se desmarca, no cuenta en la suma de equivalentes de ese tiempo, pero
 sigue siendo parte de la definición de la receta (no hay que borrarlo ni crear una receta aparte).
@@ -249,6 +249,62 @@ arriba), un "delta de este tiempo" no tiene un significado fijo por sí solo; el
 nivel del documento es lo que sí se valida. El presupuesto restante por tiempo que se muestra en
 vivo en la UI (objetivo diario menos lo ya usado en otros tiempos) es una vista calculada al vuelo,
 no algo que se persiste.
+
+## Colección `plantillas_semana` — menús reutilizables, no atados a una fecha (2026-08-29)
+
+A pedido del usuario: en la vida real, no arma un día distinto cada vez -- alterna entre un
+puñado de menús fijos (ej. "Menú 1" lunes/miércoles/viernes, "Menú 2" martes/jueves/sábado,
+domingo libre/"cheat day"). `menus_construidos` (arriba) sigue siendo la bitácora real de "qué se
+guardó para tal fecha"; esta colección es la plantilla reutilizable de la que esa bitácora podría
+partir (la página "Menú semanal" no escribe a `menus_construidos` -- son colecciones
+independientes por ahora, ver `UI-BUILD-YOUR-MENU.md` → "Menú semanal" para la razón).
+
+Versión intencionalmente más simple que `menus_construidos`: solo guarda QUÉ recetas van en cada
+tiempo, no el ajuste fino de ingredientes/equivalentes por receta (eso sigue siendo trabajo de
+"Menú del día" el día que corresponda).
+
+```
+{
+  "persona": string,
+  "nombre": string,                 // ej. "Menú 1" -- identifica la plantilla, único por persona
+  "tiempos": {
+    "al_despertar": [ RecetaResumen, ... ],
+    "desayuno": [ RecetaResumen, ... ],
+    "colacion": [ RecetaResumen, ... ],
+    "comida": [ RecetaResumen, ... ],
+    "cena": [ RecetaResumen, ... ]
+  }
+}
+```
+**RecetaResumen**: `{ "receta_id": string, "nombre": string, "vector_equivalentes": {grupo: int} }`
+— snapshot ligero tomado de `recetas` al agregarla (no una referencia viva: si la receta se edita
+después, la plantilla conserva el vector con el que se agregó, igual que ya pasa hoy con
+`RecetaInstancia` en `menus_construidos`).
+
+Índice recomendado: único compuesto `(persona, nombre)`.
+
+## Colección `asignacion_semanal` — qué plantilla aplica a cada día, por persona (2026-08-29)
+
+Un documento por persona (se sobreescribe, no se versiona por ahora).
+
+```
+{
+  "persona": string,                // único índice
+  "dias": {
+    "lunes": string | null,         // "nombre" de una plantillas_semana de esa persona, o
+    "martes": string | null,        // null = libre/descanso (ej. el domingo "cheat day")
+    "miercoles": string | null,
+    "jueves": string | null,
+    "viernes": string | null,
+    "sabado": string | null,
+    "domingo": string | null
+  }
+}
+```
+Referencia por `nombre`, no por id (mismo patrón que `recetas.ingredientes[].alimento` apuntando a
+`catalogo_alimentos.alimento`) — si se renombra o elimina una plantilla, `views/menu_semanal.py`
+actualiza/limpia estas referencias en cascada (`_renombrar_en_asignacion()` /
+`_quitar_de_asignacion()`), igual que el editor de ingredientes lo hace para `recetas`.
 
 **RecetaInstancia** — snapshot completo de la receta tal como quedó tras los ajustes del usuario
 (ya NO delta-encoded contra la receta base — se cambió a guardar el estado completo para garantizar

@@ -1,4 +1,4 @@
-"""Acceso a Mongo cacheado, compartido entre las páginas de Streamlit (build_your_menu,
+"""Acceso a Mongo cacheado, compartido entre las páginas de Streamlit (menu_del_dia,
 editor_recetas). No contiene lógica de negocio — eso vive en nutriguia/validation.py.
 """
 

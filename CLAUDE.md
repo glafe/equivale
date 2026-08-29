@@ -16,31 +16,31 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.5.2` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.6.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
-**Nota:** `0.5.2` (checkbox opt-in en el editor de ingredientes para también quitar un alimento
-eliminado de las recetas que lo usaban, no solo del catálogo — ver `CHANGELOG.md`) se hizo desde
-otra sesión/interfaz en paralelo a esta misma — ya está commiteada, pusheada y desplegada; no es
-un cambio pendiente de esta sesión.
 
-Al 2026-08-27: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
+Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
 datos importados, `nutriguia/validation.py` con 35/35 tests en verde (más suites adicionales
 sobre datos sintéticos/públicos que corren en cualquier clon del repo — `tests/
-test_validation_samples.py`, `test_cantidades.py`, `test_smae_csv.py`, `test_texto.py`, 51/51 en
-total, ver más abajo), app Streamlit multipágina ("Build your menu", "Editor de recetas", "Editor
-de ingredientes", "Personas") corriendo en producción. "Build your menu" ya cubre el día completo
-(los 5 tiempos vía tabs), guarda por `(persona, fecha)` en `menus_construidos`, y tiene historial
-de planes guardados con round-trip verificado. El "Editor de ingredientes" (2026-08-27) permite
+test_validation_samples.py`, `test_cantidades.py`, `test_smae_csv.py`, `test_texto.py`, ver más
+abajo), app Streamlit multipágina ("Menú del día", "Menú semanal", "Editor de recetas", "Editor
+de ingredientes", "Personas") corriendo en producción. "Menú del día" (renombrado desde "Build
+your menu" el 2026-08-29 para homologar el idioma de toda la app) ya cubre el día completo (los 5
+tiempos vía tabs), guarda por `(persona, fecha)` en `menus_construidos`, y tiene historial de
+planes guardados con round-trip verificado. El "Editor de ingredientes" (2026-08-27) permite
 limpiar/fusionar el catálogo de alimentos (con cascada de renombrado a `recetas`) y agregar
-alimentos nuevos desde `SMAE_CONSULTA.csv` (commiteado al repo — ver "Editor de ingredientes" en
-`UI-BUILD-YOUR-MENU.md`). Falta Fase 5 (pulido) — no empezarla sin haber usado la Fase 4 unos
-días en la vida real.
+alimentos nuevos desde `SMAE_CONSULTA.csv` (commiteado al repo). "Menú semanal" (2026-08-29, ver
+`schema.md` → `plantillas_semana`/`asignacion_semanal`) define menús reutilizables por persona
+(versión simple a propósito: solo elige recetas por tiempo, sin ajustar ingredientes) y su
+asignación a los 7 días de la semana, con un resumen de cobertura — pensado como base para una
+futura lista de súper (`BUGS.md` FR-004), no integrado todavía con `menus_construidos`. Falta
+Fase 5 (pulido) — no empezarla sin haber usado la Fase 4 unos días en la vida real.
 
 **Identidad visual "Barro" (2026-08-27)**: paleta/tipografía/radios propios sobre los 7 colores
 de grupo SMAE (que NO cambiaron — son funcionales). Aprobada primero como maqueta interactiva
 (artefacto fuera del repo) antes de tocar código. Implementada en `.streamlit/config.toml` +
 `nutriguia/estilo.py` (inyectado una vez desde `app.py`), con las filas de ingrediente
-reestructuradas en `views/build_your_menu.py` y `views/editor_recetas.py` para verse bien también
+reestructuradas en `views/menu_del_dia.py` y `views/editor_recetas.py` para verse bien también
 en teléfono (Streamlit apila `st.columns` bajo ~640px). Detalle completo, incluida la convención
 de `key=` para CSS dirigido (`menos_`/`mas_`/`receta_card_`/`status_`), en `UI-BUILD-YOUR-MENU.md`
 → "Identidad visual Barro y responsividad". Verificado en vivo (escritorio + viewport de
@@ -83,7 +83,7 @@ algo desde cero, revisar si ya existe y solo necesita un redeploy.
 2. **`ARCHITECTURE.md`** — componentes del sistema, stack elegido y por qué, estructura de carpetas.
 3. **`SETUP.md`** — pasos concretos de instalación (MongoDB, Python, `.env`) en la máquina Linux.
 4. **`schema.md`** — forma exacta de cada colección de Mongo (`catalogo_alimentos`, `menus`,
-   `recetas`, `objetivos`, `menus_construidos`).
+   `recetas`, `objetivos`, `menus_construidos`, `plantillas_semana`, `asignacion_semanal`).
 5. **`VALIDATION.md`** — contrato exacto del módulo `nutriguia/validation.py` (toda la aritmética
    de equivalentes vive ahí, en un solo lugar).
 6. **`UI-BUILD-YOUR-MENU.md`** — especificación de interacción de la app Streamlit.
@@ -189,7 +189,7 @@ generar un platillo nuevo desde el catálogo — y ahí sí aplican las reglas d
      mantiene fijo (ajustable con el stepper como siempre); uno presente solo en ALGUNAS se marca
      `Ingrediente.opcional` (ver `schema.md`) — esto también cubre "ingrediente A en una variante,
      alternativa B en otra" (ej. papa vs arroz): ambos quedan opcionales independientes, y el
-     usuario incluye uno/excluye el otro en "Build your menu" para reconstruir la variante que
+     usuario incluye uno/excluye el otro en "Menú del día" para reconstruir la variante que
      quiera. Conocido efecto secundario menor: si el mismo alimento real aparece escrito distinto
      entre variantes (ej. "Atún" vs "Atún en agua", "Proteína" vs "Proteína en polvo"), el script no
      los reconoce como el mismo ingrediente y quedan como dos opcionales separados en vez de uno —
@@ -229,13 +229,14 @@ generar un platillo nuevo desde el catálogo — y ahí sí aplican las reglas d
 ## Convenciones para la base de datos (MongoDB)
 
 Colecciones: `personas`, `catalogo_alimentos`, `recetas`, `menus`, `objetivos`,
-`menus_construidos`. Ver `schema.md` para la forma exacta de cada documento — incluye las dos
-colecciones nuevas de esta fase (`objetivos` y `menus_construidos`, para la app "build your
-menu"). Índices recomendados: `menus` → compuesto `(persona, periodo, menu_id)`; `recetas` →
-`tiempo_tipico` y `vector_equivalentes.<grupo>`; `catalogo_alimentos` → único sobre `alimento`;
-`menus_construidos` → único compuesto `(persona, fecha)` (una persona no puede tener dos planes
-guardados para la misma fecha — se sobreescribe, no se duplica; el índice se crea perezosamente
-desde `views/build_your_menu.py` al primer guardado, no desde `import_data.py`).
+`menus_construidos`, `plantillas_semana`, `asignacion_semanal`. Ver `schema.md` para la forma
+exacta de cada documento. Índices recomendados: `menus` → compuesto `(persona, periodo, menu_id)`;
+`recetas` → `tiempo_tipico` y `vector_equivalentes.<grupo>`; `catalogo_alimentos` → único sobre
+`alimento`; `menus_construidos` → único compuesto `(persona, fecha)` (una persona no puede tener
+dos planes guardados para la misma fecha — se sobreescribe, no se duplica; el índice se crea
+perezosamente desde `views/menu_del_dia.py` al primer guardado, no desde `import_data.py`);
+`plantillas_semana` → único compuesto `(persona, nombre)`; `asignacion_semanal` → único sobre
+`persona` (ambos índices creados perezosamente desde `views/menu_semanal.py`, mismo patrón).
 
 No commitear credenciales de conexión a Mongo — usar `.env` fuera de git (ver `SETUP.md`).
 

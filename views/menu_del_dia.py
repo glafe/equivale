@@ -1,4 +1,5 @@
-"""EquiVale — "Build your menu" (Fase 4: día completo, guardado por fecha, historial).
+"""EquiVale — "Menú del día" (antes "Build your menu"; renombrado 2026-08-29 para homologar el
+idioma de la app -- Fase 4: día completo, guardado por fecha, historial).
 
 Ver UI-BUILD-YOUR-MENU.md para la especificación de interacción completa.
 """
@@ -206,7 +207,7 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
 
 
 def render() -> None:
-    st.title("🥗 EquiVale — Build your menu")
+    st.title("🥗 EquiVale — Menú del día")
     st.caption("Arma tu día completo, guarda un plan por fecha, y revisa tu historial.")
 
     # Un botón "Abrir" del historial (más abajo, en un render anterior) puede haber pedido
