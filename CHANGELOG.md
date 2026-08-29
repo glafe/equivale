@@ -20,6 +20,16 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.8.3] - 2026-08-29
+
+### Fixed
+- Corrección sobre `0.8.2`: el `onclick` agregado ahí no hacía nada (Streamlit también elimina
+  `onclick` de un `<a>` renderizado vía markdown). Los enlaces del diagrama de "Guía" en realidad
+  siempre funcionaron -- Streamlit fuerza `target="_blank"` en todo `<a>` de markdown, así que
+  abren en una pestaña nueva, no navegan en el mismo lugar. Quitado el `onclick` inerte y
+  corregido el texto de la página para decir "se abre en una pestaña nueva" (ver `BUGS.md`
+  BUG-008, reclasificado de RV a Closed -- no era un bug de la app).
+
 ## [0.8.2] - 2026-08-29
 
 ### Fixed

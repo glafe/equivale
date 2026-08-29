@@ -9,14 +9,13 @@ CSS y HTML van en llamadas a st.markdown SEPARADAS a propósito (una para el <st
 llamada rompió el CSS de la identidad Barro (el parser de Markdown de Streamlit corta el bloque en
 la primera línea en blanco si el <style> no empieza su propia línea desde el carácter 0).
 
-Los nodos son `<a href="...">` pero un `<a>` normal insertado vía `unsafe_allow_html` NO navega
-al hacer clic dentro de esta app (el shell de Streamlit intercepta el click en algún punto antes
-de que llegue el navegador a seguir el `href` -- no investigado a fondo por qué, solo confirmado
-en QA visual que el clic no hacía nada; ver BUGS.md BUG-008). Cada nodo trae además
-`onclick="window.location.href=this.getAttribute('href'); return false;"` -- un atributo HTML
-normal SÍ se evalúa aunque el elemento se haya insertado vía `innerHTML` (a diferencia de un tag
-`<script>`, que no se ejecuta así -- ver más abajo), así que esto navega de verdad sin depender
-del comportamiento por default del `<a>`.
+Los nodos son `<a href="...">` -- Streamlit fuerza `target="_blank" rel="noopener noreferrer"`
+en TODO `<a>` que renderiza vía markdown (incluso con `unsafe_allow_html=True`, e incluso para un
+href relativo/interno como estos) y además elimina cualquier atributo `onclick` que se le ponga
+(medida de sanitización, no algo configurable) -- así que un clic aquí abre la página destino en
+una pestaña nueva, nunca navega en el mismo lugar. Confirmado en `BUGS.md` BUG-008: no es un bug
+de esta página, es cómo Streamlit sanitiza `<a>` en markdown -- no intentar forzar navegación en
+el mismo lugar con JS, se elimina de todas formas.
 
 Ver UI-BUILD-YOUR-MENU.md -> "Guía" para la especificación completa.
 """
@@ -112,28 +111,26 @@ a.eqv-node, a.eqv-node:visited{
 </style>
 """
 
-_IR = "window.location.href=this.getAttribute('href'); return false;"
-
-DIAGRAMA_HTML = f"""
+DIAGRAMA_HTML = """
 <div class="eqv-guia-wrap">
   <div class="eqv-guia-diagrama">
-    <a id="n-personas" class="eqv-node" href="/personas" onclick="{_IR}">
+    <a id="n-personas" class="eqv-node" href="/personas">
       <span class="ico">🧑‍🤝‍🧑</span>Personas<span class="sub">quién, y su objetivo diario</span>
     </a>
     <div id="a-pv" class="eqv-arrow"></div>
-    <a id="n-ing" class="eqv-node" href="/editor_ingredientes" onclick="{_IR}">
+    <a id="n-ing" class="eqv-node" href="/editor_ingredientes">
       <span class="ico">🥕</span>Ingredientes<span class="sub">el catálogo base</span>
     </a>
     <div id="a-1" class="eqv-arrow"></div>
-    <a id="n-recetas" class="eqv-node" href="/editor_recetas" onclick="{_IR}">
+    <a id="n-recetas" class="eqv-node" href="/editor_recetas">
       <span class="ico">🧑‍🍳</span>Recetas<span class="sub">platillos armados con ingredientes</span>
     </a>
     <div id="a-2" class="eqv-arrow"></div>
-    <a id="n-semanal" class="eqv-node" href="/menu_semanal" onclick="{_IR}">
+    <a id="n-semanal" class="eqv-node" href="/menu_semanal">
       <span class="ico">🗓️</span>Menú semanal<span class="sub">ciclo de menús por día</span>
     </a>
     <div id="a-rd" class="eqv-arrow"></div>
-    <a id="n-diario" class="eqv-node" href="/menu_del_dia" onclick="{_IR}">
+    <a id="n-diario" class="eqv-node" href="/menu_del_dia">
       <span class="ico">🥗</span>Menú del día<span class="sub">un día suelto, por fecha</span>
     </a>
   </div>
@@ -156,8 +153,8 @@ def render() -> None:
     st.markdown(DIAGRAMA_CSS, unsafe_allow_html=True)
     st.markdown(DIAGRAMA_HTML, unsafe_allow_html=True)
     st.caption(
-        "Pasa el cursor sobre un cuadro para ver con qué se conecta. Haz clic para ir directo a "
-        "esa página."
+        "Pasa el cursor sobre un cuadro para ver con qué se conecta. Haz clic para abrir esa "
+        "página en una pestaña nueva."
     )
 
     st.divider()

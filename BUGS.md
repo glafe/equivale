@@ -11,7 +11,7 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 ### Bugs
 - Resueltos: [BUG-001](#bug-001--status-rv), [BUG-002](#bug-002--status-rv),
   [BUG-003](#bug-003--status-rv), [BUG-004](#bug-004--status-rv), [BUG-005](#bug-005--status-rv),
-  [BUG-006](#bug-006--status-rv), [BUG-007](#bug-007--status-rv), [BUG-008](#bug-008--status-rv)
+  [BUG-006](#bug-006--status-rv), [BUG-007](#bug-007--status-rv), [BUG-008](#bug-008--status-c)
 
 ### Known Caveats
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002)
@@ -37,36 +37,37 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 
 ### Detailed Entries
 
-#### BUG-008 · [STATUS: RV]
+#### BUG-008 · [STATUS: C]
 **Title:** Los enlaces `<a href>` del diagrama de "Guía" no navegaban al hacer clic
-**Severity:** Medium
+**Severity:** Low
 **Reported Date:** 2026-08-29
-**Release Fixed:** 0.8.2
+**Resolved Date:** 2026-08-29
 
 ##### Observable Problem
-Cada nodo del diagrama de "Guía" es un `<a href="/slug">` con la URL correcta (confirmado
-leyendo el atributo `href` en el DOM), pero hacer clic no navegaba a ninguna parte — la URL se
-quedaba en `/guia`.
-
-##### Steps to Reproduce
-1. Abrir "Guía".
-2. Hacer clic en el nodo "Menú semanal".
-3. Esperado: navegar a `/menu_semanal`. Actual: no pasa nada, sigue en `/guia`.
+Al probar el diagrama de "Guía" con Playwright, hacer clic en un nodo no cambiaba la URL de la
+página bajo prueba — parecía que el clic no hacía nada.
 
 ##### Fix Explanation (Exec Level — No Code)
-Algo en la propia aplicación (Streamlit) intercepta el clic antes de que el navegador llegue a
-seguir el enlace por su cuenta — no se investigó a fondo la causa exacta, solo se confirmó el
-síntoma en pruebas visuales automatizadas.
+No era un bug de la app: Streamlit fuerza `target="_blank" rel="noopener noreferrer"` en TODO
+`<a>` que renderiza vía markdown (incluso con `unsafe_allow_html=True`, e incluso para un href
+relativo/interno como estos) — el clic sí funcionaba, solo que abría la página destino en una
+**pestaña nueva** del navegador en vez de navegar en el mismo lugar. El script de prueba
+verificaba la URL de la MISMA pestaña, así que nunca iba a ver el cambio.
 
 ##### Fix Details (Technical)
-Se agregó `onclick="window.location.href=this.getAttribute('href'); return false;"` a cada
-`<a>` del diagrama — un atributo HTML de evento sí se evalúa aunque el elemento se haya
-insertado vía `innerHTML` (a diferencia de un tag `<script>`, que no se ejecuta así — ver
-`BUG-005`/docstring de `views/guia.py`), así que la navegación ya no depende del comportamiento
-por default del `<a>`, que algo en el shell de Streamlit está suprimiendo.
+Primer intento (equivocado): se agregó `onclick="window.location.href=...; return false;"` a
+cada nodo, asumiendo que algo suprimía el comportamiento por default del `<a>`. Ese `onclick` no
+hacía nada — Streamlit también elimina cualquier atributo `onclick` de un `<a>` renderizado vía
+markdown (medida de sanitización, no configurable) — pero como el `target="_blank"` de por sí sí
+funcionaba, el clic "se veía arreglado" cuando en realidad el `onclick` nunca se ejecutó. Se
+confirmó la causa real usando `page.context.expect_page()` de Playwright (esperar una pestaña
+nueva) en vez de revisar la URL de la pestaña original. Se quitó el `onclick` (inerte) y se
+actualizó el texto de la página para decir "se abre en una pestaña nueva" en vez de implicar
+navegación en el mismo lugar.
 
 ##### Workaround
-Ninguno necesario tras el fix.
+Ninguno necesario — el comportamiento real (abrir en pestaña nueva) es aceptable para una página
+de ayuda; solo hacía falta que el texto de la UI lo describiera bien.
 
 #### BUG-007 · [STATUS: RV]
 **Title:** Los nodos del diagrama de "Guía" se veían como enlaces azules subrayados, no como tarjetas

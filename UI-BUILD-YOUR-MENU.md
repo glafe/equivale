@@ -187,13 +187,12 @@ entender cómo se construye un Menú semanal, con enlaces y resaltado.
 - **Diagrama** (`<div>` con `st.markdown(..., unsafe_allow_html=True)`, dos llamadas separadas
   para el `<style>` y el HTML — ver nota de `BUG-005` en el docstring del archivo): 5 nodos
   (Personas, Ingredientes, Recetas, Menú semanal, Menú del día) conectados con flechas de texto
-  (→/↓) en un `grid-template-areas` de CSS. Cada nodo es un `<a href="/slug_de_la_pagina">` con
-  además `onclick="window.location.href=this.getAttribute('href'); return false;"` — un `<a>`
-  normal sin ese `onclick` **no navega** dentro de esta app (el shell de Streamlit intercepta el
-  clic antes de que el navegador siga el `href` por default; no investigado a fondo por qué, solo
-  confirmado en QA visual — ver `BUGS.md` BUG-008). El atributo `onclick` sí se evalúa aunque el
-  elemento se inserte vía `innerHTML` (a diferencia de un `<script>`, ver el punto de abajo), así
-  que fuerza la navegación sin depender del comportamiento por default del enlace.
+  (→/↓) en un `grid-template-areas` de CSS. Cada nodo es un `<a href="/slug_de_la_pagina">` —
+  Streamlit fuerza `target="_blank" rel="noopener noreferrer"` en todo `<a>` renderizado vía
+  markdown (aunque el href sea relativo/interno) y elimina cualquier `onclick` que se le ponga,
+  así que un clic abre la página destino **en una pestaña nueva**, no navega en el mismo lugar —
+  no es un bug, es cómo Streamlit sanitiza `<a>` en markdown (ver `BUGS.md` BUG-008, no intentar
+  forzarlo distinto con JS, se elimina de todas formas).
   - **Resaltado al pasar el cursor**: CSS puro con el selector `:has()` (ej.
     `.diagrama:has(#n-recetas:hover) #n-semanal { ... }`) — sin JavaScript. Se evitó `<script>`
     a propósito: un `<script>` insertado vía `unsafe_allow_html` generalmente NO se ejecuta,
