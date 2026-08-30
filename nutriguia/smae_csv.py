@@ -12,9 +12,28 @@ porción que de verdad aporta suficiente proteína como para contar como tal -- 
 fuera a propósito, no es la misma decisión que la leche simple. La clasificación por categoría se
 hace por texto normalizado (sin acentos/mayúsculas) en vez de comparar el texto exacto, porque el
 CSV mezcla más de una codificación de caracteres entre secciones (algunas filas vienen en Latin-1,
-otras no) y comparar así es robusto a eso; los nombres de alimento en sí se decodifican como
-Latin-1 (correcto para la gran mayoría) y pueden salir con acentos mal formados en un puñado de
-filas -- no se persiguió exhaustivamente, mismo criterio que la regla 9 de CLAUDE.md.
+otras en UTF-8) y comparar así es robusto a eso -- además, la clasificación solo mira el PREFIJO
+de `Tipo Equivalente` (ej. `"alimentos libres"`), que siempre es ASCII puro, así que le da igual
+si el resto de esa celda quedó mal decodificado.
+
+**`_reparar_mojibake()` (2026-08-30, corrige `BUG-012`)**: el archivo se abre entero como Latin-1
+(`open(..., encoding="latin1")`, nunca falla porque Latin-1 mapea cualquier byte a un carácter),
+pero varias filas están en realidad codificadas en UTF-8 -- decodificarlas como Latin-1 da
+"mojibake" (ej. "Café" sale como "CafÃ©": los bytes UTF-8 de "é", `0xC3 0xA9`, se leen como dos
+caracteres Latin-1 sueltos, "Ã" y "©"). Antes esto se dejaba así ("no se persiguió
+exhaustivamente") porque parecía solo cosmético -- pero rompía también la BÚSQUEDA de "Agregar de
+SMAE": `normalizar_busqueda()` le quita el acento a "é" (correcto) dejando "e", pero a "Ã©"
+(mojibake) le quita la "Ã" (que sí tiene decomposición NFKD, A+tilde) y también la "©" (que no
+tiene decomposición Y no es ASCII, así que `encode("ascii","ignore")` la descarta entera) --
+"CafÃ©" normalizaba a "cafa", no a "cafe", así que buscar "café" no encontraba "Café en polvo" (sí
+aparecían "Café descafeinado"/etc. porque esas coincidencias no dependían de la "é" corrupta).
+`_reparar_mojibake()` revierte el daño cuando se puede: sub-codifica el string de vuelta a bytes
+Latin-1 (nunca falla, por la misma razón de arriba) y trata de decodificar ESOS bytes como UTF-8 --
+si funciona, eran bytes UTF-8 mal leídos y el resultado es el texto correcto ("CafÃ©" -> "Café");
+si truena (`UnicodeDecodeError`), el texto sí era Latin-1 genuino y se deja tal cual. Heurística
+estándar para archivos de codificación mixta (la misma que usa la librería `ftfy`), sin
+dependencia nueva -- confiable porque texto Latin-1 con acentos casi nunca es además UTF-8 válido
+por coincidencia (las reglas de bytes de continuación de UTF-8 son estrictas).
 """
 
 import csv
@@ -35,6 +54,15 @@ TIPOS_LECHE_SOPORTADOS = {"leche descremada", "leche semidescremada", "leche ent
 # catalogarse como AOA -- por debajo de esto, la porción es sobre todo carbohidrato/grasa y no
 # aporta lo que se espera de un equivalente de AOA (a pedido del usuario, 2026-08-29).
 UMBRAL_PROTEINA_LECHE_AOA = 7.0
+
+
+def _reparar_mojibake(texto: str) -> str:
+    """Repara texto UTF-8 que se decodificó por error como Latin-1 (ver docstring del módulo) --
+    si `texto` no era ese caso (era Latin-1 de verdad), lo devuelve sin cambios."""
+    try:
+        return texto.encode("latin1").decode("utf-8")
+    except UnicodeDecodeError:
+        return texto
 
 
 def _grupo_desde_tipo_equivalente(tipo: str, proteina_g: float | None = None) -> str | None:
@@ -89,14 +117,14 @@ def cargar_filas_smae() -> list[dict]:
                 cantidad = float(r["Cantidad sugerida"])
             except (KeyError, ValueError):
                 continue
-            unidad = (r.get("Unidad") or "").strip()
+            unidad = _reparar_mojibake((r.get("Unidad") or "").strip())
             cantidad_texto = f"{formatear_decimal_como_fraccion(cantidad)} {unidad}".strip()
             filas.append(
                 {
-                    "alimento": alimento,
+                    "alimento": _reparar_mojibake(alimento),
                     "grupo_smae": grupo,
                     "cantidad_por_equivalente": cantidad_texto,
-                    "tipo_original": tipo,
+                    "tipo_original": _reparar_mojibake(tipo),
                 }
             )
     return filas

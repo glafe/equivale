@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.22.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.23.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -141,6 +141,14 @@ un rectángulo claro fijo en modo oscuro; corregido definiéndolas en `nutriguia
 señal disponible ya que Streamlit no expone su tema activo a CSS/JS — ver `KC-004` en `BUGS.md`
 para la limitación de cuando alguien fuerza "Dark" a mano con el sistema en claro). Verificado en
 vivo con Playwright emulando `color_scheme="dark"` y también forzando "Dark" a mano desde el menú.
+
+**`BUG-012` corregido (0.23.0, 2026-08-30)**: el usuario reportó que buscar "Café" en "Agregar de
+SMAE" mostraba "CafÃ©" (acento corrupto) y que "Café en polvo" no aparecía en los resultados —
+misma causa: `SMAE_CONSULTA.csv` mezcla Latin-1 y UTF-8 entre secciones y se lee entera como
+Latin-1, así que las filas en UTF-8 quedan con "mojibake"; eso además rompía `normalizar_busqueda()`
+lo suficiente como para que "café" no coincidiera con "CafÃ©". Nueva `_reparar_mojibake()` en
+`nutriguia/smae_csv.py` (heurística estándar de re-codificar a Latin-1 y volver a intentar
+decodificar como UTF-8, sin dependencia nueva) aplicada a `alimento`/`unidad`/`tipo_original`.
 
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,

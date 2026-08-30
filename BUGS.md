@@ -12,7 +12,8 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 - Resueltos: [BUG-001](#bug-001--status-rv), [BUG-002](#bug-002--status-rv),
   [BUG-003](#bug-003--status-rv), [BUG-004](#bug-004--status-rv), [BUG-005](#bug-005--status-rv),
   [BUG-006](#bug-006--status-rv), [BUG-007](#bug-007--status-rv), [BUG-008](#bug-008--status-c),
-  [BUG-009](#bug-009--status-rv), [BUG-010](#bug-010--status-rv), [BUG-011](#bug-011--status-rv)
+  [BUG-009](#bug-009--status-rv), [BUG-010](#bug-010--status-rv), [BUG-011](#bug-011--status-rv),
+  [BUG-012](#bug-012--status-rv)
 
 ### Known Caveats
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002), [KC-003](#kc-003), [KC-004](#kc-004)
@@ -38,6 +39,47 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 ## Bugs
 
 ### Detailed Entries
+
+#### BUG-012 · [STATUS: RV]
+**Title:** "Agregar de SMAE" mostraba nombres con acentos corruptos ("CafÃ©") y no encontraba
+algunos alimentos al buscarlos con acento
+**Severity:** Low
+**Reported Date:** 2026-08-30
+**Release Fixed:** 0.23.0
+
+##### Observable Problem
+El usuario reportó dos cosas a la vez, que resultaron ser la misma causa: (1) al buscar "Café" (con
+o sin acento) en "Agregar de SMAE", el nombre aparecía mostrado como "CafÃ©" en vez de "Café"; y
+(2) "Café en polvo" no aparecía en los resultados de esa búsqueda -- solo las variantes
+descafeinadas.
+
+##### Fix Explanation (Exec Level — No Code)
+`SMAE_CONSULTA.csv` mezcla dos codificaciones de caracteres entre secciones (parte en Latin-1,
+parte en UTF-8) y se lee entera como Latin-1 -- las filas que en realidad están en UTF-8 quedan
+con los acentos mal formados ("mojibake": los bytes de "é" se leen como dos caracteres sueltos,
+"Ã" y "©"). Eso explica el problema (1). El problema (2) es consecuencia del mismo daño: la
+función que le quita el acento a una palabra para poder compararla sin importar mayúsculas/acentos
+(`normalizar_busqueda()`) le quitaba a "CafÃ©" el carácter equivocado y el resultado no volvía a
+coincidir con "café" al buscar -- por eso "Café en polvo" (con el acento corrupto) no aparecía,
+mientras que "Café descafeinado" sí (esa coincidencia no dependía del acento corrupto). Ahora el
+texto se repara antes de mostrarlo o compararlo, así que ambos problemas se resuelven con el mismo
+arreglo.
+
+##### Fix Details (Technical)
+Nueva función pura `_reparar_mojibake()` en `nutriguia/smae_csv.py`: re-codifica el string (ya
+decodificado como Latin-1) de vuelta a bytes Latin-1 -- eso nunca falla -- y trata de decodificar
+esos bytes como UTF-8; si funciona, eran bytes UTF-8 mal leídos y devuelve el resultado corregido;
+si truena (`UnicodeDecodeError`), el texto sí era Latin-1 genuino y se deja igual. Heurística
+estándar para archivos de codificación mixta (la misma que usa la librería `ftfy`), sin agregar
+una dependencia nueva. Se aplica a `alimento`, `unidad` (dentro de `cantidad_por_equivalente`) y
+`tipo_original` en `cargar_filas_smae()` antes de devolver cada fila. La clasificación por
+categoría (`grupo_smae`) no se tocó -- ya era inmune, porque solo compara el prefijo ASCII de
+`Tipo Equivalente`. `tests/test_smae_csv.py` cubre la reparación (recupera mojibake real, no toca
+Latin-1 genuino) y el caso reportado ("Café en polvo" aparece y se encuentra buscando "café").
+
+##### Workaround
+Ninguno necesario tras el fix -- antes, buscar por una palabra que no incluyera el acento
+corrupto (ej. "descafeinado" en vez de "café").
 
 #### BUG-011 · [STATUS: RV]
 **Title:** "🧬 Clonar" (Menú del día) podía sobreescribir sin aviso un plan ya guardado de la

@@ -6,8 +6,10 @@ from nutriguia.smae_csv import (
     NO_SOPORTADO,
     UMBRAL_PROTEINA_LECHE_AOA,
     _grupo_desde_tipo_equivalente,
+    _reparar_mojibake,
     cargar_filas_smae,
 )
+from nutriguia.texto import normalizar_busqueda
 
 
 def test_cargar_filas_smae_no_esta_vacio():
@@ -52,6 +54,35 @@ def test_leche_se_cataloga_como_aoa_solo_con_proteina_suficiente():
         assert _grupo_desde_tipo_equivalente(tipo, UMBRAL_PROTEINA_LECHE_AOA) == "AOA"
         assert _grupo_desde_tipo_equivalente(tipo, UMBRAL_PROTEINA_LECHE_AOA - 0.1) == NO_SOPORTADO
         assert _grupo_desde_tipo_equivalente(tipo, None) == NO_SOPORTADO
+
+
+def test_reparar_mojibake_recupera_utf8_mal_leido_como_latin1():
+    """BUG-012: bytes UTF-8 de "é" (0xC3 0xA9) leídos como Latin-1 dan "Ã©" -- debe recuperar
+    "é"."""
+    mojibake = "Caf\xc3\xa9"  # exactamente lo que produce open(..., encoding="latin1") sobre
+    # los bytes UTF-8 de "Café" (0x43 0x61 0x66 0xC3 0xA9).
+    assert _reparar_mojibake(mojibake) == "Café"
+
+
+def test_reparar_mojibake_no_toca_texto_latin1_genuino():
+    """Un acento decodificado correctamente como Latin-1 (ej. "ú" = U+00FA, un solo byte 0xFA en
+    el CSV original) no debe alterarse -- re-decodificar esos bytes como UTF-8 debe fallar
+    (0xFA no es un byte de inicio UTF-8 válido seguido de "n"), así que se conserva tal cual."""
+    assert _reparar_mojibake("Atún") == "Atún"
+    assert _reparar_mojibake("Acelga cruda") == "Acelga cruda"
+
+
+def test_cafe_en_polvo_aparece_y_se_encuentra_buscando_cafe():
+    """BUG-012: "Café en polvo" existe en el CSV (categoría "Alimentos libres en energía", libre)
+    pero antes de reparar el mojibake, "Café" salía como "CafÃ©" -- normalizar_busqueda() le
+    quitaba mal el acento (daba "cafa", no "cafe") y buscar "café" no lo encontraba. Ahora sí."""
+    filas = cargar_filas_smae()
+    alimentos = {f["alimento"] for f in filas}
+    assert "Café en polvo" in alimentos
+    assert "CafÃ©" not in " ".join(alimentos)  # ningún alimento debe quedar con mojibake
+
+    encontrados = [f["alimento"] for f in filas if normalizar_busqueda("café") in normalizar_busqueda(f["alimento"])]
+    assert "Café en polvo" in encontrados
 
 
 def test_filas_de_leche_con_proteina_suficiente_llegan_como_aoa():

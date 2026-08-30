@@ -20,6 +20,19 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.23.0] - 2026-08-30
+
+### Fixed
+- **BUG-012**: "Agregar de SMAE" mostraba nombres con acentos corruptos (ej. "CafÃ©" en vez de
+  "Café") y no encontraba algunos alimentos al buscarlos con acento (ej. "Café en polvo" no
+  aparecía buscando "café", aunque sí sus variantes descafeinadas). Misma causa: `SMAE_CONSULTA.
+  csv` mezcla Latin-1 y UTF-8 entre secciones y se lee entera como Latin-1, produciendo "mojibake"
+  en las filas UTF-8 -- que además rompía `normalizar_busqueda()` lo suficiente como para que
+  "café" no coincidiera con el nombre corrupto. Nueva `_reparar_mojibake()` en
+  `nutriguia/smae_csv.py` (re-codifica a Latin-1 e intenta decodificar como UTF-8; si funciona,
+  usa el resultado corregido, si no, el texto era Latin-1 genuino y se deja igual -- sin
+  dependencia nueva) aplicada a `alimento`, `unidad` y `tipo_original` en `cargar_filas_smae()`.
+
 ## [0.22.0] - 2026-08-30
 
 ### Added

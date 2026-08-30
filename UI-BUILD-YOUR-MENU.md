@@ -664,10 +664,19 @@ alimentos nuevos sin escribirlos a mano. Esto es la parte de "EquiVale Chef" que
     sección "¿Qué grupos cubre 'Agregar de SMAE'?") en vez de citar este archivo — así el usuario
     ve la explicación sin salir de la app. Ver `nutriguia/smae_csv.py` para la clasificación
     exacta.
-  - El CSV mezcla más de una codificación de caracteres entre secciones (parte viene en Latin-1,
-    el resto no) — se decodifica como Latin-1 (correcto para la gran mayoría de los ~2000 nombres
-    soportados) y un puñado puede salir con acentos mal formados; no se persiguió exhaustivamente,
-    mismo criterio que la regla 9 de `CLAUDE.md` para nombres de ingrediente parecidos.
+  - **Corregido `BUG-012` (2026-08-30)**: el CSV mezcla más de una codificación de caracteres
+    entre secciones (parte viene en Latin-1, el resto en UTF-8) — se decodifica todo el archivo
+    como Latin-1 (necesario porque nunca falla, a diferencia de intentar UTF-8 con un archivo
+    mixto), lo que dejaba las filas en UTF-8 con "mojibake" (ej. "Café" salía como "CafÃ©") — y
+    esto además rompía la búsqueda: "CafÃ©" normalizaba a "cafa", no "cafe", así que buscar "café"
+    no encontraba "Café en polvo" (el usuario lo reportó). `_reparar_mojibake()` (nuevo en
+    `nutriguia/smae_csv.py`) revierte el daño cuando puede: re-codifica el string a bytes Latin-1
+    (nunca falla) e intenta decodificarlos como UTF-8 -- si funciona, eran bytes UTF-8 mal leídos
+    y usa el resultado corregido; si truena, el texto sí era Latin-1 genuino y lo deja tal cual.
+    Se aplica a `alimento`, `unidad` (dentro de `cantidad_por_equivalente`) y `tipo_original`
+    antes de devolver cada fila -- la clasificación por categoría (`grupo_smae`) no necesitó
+    tocarse, ya era inmune a esto porque solo compara el PREFIJO de `Tipo Equivalente`, que
+    siempre es ASCII puro.
 - **Por qué widgets sueltos y no `st.form`**: un checkbox "Confirmo eliminar" adentro de un
   `st.form` no puede des-habilitar su propio botón de submit en la misma interacción — los forms
   de Streamlit solo reenvían sus valores al hacer submit, así que el botón quedaría deshabilitado
