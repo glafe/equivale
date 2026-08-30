@@ -169,13 +169,13 @@ pasó a ser puramente una herramienta de **asignación y consulta**, no de const
   advertencia visual en "Cobertura de la semana", pero no se limpia sola (ver "Configuración",
   `_check_asignacion_rota()`, que la detecta explícitamente; corregirla es volver a abrir el
   expander "Editar asignación de días" y reasignar ese día).
-- **"📄 Descargar PDF para imprimir"** (2026-08-29, a pedido del usuario -- primera pieza de FR-003
+- **"🖨️ Descargar HTML para imprimir"** (2026-08-29, a pedido del usuario -- primera pieza de FR-003
   "exportar imprimible", adelantada antes del resto de la Fase 5 porque el usuario la pidió
-  explícitamente como prueba; **rediseñado por completo el 2026-08-30**, ver abajo):
+  explícitamente como prueba; **rediseñado por completo el 2026-08-30**, ver abajo; **motor
+  cambiado de PDF/ReportLab a HTML el mismo 2026-08-30**, ver "Del PDF al HTML" más abajo):
   `st.download_button` justo debajo de "Cobertura de la semana", generado con
-  `nutriguia/pdf_semanal.py` (ReportLab, agregado como dependencia nueva -- ver
-  `requirements.txt`). Pensado para reemplazar el uso que el usuario le daba antes a un Excel
-  armado a mano (fuera de git, `menu-Sep.xlsx` y similares) para tener el menú de la semana
+  `nutriguia/html_semanal.py`. Pensado para reemplazar el uso que el usuario le daba antes a un
+  Excel armado a mano (fuera de git, `menu-Sep.xlsx` y similares) para tener el menú de la semana
   impreso y a la mano.
   - **Rediseño 2026-08-30**: la primera versión (0.12.0) era una cuadrícula de 7 días x 5 tiempos
     con solo el nombre de cada receta -- el usuario aclaró, tras pedirle revisar cómo usaba de
@@ -210,24 +210,38 @@ pasó a ser puramente una herramienta de **asignación y consulta**, no de const
     - Página vertical (carta), no horizontal como la v1 -- ya no hace falta el ancho de 7 columnas
       de día, y el contenido (nombre + tabla de ingredientes por receta) es naturalmente vertical.
     - **Afinado el mismo 2026-08-30, a pedido del usuario, para usar menos papel al imprimir**:
-      letra más chica en todo el documento, márgenes reducidos (16mm -> 10mm), y sin `PageBreak`
-      forzado entre menús -- fluyen uno tras otro (separados por una línea delgada) y ReportLab
-      solo pasa de página cuando de verdad no cabe más contenido, en vez de gastar una hoja
-      completa por cada menú corto. Cada receta (nombre + tabla) va en un `KeepTogether` para que
-      no se corte a la mitad justo en un salto de página.
-    - **Recetas a dos columnas** (`_bloque_recetas()`, mismo día -- seguía sobrando la mitad
-      derecha de la hoja): las recetas de un mismo tiempo se emparejan de dos en dos, lado a lado,
-      cada tabla a la mitad del ancho de página (con un `gutter` de 6mm entre ambas). Si el tiempo
-      tiene un número impar de recetas, la última va sola a ancho completo en vez de dejar una
-      columna vacía. Cada par (o la receta suelta) va en su propio `KeepTogether`.
-  - **`nutriguia/pdf_semanal.py` no toca Mongo** -- recibe `asignacion`/`menus_por_nombre`/
-    `catalogo` ya resueltos desde `views/menu_semanal.py` (mismo patrón que
-    `nutriguia/validation.py`), para poder probarlo con datos sintéticos
-    (`tests/test_pdf_semanal.py`) sin una base real. `catalogo` es nuevo en el rediseño -- hace
-    falta para resolver la cantidad real de cada ingrediente, no solo su conteo de equivalentes.
-  - **Sin emoji en el PDF**: las fuentes base de ReportLab (Helvetica) no traen esos glifos y
-    salen como cuadros negros -- a diferencia de Streamlit, donde sí se ven bien. Los íconos de
-    tiempo (🌅🍳🍎🍽️🌙) se quedan solo en la app; el PDF usa nombres de tiempo en texto plano.
+      letra más chica en todo el documento, márgenes reducidos (16mm -> 10mm), y sin salto de
+      página forzado entre menús -- fluyen uno tras otro (separados por una línea delgada) y el
+      motor de render solo pasa de página cuando de verdad no cabe más contenido, en vez de
+      gastar una hoja completa por cada menú corto.
+    - **Recetas a dos columnas** (mismo día -- seguía sobrando la mitad derecha de la hoja): las
+      recetas de un mismo tiempo se acomodan de dos en dos, lado a lado, cada una a la mitad del
+      ancho de página. Si el tiempo tiene un número impar de recetas, la última va sola a ancho
+      completo en vez de dejar una columna vacía.
+  - **Del PDF (ReportLab) al HTML (2026-08-30, misma tarde, a pedido del usuario)**: tras usar la
+    v1 de ReportLab, el usuario prefirió que EquiVale generara el HTML directamente y usar el
+    "Imprimir a PDF" del propio navegador -- le da control total de márgenes/escala/qué tanto cabe
+    por hoja, algo que ir ajustando a ciegas en ReportLab (ver los tres rediseños de arriba, todos
+    el mismo día) no daba. `nutriguia/pdf_semanal.py` se retiró por completo (y `reportlab` salió
+    de `requirements.txt`); `nutriguia/html_semanal.py` lo reemplaza con el mismo contenido y
+    diseño visual (mismo `GRUPO_COLOR`, mismo agrupamiento por menú/tiempo, mismas dos columnas),
+    solo cambia el motor:
+    - La celda de Grupo (chip de color con el EQ del grupo en esa receta) usa `rowspan` nativo de
+      HTML en vez de `Table` + `SPAN` de ReportLab -- mismo resultado visual, sin calcular rangos
+      de fila a mano.
+    - Las dos columnas por tiempo son CSS Grid (`grid-template-columns: 1fr 1fr`) en vez del
+      emparejado manual de recetas -- la última receta de un tiempo con número impar se marca con
+      una clase `receta-completa` (`grid-column: 1 / -1`) para ocupar el ancho completo.
+    - `break-inside: avoid` (CSS) en cada tarjeta de receta reemplaza `KeepTogether` de ReportLab
+      -- evita que una receta se corte a la mitad justo en un salto de página, tanto al imprimir
+      como al exportar a PDF desde el navegador.
+    - **Sí trae los emoji de tiempo** (🌅🍳🍎🍽️🌙, iguales a los de la app) -- a diferencia de
+      Helvetica en ReportLab, cualquier navegador los renderiza bien.
+    - Es un documento HTML autocontenido (CSS embebido, sin fuentes ni scripts externos) --
+      `st.download_button` con `mime="text/html"`; el usuario lo abre y usa Ctrl/Cmd+P.
+    - `nutriguia/html_semanal.py` sigue sin tocar Mongo -- recibe `asignacion`/`menus_por_nombre`/
+      `catalogo` ya resueltos desde `views/menu_semanal.py` (mismo patrón que
+      `nutriguia/validation.py`), con `tests/test_html_semanal.py` sobre datos sintéticos.
   - Sigue siendo una primera versión de FR-003/Fase 5, no la definitiva -- ajustar según feedback
     de uso real antes de darla por terminada.
 

@@ -20,6 +20,32 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.18.0] - 2026-08-30
+
+### Changed
+- **"Menú semanal" exporta HTML en vez de PDF** -- a pedido del usuario, que prefiere que EquiVale
+  genere el HTML y usar el "Imprimir a PDF" de su propio navegador (Ctrl/Cmd+P), con control total
+  de márgenes/escala/qué tanto cabe por hoja, en vez de un PDF armado a ciegas con ReportLab.
+  `nutriguia/pdf_semanal.py` se retiró por completo (y `reportlab` salió de `requirements.txt`);
+  `nutriguia/html_semanal.py` (nuevo) lo reemplaza con el mismo contenido y diseño visual (mismo
+  `GRUPO_COLOR`, mismo agrupamiento por menú/tiempo, mismas dos columnas por tiempo):
+  - Chip de grupo (con el EQ del grupo en esa receta) fusionado sobre sus filas de ingredientes
+    con `rowspan` nativo de HTML, en vez de `Table` + `SPAN` de ReportLab.
+  - Dos columnas por tiempo con CSS Grid (`grid-template-columns: 1fr 1fr`) en vez del emparejado
+    manual de recetas de dos en dos -- con un número impar, la última se marca `receta-completa`
+    (`grid-column: 1 / -1`) para ocupar el ancho completo.
+  - `break-inside: avoid` reemplaza `KeepTogether` -- evita que una receta se corte a la mitad en
+    un salto de página, tanto al imprimir como al exportar a PDF desde el navegador.
+  - Sí trae los emoji de tiempo (🌅🍳🍎🍽️🌙) -- a diferencia de Helvetica en ReportLab, cualquier
+    navegador los renderiza bien.
+  - `st.download_button` ahora entrega `mime="text/html"` (antes `application/pdf`), botón
+    renombrado a "🖨️ Descargar HTML para imprimir".
+  - `tests/test_pdf_semanal.py` se retiró; `tests/test_html_semanal.py` (nuevo) cubre los mismos
+    casos (semana mixta/libre, sin objetivo, menú sin día asignado, fallback de cantidad sin
+    catálogo, ingrediente libre sin "None", dos/tres recetas por tiempo) más uno nuevo de
+    escapado de HTML en nombres.
+  - Ver `UI-BUILD-YOUR-MENU.md` → "Del PDF al HTML" y `BUGS.md` FR-003 para el detalle completo.
+
 ## [0.17.0] - 2026-08-30
 
 ### Fixed

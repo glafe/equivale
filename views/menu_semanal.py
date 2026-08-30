@@ -16,7 +16,7 @@ Ver UI-BUILD-YOUR-MENU.md -> "Menú semanal" para la especificación completa.
 import streamlit as st
 
 from nutriguia.colores import GRUPO_ETIQUETA, chip_html
-from nutriguia.pdf_semanal import generar_pdf_semanal
+from nutriguia.html_semanal import generar_html_semanal
 from nutriguia.streamlit_data import cargar_catalogo, cargar_objetivo, cargar_personas, db
 
 DIAS = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
@@ -92,16 +92,18 @@ def render() -> None:
                 st.caption("Libre")
 
     st.download_button(
-        "📄 Descargar PDF para imprimir",
-        data=generar_pdf_semanal(
+        "🖨️ Descargar HTML para imprimir",
+        data=generar_html_semanal(
             persona, cargar_objetivo(persona), asignacion, menus_por_nombre, cargar_catalogo()
         ),
-        file_name=f"menu-semanal-{persona}.pdf",
-        mime="application/pdf",
+        file_name=f"menu-semanal-{persona}.html",
+        mime="text/html",
         help=(
             "Un bloque por menú (nombre, a qué días aplica, y sus recetas con ingredientes y "
             "cantidades reales agrupados por grupo SMAE) -- mismo formato que el Excel que "
-            "usabas antes, con los colores estandarizados de EquiVale."
+            "usabas antes, con los colores estandarizados de EquiVale. Ábrelo en tu navegador y "
+            "usa Ctrl/Cmd+P para imprimirlo o guardarlo como PDF -- con el control de "
+            "márgenes/escala del propio navegador."
         ),
     )
 

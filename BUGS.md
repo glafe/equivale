@@ -451,6 +451,12 @@ Fase 4 en la vida real — puede cambiar qué vale la pena pulir primero.
 > "Menú semanal". Ver `CHANGELOG.md` 0.12.0 y `UI-BUILD-YOUR-MENU.md` → "Menú semanal" para el
 > detalle. Es una primera versión ("hagamos la prueba", palabras del usuario) -- falta ajustar
 > tamaños/diseño según feedback de uso real antes de darla por terminada del todo.
+>
+> **Motor cambiado de PDF a HTML en 0.18.0 (2026-08-30)** — a pedido del usuario, que prefiere que
+> EquiVale genere el HTML y usar el "Imprimir a PDF" de su propio navegador (control total de
+> márgenes/escala). `nutriguia/pdf_semanal.py` (ReportLab) se retiró; `nutriguia/html_semanal.py`
+> lo reemplaza con el mismo diseño visual. Ver `CHANGELOG.md` 0.18.0 y `UI-BUILD-YOUR-MENU.md` →
+> "Del PDF al HTML".
 
 ##### Dependencies
 Fase 4 (día completo + guardado + historial) — completa desde 2026-08-27.

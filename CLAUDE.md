@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.17.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.18.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -59,18 +59,22 @@ simple (descremada/semidescremada/entera), catalogada como AOA solo cuando la po
 aporta al menos 7 g de proteína (`UMBRAL_PROTEINA_LECHE_AOA` en `nutriguia/smae_csv.py`) —
 "Leche con azúcar" sigue sin soportarse a propósito; el caption de esa sección ya no cita
 `CLAUDE.md`, enlaza a "Guía" (expander "¿Qué grupos cubre 'Agregar de SMAE'?"). "Menú semanal"
-ahora también trae "📄 Descargar PDF para imprimir" (2026-08-29, primera pieza de FR-003/Fase 5
+ahora también trae "🖨️ Descargar HTML para imprimir" (2026-08-29, primera pieza de FR-003/Fase 5
 adelantada a pedido del usuario; **rediseñado 2026-08-30** tras revisar cómo usaba de verdad
 `menu-Sep.xlsx` -- ya no es una cuadrícula de 7 días, es un bloque por menú con nombre, a qué días
 aplica, y sus recetas con el detalle de ingredientes reales agrupado por grupo SMAE con los mismos
-`GRUPO_COLOR` de siempre, para identificar rápido la relación equivalente↔ingrediente
-(`nutriguia/pdf_semanal.py`, ReportLab); **afinado el mismo 2026-08-30** a pedido del usuario --
-Grupo/Cantidad/Alimento en columnas separadas (una fila por ingrediente, no varios apilados), letra
-más chica, y sin salto de página forzado entre menús (fluyen uno tras otro) para usar menos papel
-al imprimir; **las recetas de un mismo tiempo ahora se acomodan de a dos por fila** (a dos
-columnas, `_bloque_recetas()`) en vez de apiladas una debajo de otra -- aprovecha el ancho
-completo de la hoja; si un tiempo tiene un número impar de recetas, la última va sola a ancho
-completo. En "Menú del día" (2026-08-29,
+`GRUPO_COLOR` de siempre, para identificar rápido la relación equivalente↔ingrediente; **afinado el
+mismo 2026-08-30** a pedido del usuario -- Grupo/Cantidad/Alimento en columnas separadas (una fila
+por ingrediente, no varios apilados), letra más chica, y sin salto de página forzado entre menús
+(fluyen uno tras otro) para usar menos papel al imprimir; **las recetas de un mismo tiempo se
+acomodan de a dos por fila** (dos columnas) en vez de apiladas una debajo de otra -- aprovecha el
+ancho completo de la hoja; si un tiempo tiene un número impar de recetas, la última va sola a
+ancho completo. **Motor cambiado de PDF (ReportLab) a HTML el mismo 2026-08-30**, a pedido del
+usuario -- prefiere que EquiVale genere el HTML y usar el "Imprimir a PDF" de su propio navegador,
+con control total de márgenes/escala; `nutriguia/pdf_semanal.py` se retiró (y `reportlab` salió de
+`requirements.txt`), `nutriguia/html_semanal.py` lo reemplaza con el mismo diseño visual (chip de
+grupo con `rowspan` HTML nativo, dos columnas con CSS Grid, `break-inside: avoid` en vez de
+`KeepTogether`) — ver "Del PDF al HTML" en `UI-BUILD-YOUR-MENU.md`. En "Menú del día" (2026-08-29,
 a pedido del usuario), "Ver recetas de todas las personas" ahora arranca marcado por default, y
 cada receta agregada a un tiempo colapsa/expande su detalle de ingredientes (`st.expander` con
 `key=f"exp_receta_{instancia_id}"`) — al agregar una receta nueva, las demás de ese tiempo se

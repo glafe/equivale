@@ -36,8 +36,9 @@ def luminancia_relativa(color_hex: str) -> float:
 def color_texto_legible(color_hex: str) -> str:
     """Hex de texto (casi negro u casi blanco "Barro") legible sobre `color_hex` de fondo -- mismo
     criterio en todos los usos de GRUPO_COLOR, para no listar excepciones a mano (ej. Fruta es
-    claro y necesita texto oscuro). Compartido entre `chip_html` (HTML) y `nutriguia/pdf_semanal.py`
-    (PDF del "Menú semanal") para que un mismo grupo se vea igual de legible en ambos formatos."""
+    claro y necesita texto oscuro). Compartido entre `chip_html` (HTML de la app) y
+    `nutriguia/html_semanal.py` (HTML imprimible del "Menú semanal") para que un mismo grupo se
+    vea igual de legible en ambos."""
     return "#2B2621" if luminancia_relativa(color_hex) > 0.6 else "#F7F4EE"
 
 
