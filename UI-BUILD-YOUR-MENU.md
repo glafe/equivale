@@ -78,12 +78,28 @@ Ajustes       -> Configuración
         que se agrega otra receta al mismo tiempo) -- así cada vez que hace falta forzar el
         colapso, la key cambia y Streamlit trata el expander como recién creado, respetando
         `expanded=` una vez más.
+      - **Reordenar** (2026-08-30, a pedido del usuario, para mejorar la lectura cuando hay
+        varias recetas agregadas al mismo tiempo): dos botones angostos "🔼"/"🔽" junto al de
+        quitar (fuera del expander, mismo criterio de no tener que expandir para actuar) que
+        intercambian la posición de esa tarjeta con la anterior/siguiente en `dia["tiempos"]
+        [tiempo]` -- deshabilitados en los extremos (el primero no puede subir, el último no
+        puede bajar). No afecta el mecanismo de "epoch" de arriba -- el `instancia_id` de cada
+        una no cambia al reordenar, así que el estado de colapso/expansión de cada tarjeta se
+        conserva tal cual quedó, solo cambia el orden en que aparecen.
+      - **Título del platillo con más peso visual** (2026-08-30, a pedido del usuario): el nombre
+        de la receta (título del expander) se ve más grande y en negrita que los ingredientes de
+        adentro -- CSS dirigido por `key=` (`nutriguia/estilo.py`, selector `div[class*="st-key-
+        exp_receta_"] summary [data-testid="stMarkdownContainer"] p`), para distinguir de un
+        vistazo el nombre del platillo de su lista de ingredientes.
    d. Por cada receta agregada, listar sus ingredientes (dentro del expander de arriba). Para cada
       ingrediente **ajustable** (`paso_equivalente()` no da `None`): un control +/- (`st.button("-")`
       / `st.button("+")` a los lados de un número, NO `st.slider`) que sube/baja de 1 en 1
       equivalente. Mostrar junto la cantidad real resultante (ej. "150 g (5 equivalentes)")
-      recalculada con `cantidad_por_equivalente` del catálogo. Ingredientes no ajustables
-      (placeholders, items compuestos) se muestran fijos, sin stepper.
+      recalculada con `cantidad_por_equivalente` del catálogo -- **el "(N equivalentes)" en el
+      color del grupo SMAE de ese ingrediente** (2026-08-30, a pedido del usuario, `chip_html()`
+      igual que en el resto de la app) en vez de texto plano, para que un vistazo rápido a la
+      cantidad ya diga a qué grupo cuenta. Ingredientes no ajustables (placeholders, items
+      compuestos) se muestran fijos, sin stepper.
    d.1. Ingredientes marcados `opcional` (ver `schema.md`) traen además un checkbox **Incluir**,
       marcado por default (reproduce la versión más completa de la receta). Si se desmarca, ese
       ingrediente no cuenta en la suma de equivalentes de ese tiempo — no hace falta "quitarlo" de

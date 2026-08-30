@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.24.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.25.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -164,6 +164,15 @@ guardados) no aparecía en ningún lado para poder corregirlo. De paso, "Lista d
 un alimento **huérfano** (`SIN_CATALOGAR`, sección "⚠️ Sin catalogar") de uno **libre a
 propósito** (sección "Sin grupo / libre") -- antes se mezclaban. Las 8 apariciones ya afectadas en
 producción se corrigieron con la misma herramienta ya desplegada.
+
+**Pulido de "Menú del día" (0.25.0, 2026-08-30, a pedido del usuario)**: tres ajustes de lectura
+sobre las tarjetas de receta colapsables. (1) El nombre del platillo (título del expander) ahora
+se ve más grande y en negrita que sus ingredientes -- CSS por `key=` en `nutriguia/estilo.py`. (2)
+El "(N equivalentes)" junto a cada cantidad real ahora es un chip en el color del grupo SMAE de
+ese ingrediente (`chip_html()`, igual que el resto de la app) en vez de texto plano. (3) Botones
+"🔼"/"🔽" junto al de quitar, para reordenar las recetas de un mismo tiempo sin tener que
+quitarlas y volver a agregarlas -- deshabilitados en los extremos, no afectan el "epoch" de
+colapso de cada tarjeta (el `instancia_id` no cambia al reordenar).
 
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,

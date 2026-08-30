@@ -20,6 +20,17 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.25.0] - 2026-08-30
+
+### Changed
+- Pulido de lectura en "Menú del día", a pedido del usuario:
+  - El nombre del platillo (título del expander colapsable) se ve más grande y en negrita que sus
+    ingredientes -- CSS por `key=` en `nutriguia/estilo.py`.
+  - El "(N equivalentes)" junto a cada cantidad real ahora es un chip en el color del grupo SMAE
+    de ese ingrediente (`chip_html()`) en vez de texto plano.
+  - Botones "🔼"/"🔽" junto al de quitar, para reordenar las recetas de un mismo tiempo --
+    deshabilitados en los extremos, no afectan el "epoch" de colapso de cada tarjeta.
+
 ## [0.24.0] - 2026-08-30
 
 ### Fixed

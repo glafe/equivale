@@ -16,12 +16,14 @@ Convención de `key=` para que este CSS los alcance (ver views/menu_del_dia.py):
 - contenedor de una receta agregada: key que empieza con "receta_card_"
 - contenedor del panel de estado (por tiempo o del día): key que empieza con "status_"
 - expander colapsable de ingredientes de una receta agregada (2026-08-29): key que empieza con
-  "exp_receta_" -- no tiene CSS propio, pero comparte la regla general `.stExpander` de abajo
-  (radio "de barro"). El `key=` incluye un número de "epoch" (`f"exp_receta_{id}_{epoch}"`) que
-  sube cada vez que se agrega otra receta al mismo tiempo -- `st.expander` no respeta `expanded=`
-  en reruns donde su key ya existía (a diferencia de widgets "de valor" como `st.checkbox`), así
-  que forzar el colapso de una receta ya agregada requiere una key nueva, no solo cambiar
-  `session_state` (ver `_renderizar_tiempo()` en `views/menu_del_dia.py`).
+  "exp_receta_" -- comparte la regla general `.stExpander` de abajo (radio "de barro") y además
+  tiene su propia regla (2026-08-30, a pedido del usuario) que agranda/engrosa el texto del título
+  (el nombre del platillo) para distinguirlo de un vistazo de los ingredientes de adentro (texto
+  normal). El `key=` incluye un número de "epoch" (`f"exp_receta_{id}_{epoch}"`) que sube cada vez
+  que se agrega otra receta al mismo tiempo -- `st.expander` no respeta `expanded=` en reruns donde
+  su key ya existía (a diferencia de widgets "de valor" como `st.checkbox`), así que forzar el
+  colapso de una receta ya agregada requiere una key nueva, no solo cambiar `session_state` (ver
+  `_renderizar_tiempo()` en `views/menu_del_dia.py`).
 
 **Vista oscura (2026-08-30, a pedido del usuario, para leer de noche)**: `.streamlit/config.toml`
 ahora define `[theme.light]`/`[theme.dark]` -- Streamlit 1.62 los soporta de forma nativa
@@ -135,6 +137,16 @@ div[class*="st-key-status_"] [data-testid="stVerticalBlockBorderWrapper"] {
   border-radius: var(--barro-radius-card) !important;
   border-color: var(--barro-border) !important;
   box-shadow: var(--barro-shadow);
+}
+
+/* Nombre del platillo (título del expander colapsable de "Menú del día") un poco más grande y
+   con más peso que los ingredientes de adentro (texto normal) -- a pedido del usuario,
+   2026-08-30, para distinguir de un vistazo el nombre de la receta de su lista de ingredientes.
+   Selector por `data-testid`, no por la clase con hash de Streamlit (cambia entre builds) -- ver
+   convención de `key=` arriba: `exp_receta_`. */
+div[class*="st-key-exp_receta_"] summary [data-testid="stMarkdownContainer"] p {
+  font-size: 1.08rem;
+  font-weight: 700;
 }
 
 /* --- Tabs de tiempos del día: pastillas horizontales con scroll táctil --- */

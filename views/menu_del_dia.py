@@ -311,7 +311,25 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
     seleccion_actual = list(seleccion)
     for idx, instancia in enumerate(seleccion_actual):
         with st.container(border=True, key=f"receta_card_{instancia['instancia_id']}"):
-            col_exp, col_quitar = st.columns([6, 1])
+            # Reordenar (2026-08-30, a pedido del usuario, para mejorar la lectura del tiempo
+            # cuando hay varias recetas agregadas) -- `idx` corresponde 1:1 al índice en `seleccion`
+            # porque `seleccion_actual` es una copia hecha justo antes de este loop, sin mutar
+            # todavía -- intercambiar posiciones directo en `seleccion` (la lista real) alcanza,
+            # no hace falta buscar el índice de nuevo.
+            col_exp, col_mover, col_quitar = st.columns([5, 1, 1])
+            with col_mover:
+                if st.button(
+                    "🔼", key=f"subir_{tiempo}_{instancia['instancia_id']}",
+                    help="Mover arriba", disabled=idx == 0,
+                ):
+                    seleccion[idx - 1], seleccion[idx] = seleccion[idx], seleccion[idx - 1]
+                    st.rerun()
+                if st.button(
+                    "🔽", key=f"bajar_{tiempo}_{instancia['instancia_id']}",
+                    help="Mover abajo", disabled=idx == len(seleccion_actual) - 1,
+                ):
+                    seleccion[idx], seleccion[idx + 1] = seleccion[idx + 1], seleccion[idx]
+                    st.rerun()
             with col_quitar:
                 if st.button(
                     "🗑️", key=f"quitar_{tiempo}_{instancia['instancia_id']}",
@@ -375,7 +393,15 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
                     ):
                         ing["equivalentes"] -= 1
                         st.rerun()
-                    c_cant.write(f"{escalar_cantidad(paso, ing['equivalentes'])} ({ing['equivalentes']} equivalentes)")
+                    # "(N equivalentes)" en el color del grupo SMAE de este ingrediente (2026-08-30,
+                    # a pedido del usuario) -- mismo chip_html() que el resto de la app, así que un
+                    # vistazo rápido a la cantidad ya dice a qué grupo cuenta, sin leer el nombre.
+                    texto_equivalentes = f"{ing['equivalentes']} equivalentes"
+                    c_cant.markdown(
+                        f"{escalar_cantidad(paso, ing['equivalentes'])} "
+                        f"{chip_html(ing['grupo_smae'], texto_equivalentes)}",
+                        unsafe_allow_html=True,
+                    )
                     if c_mas.button("+", key=f"mas_{tiempo}_{instancia['instancia_id']}_{ing['alimento']}"):
                         ing["equivalentes"] += 1
                         st.rerun()
