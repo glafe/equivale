@@ -19,7 +19,7 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002), [KC-003](#kc-003), [KC-004](#kc-004)
 
 ### Feature Requests
-- Propuestos: [FR-001](#fr-001), [FR-005](#fr-005), [FR-006](#fr-006)
+- Propuestos: [FR-001](#fr-001), [FR-005](#fr-005), [FR-006](#fr-006), [FR-009](#fr-009)
 - Parcialmente Shipped: [FR-003](#fr-003)
 - Shipped: [FR-002](#fr-002), [FR-004](#fr-004), [FR-007](#fr-007), [FR-008](#fr-008)
 
@@ -480,6 +480,44 @@ del banco (86 recetas).
 ## Feature Requests
 
 ### Detailed Entries
+
+#### FR-009
+**Title:** "¿Qué puedo cocinar?" — sugerir recetas del banco según los ingredientes que tienes a mano
+**Date Requested:** 2026-08-30
+**Status:** Proposed
+
+##### Exec Description
+Inspirado en [supercook.com](https://www.supercook.com/): marcar qué alimentos del catálogo se
+tienen a mano ahora mismo (una "despensa") y que EquiVale muestre qué recetas del banco se pueden
+cocinar ya, o casi (falta 1-2 ingredientes) -- limitado a recetas de máximo 6 ingredientes, porque
+las más largas del banco no aplican para "qué hago ya con lo que tengo". A diferencia de
+supercook.com (que busca en una base de recetas externa gigante), esto es **procedural sobre
+nuestros propios datos** -- el banco de `recetas` ya existente y el catálogo de alimentos, sin
+integrar ningún servicio externo ni scraping.
+
+##### Eng Description
+- **"Despensa"**: qué alimentos del catálogo tiene la persona a mano ahora mismo. Se recomienda
+  persistirla por persona (colección nueva `despensa`: `{persona, alimentos: [string, ...]}`, un
+  documento por persona, se sobreescribe) en vez de un checklist que se resetea cada vez que se
+  abre la página -- lo que hay en la alacena cambia poco día a día, tiene más sentido mantenerlo
+  que volver a marcarlo cada vez. Un `st.multiselect` sobre `cargar_nombres_alimentos()` para
+  editarla.
+- **Filtro de longitud**: solo recetas con `len(receta["ingredientes"]) <= 6` (a pedido del
+  usuario) entran a la comparación -- las demás ni se evalúan.
+- **Coincidencia**: para cada receta que pasa el filtro, contar cuántos de sus ingredientes
+  (`ingredientes[].alimento`) NO están en la despensa de la persona -- 0 faltantes = "✅ la puedes
+  hacer ya", 1-2 faltantes = "🔺 casi, te falta(n): X, Y" (vale la pena mostrarla igual, como hace
+  supercook.com con sus recetas "casi completas"), 3+ faltantes = no se muestra. Los placeholders
+  genéricos (`"Fruta"`/`"Fruta suelta"` con cantidad `"1"`, ver regla 6 de `CLAUDE.md`) cuentan
+  como "siempre disponibles" -- no tiene sentido pedir que se marquen a mano en la despensa.
+  Función pura, testable con datos sintéticos (mismo patrón que `nutriguia/validation.py`), sin
+  Mongo -- recibe la despensa y el banco de recetas ya resueltos desde la vista.
+- Página nueva, probablemente en "Tus recetas" (junto a "Recetas"/"Ingredientes") ya que no arma
+  ni edita un día -- es una herramienta de consulta/descubrimiento, parecida en espíritu a
+  Configuración pero para el usuario final, no para mantenimiento de datos.
+
+##### Dependencies
+`recetas`/`catalogo_alimentos` (ya existen). Ninguna dependencia nueva.
 
 #### FR-008 · [STATUS: Shipped 0.19.0]
 > **Shipped en 0.19.0 (2026-08-30)** — botón "🧬 Clonar" (`st.popover`) junto a "Abrir" en el
