@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.12.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.13.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -62,8 +62,14 @@ aporta al menos 7 g de proteína (`UMBRAL_PROTEINA_LECHE_AOA` en `nutriguia/smae
 ahora también trae "📄 Descargar PDF para imprimir" (2026-08-29, a pedido del usuario, primera
 pieza de FR-003/Fase 5 adelantada como prueba) — página horizontal con los 7 días x 5 tiempos,
 letra grande y los mismos `GRUPO_COLOR` de siempre para el objetivo y el total de cada día
-(`nutriguia/pdf_semanal.py`, con ReportLab como dependencia nueva). Falta el resto de Fase 5
-(pulido) — no empezarla sin haber usado la Fase 4 unos días en la vida real.
+(`nutriguia/pdf_semanal.py`, con ReportLab como dependencia nueva). En "Menú del día" (2026-08-29,
+a pedido del usuario), "Ver recetas de todas las personas" ahora arranca marcado por default, y
+cada receta agregada a un tiempo colapsa/expande su detalle de ingredientes (`st.expander` con
+`key=f"exp_receta_{instancia_id}"`) — al agregar una receta nueva, las demás de ese tiempo se
+colapsan solas y la nueva queda expandida, para que la lista no se vuelva interminable de
+steppers; el botón "quitar" (ahora 🗑️) vive fuera del expander, así que no hace falta expandir
+una receta para poder quitarla. Falta el resto de Fase 5 (pulido) — no empezarla sin haber usado
+la Fase 4 unos días en la vida real.
 
 **Identidad visual "Barro" (2026-08-27)**: paleta/tipografía/radios propios sobre los 7 colores
 de grupo SMAE (que NO cambiaron — son funcionales). Aprobada primero como maqueta interactiva

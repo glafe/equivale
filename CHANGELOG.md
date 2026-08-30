@@ -20,6 +20,18 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.13.0] - 2026-08-29
+
+### Changed
+- **"Menú del día" → "Ver recetas de todas las personas" arranca marcado por default**, a pedido
+  del usuario (antes arrancaba desmarcado).
+- **Cada receta agregada a un tiempo ahora colapsa/expande su detalle de ingredientes**, a pedido
+  del usuario: el contenido vive en un `st.expander` con `key=f"exp_receta_{instancia_id}"`. Al
+  agregar una receta nueva, las demás de ese tiempo se colapsan solas (sobreescribiendo su
+  `session_state` antes del rerun) y la recién agregada queda expandida -- así la lista no se
+  vuelve interminable de steppers conforme se arma el día. El botón "quitar" (ahora un ícono 🗑️)
+  se movió fuera del expander para poder quitar una receta sin tener que expandirla primero.
+
 ## [0.12.0] - 2026-08-29
 
 ### Added

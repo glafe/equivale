@@ -45,7 +45,8 @@ Ajustes       -> Configuración
       estricta y un platillo típico de otro tiempo simplemente no aparecía): `st.selectbox` sobre
       TODO el banco filtrado solo por `personas_vistas` incluya la persona seleccionada (con
       opción de "ver todas" — un platillo probado para una persona puede servir de punto de
-      partida para la otra) — sin excluir por `tiempo_tipico`, porque nada impide usar un
+      partida para la otra; **marcado por default desde 2026-08-29**, a pedido del usuario, en
+      vez de arrancar desmarcado como antes) — sin excluir por `tiempo_tipico`, porque nada impide usar un
       platillo típico de otro tiempo si conviene. Orden de las opciones: primero las recetas cuyo
       `tiempo_tipico` incluye este tiempo (alfabético), luego el resto del banco (también
       alfabético) con su primer `tiempo_tipico` como sufijo de texto (ej. "Pan Francés  ·
@@ -59,12 +60,21 @@ Ajustes       -> Configuración
       grupo "coincide".
    c. Botón "Agregar al tiempo" — permite agregar más de una receta al mismo tiempo (los tiempos
       históricos casi siempre tienen 2 platillos).
-   d. Por cada receta agregada, listar sus ingredientes. Para cada ingrediente **ajustable**
-      (`paso_equivalente()` no da `None`): un control +/- (`st.button("-")` / `st.button("+")` a
-      los lados de un número, NO `st.slider`) que sube/baja de 1 en 1 equivalente. Mostrar junto
-      la cantidad real resultante (ej. "150 g (5 equivalentes)") recalculada con
-      `cantidad_por_equivalente` del catálogo. Ingredientes no ajustables (placeholders, items
-      compuestos) se muestran fijos con un botón "quitar".
+   c.1. **Cada receta agregada colapsa/expande su detalle** (2026-08-29, a pedido del usuario, para
+      que la lista no se vuelva interminable de steppers conforme se agregan más platillos): el
+      contenido de ingredientes/steppers vive dentro de un `st.expander(nombre_receta,
+      key=f"exp_receta_{instancia_id}")` -- colapsado se ve solo el nombre (repaso rápido de qué
+      ya se agregó), expandido se pueden ajustar porciones. Al hacer clic en "+ Agregar", TODAS
+      las recetas ya presentes en ese tiempo se colapsan (`st.session_state[...] = False` antes de
+      `st.rerun()`, mismo patrón que `_fecha_pendiente`) y la recién agregada queda expandida por
+      default. El botón "quitar" (ahora un ícono 🗑️) vive FUERA del expander, en una columna
+      angosta al lado, para poder quitar una receta sin necesidad de expandirla primero.
+   d. Por cada receta agregada, listar sus ingredientes (dentro del expander de arriba). Para cada
+      ingrediente **ajustable** (`paso_equivalente()` no da `None`): un control +/- (`st.button("-")`
+      / `st.button("+")` a los lados de un número, NO `st.slider`) que sube/baja de 1 en 1
+      equivalente. Mostrar junto la cantidad real resultante (ej. "150 g (5 equivalentes)")
+      recalculada con `cantidad_por_equivalente` del catálogo. Ingredientes no ajustables
+      (placeholders, items compuestos) se muestran fijos, sin stepper.
    d.1. Ingredientes marcados `opcional` (ver `schema.md`) traen además un checkbox **Incluir**,
       marcado por default (reproduce la versión más completa de la receta). Si se desmarca, ese
       ingrediente no cuenta en la suma de equivalentes de ese tiempo — no hace falta "quitarlo" de

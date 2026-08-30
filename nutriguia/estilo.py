@@ -15,6 +15,10 @@ Convención de `key=` para que este CSS los alcance (ver views/menu_del_dia.py):
 - botones "+" de un stepper: key que empieza con "mas_"
 - contenedor de una receta agregada: key que empieza con "receta_card_"
 - contenedor del panel de estado (por tiempo o del día): key que empieza con "status_"
+- expander colapsable de ingredientes de una receta agregada (2026-08-29): key que empieza con
+  "exp_receta_" -- no tiene CSS propio, pero comparte la regla general `.stExpander` de abajo
+  (radio "de barro"); el `key=` se usa para poder forzar su estado colapsado/expandido desde
+  Python (ver `_renderizar_tiempo()` en `views/menu_del_dia.py`), no para apuntarle con CSS.
 """
 
 import streamlit as st

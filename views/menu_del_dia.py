@@ -125,7 +125,9 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
     ])
     restante = delta_objetivo(objetivo_diario, actual_otros)
 
-    ver_todas = st.checkbox("Ver recetas de todas las personas", key=f"ver_todas_{tiempo}")
+    ver_todas = st.checkbox(
+        "Ver recetas de todas las personas", value=True, key=f"ver_todas_{tiempo}"
+    )
     # No se filtra estrictamente por tiempo -- se ordena con las recetas de este tiempo primero
     # (alfabético) y luego el resto del banco (también alfabético, con su primer tiempo típico
     # como referencia), porque nada impide usar un platillo típico de otro tiempo si conviene.
@@ -174,71 +176,85 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
                 f"{chip_muted_html('Normalmente: ' + etiqueta_tiempo)}</div>",
                 unsafe_allow_html=True,
             )
+    seleccion = dia["tiempos"][tiempo]
     with col2:
         st.write("")
         st.write("")
         if st.button("+ Agregar", key=f"agregar_{tiempo}", disabled=receta_id_elegida is None):
-            dia["tiempos"][tiempo].append(_nueva_instancia(opciones[receta_id_elegida]))
+            # Colapsar las recetas ya agregadas para que la lista no se vuelva interminable de
+            # steppers -- la recién agregada es la única que vale la pena ver expandida de
+            # entrada (a pedido del usuario, 2026-08-29). Los expanders de las demás ya existen
+            # en session_state desde que se agregaron -- sobreescribirlo ANTES del rerun es la
+            # forma soportada de forzar su estado (mismo patrón que _fecha_pendiente más abajo).
+            for inst in seleccion:
+                st.session_state[f"exp_receta_{inst['instancia_id']}"] = False
+            seleccion.append(_nueva_instancia(opciones[receta_id_elegida]))
             st.rerun()
 
-    seleccion = dia["tiempos"][tiempo]
     for instancia in list(seleccion):
         with st.container(border=True, key=f"receta_card_{instancia['instancia_id']}"):
-            top_l, top_r = st.columns([4, 1])
-            top_l.markdown(f"**{instancia['nombre']}**")
-            if top_r.button("quitar", key=f"quitar_{tiempo}_{instancia['instancia_id']}"):
-                seleccion.remove(instancia)
-                st.rerun()
-
-            for i, ing in enumerate(instancia["ingredientes"]):
-                if i > 0:
-                    st.markdown(
-                        '<hr style="margin:.5rem 0;opacity:.35;">', unsafe_allow_html=True
-                    )
-
-                # Fila 1: etiqueta (+ checkbox "Incluir" si es opcional) -- en pantallas angostas
-                # cada `st.columns(...)` se apila completo, así que separar la etiqueta del
-                # stepper en dos filas cortas se ve mejor en un teléfono que un solo renglón de
-                # 4-5 columnas apilándose una por una.
-                opcional = ing.get("opcional", False)
-                if opcional:
-                    c_incl, c_etq = st.columns([1, 6])
-                    ing["incluido"] = c_incl.checkbox(
-                        "Incluir",
-                        value=ing.get("incluido", True),
-                        key=f"incluir_{tiempo}_{instancia['instancia_id']}_{ing['alimento']}",
-                        label_visibility="collapsed",
-                        help="Ingrediente opcional de esta receta",
-                    )
-                    c_etq.markdown(f"{ing['alimento']} *(opcional)*")
-                else:
-                    st.markdown(ing["alimento"])
-
-                if opcional and not ing.get("incluido", True):
-                    st.caption("No incluido en este platillo.")
-                    continue
-
-                paso = paso_equivalente(ing["alimento"], catalogo)
-                ajustable = paso is not None and not ing.get("bloqueado", False)
-                if not ajustable:
-                    motivo = "bloqueado" if ing.get("bloqueado") else "no ajustable"
-                    st.caption(f"({motivo})")
-                    continue
-
-                # Fila 2: stepper -/cantidad/+ en 3 columnas (antes eran 4-5) -- menos bloques
-                # cuando se apilan en móvil, y visualmente quedan agrupados con la etiqueta de
-                # arriba en vez de mezclados con la del ingrediente siguiente.
-                c_menos, c_cant, c_mas = st.columns([1, 3, 1])
-                if c_menos.button(
-                    "-", key=f"menos_{tiempo}_{instancia['instancia_id']}_{ing['alimento']}",
-                    disabled=ing["equivalentes"] <= 1,
+            col_exp, col_quitar = st.columns([6, 1])
+            with col_quitar:
+                if st.button(
+                    "🗑️", key=f"quitar_{tiempo}_{instancia['instancia_id']}",
+                    help="Quitar esta receta de este tiempo",
                 ):
-                    ing["equivalentes"] -= 1
+                    seleccion.remove(instancia)
                     st.rerun()
-                c_cant.write(f"{escalar_cantidad(paso, ing['equivalentes'])} ({ing['equivalentes']} equivalentes)")
-                if c_mas.button("+", key=f"mas_{tiempo}_{instancia['instancia_id']}_{ing['alimento']}"):
-                    ing["equivalentes"] += 1
-                    st.rerun()
+            # Colapsado = solo se ve el nombre (para revisar de un vistazo qué ya se agregó);
+            # expandido = se pueden ajustar porciones. `expanded=True` solo aplica la primera vez
+            # que existe esta key (ver botón "+ Agregar" arriba) -- después manda el toggle del
+            # usuario, como cualquier otro widget con estado de Streamlit.
+            with col_exp, st.expander(instancia["nombre"], expanded=True, key=f"exp_receta_{instancia['instancia_id']}"):
+                for i, ing in enumerate(instancia["ingredientes"]):
+                    if i > 0:
+                        st.markdown(
+                            '<hr style="margin:.5rem 0;opacity:.35;">', unsafe_allow_html=True
+                        )
+
+                    # Fila 1: etiqueta (+ checkbox "Incluir" si es opcional) -- en pantallas
+                    # angostas cada `st.columns(...)` se apila completo, así que separar la
+                    # etiqueta del stepper en dos filas cortas se ve mejor en un teléfono que un
+                    # solo renglón de 4-5 columnas apilándose una por una.
+                    opcional = ing.get("opcional", False)
+                    if opcional:
+                        c_incl, c_etq = st.columns([1, 6])
+                        ing["incluido"] = c_incl.checkbox(
+                            "Incluir",
+                            value=ing.get("incluido", True),
+                            key=f"incluir_{tiempo}_{instancia['instancia_id']}_{ing['alimento']}",
+                            label_visibility="collapsed",
+                            help="Ingrediente opcional de esta receta",
+                        )
+                        c_etq.markdown(f"{ing['alimento']} *(opcional)*")
+                    else:
+                        st.markdown(ing["alimento"])
+
+                    if opcional and not ing.get("incluido", True):
+                        st.caption("No incluido en este platillo.")
+                        continue
+
+                    paso = paso_equivalente(ing["alimento"], catalogo)
+                    ajustable = paso is not None and not ing.get("bloqueado", False)
+                    if not ajustable:
+                        motivo = "bloqueado" if ing.get("bloqueado") else "no ajustable"
+                        st.caption(f"({motivo})")
+                        continue
+
+                    # Fila 2: stepper -/cantidad/+ en 3 columnas (antes eran 4-5) -- menos
+                    # bloques cuando se apilan en móvil, y visualmente quedan agrupados con la
+                    # etiqueta de arriba en vez de mezclados con la del ingrediente siguiente.
+                    c_menos, c_cant, c_mas = st.columns([1, 3, 1])
+                    if c_menos.button(
+                        "-", key=f"menos_{tiempo}_{instancia['instancia_id']}_{ing['alimento']}",
+                        disabled=ing["equivalentes"] <= 1,
+                    ):
+                        ing["equivalentes"] -= 1
+                        st.rerun()
+                    c_cant.write(f"{escalar_cantidad(paso, ing['equivalentes'])} ({ing['equivalentes']} equivalentes)")
+                    if c_mas.button("+", key=f"mas_{tiempo}_{instancia['instancia_id']}_{ing['alimento']}"):
+                        ing["equivalentes"] += 1
+                        st.rerun()
 
     with st.container(border=True, key=f"status_{tiempo}"):
         st.markdown("**Estado de este tiempo** (contra lo que queda del presupuesto diario)")
