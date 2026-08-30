@@ -537,6 +537,20 @@ Dos variantes posibles, sin decidir todavía cuál construir:
   Requiere: cuenta/API key de Spoonacular, manejo de su límite diario, y una pantalla de mapeo
   ingrediente-por-ingrediente antes de poder guardar (no se puede automatizar bien el
   español↔inglés + unidades sin revisión humana).
+- **Requisitos adicionales, anotados 2026-08-30 (solo si algún día se paga la API -- no es
+  dependencia de ningún release, ni siquiera de terminar Fase 5; es una idea a futuro, nada más)**:
+  - **Traer de a 10 recetas por consulta** (no una lista larga de golpe) -- un "lote" por cada vez
+    que se pulsa "Descubrir platillos", para no gastar el límite diario de golpe ni saturar la
+    pantalla.
+  - Además de "Agregar a mi recetario", cada receta sugerida necesita dos botones más:
+    - **"Revisar luego"**: la guarda en una cola de pendientes (nueva, ej. colección
+      `descubrimientos_pendientes: {persona, spoonacular_id, datos_crudos, ...}`) para volver a
+      verla después sin gastar otra consulta a la API ni que se pierda entre lotes nuevos.
+    - **"No volver a mostrar"**: la descarta permanentemente -- se guarda su id de Spoonacular en
+      una lista de descartados por persona (ej. `descubrimientos_descartados: {persona,
+      spoonacular_ids: [...]}`), y los lotes siguientes (de esta sesión o de otra futura) la
+      excluyen filtrando por ese id antes de mostrar resultados -- no debe volver a aparecer
+      nunca, ni al pedir otro lote ni en una sesión distinta.
 
 ##### Dependencies
 Variante A: `recetas`/`catalogo_alimentos` (ya existen), ninguna dependencia nueva. Variante B:
