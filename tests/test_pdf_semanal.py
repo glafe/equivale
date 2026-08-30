@@ -3,17 +3,42 @@ inventados, no reales de ninguna persona) para poder correr en cualquier clon de
 
 from nutriguia.pdf_semanal import generar_pdf_semanal
 
+CATALOGO_EJEMPLO = {
+    "Avena en hojuelas": {"alimento": "Avena en hojuelas", "grupo": "Cereal", "cantidad_por_equivalente": "1/4 taza"},
+    "Leche semi": {"alimento": "Leche semi", "grupo": "AOA", "cantidad_por_equivalente": "1 taza"},
+    "Pollo": {"alimento": "Pollo", "grupo": "AOA", "cantidad_por_equivalente": "30 g"},
+    "Nopal": {"alimento": "Nopal", "grupo": "Verdura", "cantidad_por_equivalente": "1 taza"},
+    # "Fruta libre" deliberadamente NO está en el catálogo -- para probar el fallback a "N equiv."
+}
+
 MENU_EJEMPLO = {
     "persona": "prueba",
     "fecha": "2026-08-31",
     "nombre": "Menú 1",
-    "actual_diario": {"AOA": 15, "Cereal": 10, "Verdura": 5, "Fruta": 4},
+    "actual_diario": {"AOA": 9, "Cereal": 2, "Verdura": 2, "Fruta": 1},
     "tiempos": {
-        "desayuno": {"seleccion": [{"nombre": "Avena remojada", "ingredientes": []}]},
+        "desayuno": {
+            "seleccion": [
+                {
+                    "nombre": "Avena con leche",
+                    "ingredientes": [
+                        {"alimento": "Avena en hojuelas", "grupo_smae": "Cereal", "equivalentes": 2, "incluido": True},
+                        {"alimento": "Leche semi", "grupo_smae": "AOA", "equivalentes": 1, "incluido": True},
+                        {"alimento": "Fruta libre", "grupo_smae": "Fruta", "equivalentes": 1, "incluido": True},
+                    ],
+                }
+            ]
+        },
         "comida": {
             "seleccion": [
-                {"nombre": "Tacos de pollo", "ingredientes": []},
-                {"nombre": "Ensalada de nopal", "ingredientes": []},
+                {
+                    "nombre": "Tacos de pollo con nopal",
+                    "ingredientes": [
+                        {"alimento": "Pollo", "grupo_smae": "AOA", "equivalentes": 4, "incluido": True},
+                        {"alimento": "Nopal", "grupo_smae": "Verdura", "equivalentes": 2, "incluido": True},
+                        {"alimento": "Salsa extra", "grupo_smae": "Verdura", "equivalentes": 1, "incluido": False},
+                    ],
+                }
             ]
         },
         # "cena" deliberadamente ausente -- un tiempo que el usuario no llegó a armar.
@@ -41,6 +66,7 @@ def test_genera_pdf_con_semana_mixta():
         objetivo_diario={"AOA": 15, "Cereal": 10, "Verdura": 5, "Fruta": 4},
         asignacion=ASIGNACION_MIXTA,
         menus_por_nombre={"Menú 1": MENU_EJEMPLO},
+        catalogo=CATALOGO_EJEMPLO,
     )
     assert _es_pdf_valido(pdf)
     assert len(pdf) > 1000
@@ -49,7 +75,11 @@ def test_genera_pdf_con_semana_mixta():
 def test_genera_pdf_con_semana_completamente_libre():
     asignacion = {dia: None for dia in ASIGNACION_MIXTA}
     pdf = generar_pdf_semanal(
-        persona="Persona de prueba", objetivo_diario={}, asignacion=asignacion, menus_por_nombre={}
+        persona="Persona de prueba",
+        objetivo_diario={},
+        asignacion=asignacion,
+        menus_por_nombre={},
+        catalogo={},
     )
     assert _es_pdf_valido(pdf)
 
@@ -62,5 +92,28 @@ def test_genera_pdf_sin_objetivo_no_truena():
         objetivo_diario={},
         asignacion={"lunes": "Menú 1", **{d: None for d in list(ASIGNACION_MIXTA)[1:]}},
         menus_por_nombre={"Menú 1": MENU_EJEMPLO},
+        catalogo=CATALOGO_EJEMPLO,
     )
     assert _es_pdf_valido(pdf)
+
+
+def test_menu_sin_dia_asignado_no_truena():
+    """Un menú guardado con nombre pero que todavía no se asignó a ningún día de la semana debe
+    seguir apareciendo en el PDF (como referencia), solo sin la etiqueta "Aplica: ..."."""
+    pdf = generar_pdf_semanal(
+        persona="Persona de prueba",
+        objetivo_diario={},
+        asignacion={d: None for d in ASIGNACION_MIXTA},
+        menus_por_nombre={"Menú 1": MENU_EJEMPLO},
+        catalogo=CATALOGO_EJEMPLO,
+    )
+    assert _es_pdf_valido(pdf)
+
+
+def test_ingrediente_sin_catalogo_usa_fallback_de_equivalentes():
+    """"Fruta libre" no está en CATALOGO_EJEMPLO -- no debe tronar, debe caer al fallback
+    "N equiv." (ver _cantidad_real())."""
+    from nutriguia.pdf_semanal import _cantidad_real
+
+    assert _cantidad_real("Fruta libre", 1, CATALOGO_EJEMPLO) == "1 equiv."
+    assert _cantidad_real("Avena en hojuelas", 2, CATALOGO_EJEMPLO) == "1/2 taza"

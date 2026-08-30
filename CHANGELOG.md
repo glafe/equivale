@@ -20,6 +20,28 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.14.0] - 2026-08-30
+
+### Changed
+- **Rediseño completo del PDF de "Menú semanal"**, a pedido del usuario, tras revisar cómo usaba
+  de verdad `menu-Sep.xlsx` (fuera de git): la v1 (0.12.0) era una cuadrícula de 7 días x 5
+  tiempos con solo el nombre de cada receta -- lo que de verdad necesitaba era identificar rápido
+  la relación entre el EQUIVALENTE y el INGREDIENTE real, organizado **por menú** (no por día),
+  con una nota de a qué días aplica cada uno, igual que ese Excel.
+  - Ahora un bloque por cada menú con nombre de la persona (salto de página entre uno y otro):
+    nombre + "Aplica: {días}" (o "Sin día asignado todavía"), y por cada receta de cada tiempo,
+    una fila por grupo SMAE con su chip de color + EQ y la cantidad real de cada ingrediente
+    (`escalar_cantidad()`/`paso_equivalente()`, mismas funciones que "Menú del día" -- con
+    fallback a "N equiv." si el alimento ya no está en el catálogo).
+  - Chips de "Objetivo diario" (una vez, arriba) y "Total real de este menú" (al final de cada
+    bloque) siguen usando los mismos `GRUPO_COLOR` de siempre, ahora con una etiqueta corta
+    (`ETIQUETA_CORTA`, nueva en `pdf_semanal.py`) porque los nombres largos de `GRUPO_ETIQUETA`
+    no caben en las columnas fijas de estas tablas.
+  - Página vertical (carta) en vez de horizontal -- ya no hace falta el ancho de 7 columnas.
+  - `generar_pdf_semanal()` ahora recibe también `catalogo` (`cargar_catalogo()`) para poder
+    resolver la cantidad real de cada ingrediente.
+  - `tests/test_pdf_semanal.py` reescrito para la nueva forma de los datos.
+
 ## [0.13.0] - 2026-08-29
 
 ### Changed

@@ -171,29 +171,52 @@ pasó a ser puramente una herramienta de **asignación y consulta**, no de const
   expander "Editar asignación de días" y reasignar ese día).
 - **"📄 Descargar PDF para imprimir"** (2026-08-29, a pedido del usuario -- primera pieza de FR-003
   "exportar imprimible", adelantada antes del resto de la Fase 5 porque el usuario la pidió
-  explícitamente como prueba): `st.download_button` justo debajo de "Cobertura de la semana",
-  generado con `nutriguia/pdf_semanal.py` (ReportLab, agregado como dependencia nueva -- ver
+  explícitamente como prueba; **rediseñado por completo el 2026-08-30**, ver abajo):
+  `st.download_button` justo debajo de "Cobertura de la semana", generado con
+  `nutriguia/pdf_semanal.py` (ReportLab, agregado como dependencia nueva -- ver
   `requirements.txt`). Pensado para reemplazar el uso que el usuario le daba antes a un Excel
-  armado a mano (fuera de git) para tener el menú de la semana visible de lejos, pegado en la
-  cocina:
-  - **Una página horizontal** (landscape carta): filas = los 5 tiempos, columnas = los 7 días,
-    con el nombre de cada receta en letra grande y negrita -- nada de ingredientes ni porciones
-    (ese detalle se sigue viendo solo en "Menú del día"). Un día "Libre" o con una referencia rota
-    (mismo caso que arriba) se dibuja fusionado verticalmente sobre las 5 filas de tiempo, con el
-    texto correspondiente en vez de recetas.
-  - **Colores estandarizados de EquiVale, no una paleta nueva para el PDF**: la fila superior
-    "Objetivo diario" y la fila inferior "Total del día" (equivalentes reales, `actual_diario` de
-    cada `menus_construidos`) usan los mismos `GRUPO_COLOR`/`GRUPO_ETIQUETA` de `colores.py` que
-    ya se ven en toda la app -- mismo criterio de texto claro/oscuro legible por contraste
-    (`color_texto_legible()`, factorizado de `chip_html()` para poder compartirlo con el PDF).
-  - **`nutriguia/pdf_semanal.py` no toca Mongo** -- recibe `asignacion`/`menus_por_nombre` ya
-    resueltos desde `views/menu_semanal.py` (mismo patrón que `nutriguia/validation.py`), para
-    poder probarlo con datos sintéticos (`tests/test_pdf_semanal.py`) sin una base real.
+  armado a mano (fuera de git, `menu-Sep.xlsx` y similares) para tener el menú de la semana
+  impreso y a la mano.
+  - **Rediseño 2026-08-30**: la primera versión (0.12.0) era una cuadrícula de 7 días x 5 tiempos
+    con solo el nombre de cada receta -- el usuario aclaró, tras pedirle revisar cómo usaba de
+    verdad `menu-Sep.xlsx`, que lo que necesitaba era poder identificar rápido la relación entre
+    el EQUIVALENTE y el INGREDIENTE real (cantidad + alimento), organizado **por menú** (no por
+    día), con una nota de a qué días de la semana aplica cada uno -- el patrón exacto de ese
+    Excel. Ahora, un bloque por cada menú con nombre de la persona (orden alfabético, salto de
+    página entre uno y otro):
+    - Encabezado del bloque: nombre del menú + "Aplica: {días}" (o "Sin día asignado en Menú
+      semanal todavía" si ese menú aún no se asignó a ningún día -- así el PDF también sirve como
+      referencia completa del banco de menús con nombre, no solo de la semana ya armada).
+    - Por cada tiempo con recetas, por cada receta: su nombre, y una tabla con una fila por grupo
+      SMAE que toca esa receta -- chip de color a la izquierda con el grupo y el EQ total de ese
+      grupo en esa receta, cantidad real + nombre de cada ingrediente a la derecha (uno por línea
+      si el grupo tiene más de un ingrediente). Ingredientes `opcional` no incluidos
+      (`incluido: false`) no aparecen, igual que en el resto de la app. La cantidad real se
+      calcula con `paso_equivalente()` + `escalar_cantidad()` (mismas funciones que "Menú del
+      día") -- si el alimento ya no está en el catálogo, cae a un fallback "`N` equiv." en vez de
+      tronar.
+    - Chips de "Objetivo diario" (una sola vez, arriba de todo) y "Total real de este menú" (al
+      final de cada bloque, con `actual_diario` de ese `menus_construidos`) -- **colores
+      estandarizados de EquiVale, no una paleta nueva para el PDF**: mismos `GRUPO_COLOR` que se
+      ven en toda la app, con `ETIQUETA_CORTA` (en vez de `GRUPO_ETIQUETA`) porque los nombres
+      largos ("Aceites s/proteína") no caben en una columna de chip ni en el ancho fijo de la
+      columna de grupo de cada receta. Mismo criterio de texto claro/oscuro por contraste
+      (`color_texto_legible()`, factorizado de `chip_html()` para compartirlo con el PDF).
+    - Nota final (si aplica): qué días quedaron libres/descanso, y qué días tienen una referencia
+      rota en `asignacion_semanal` (nombre que ya no existe) -- mismo criterio de "detectar, no
+      arreglar solo" que Configuración.
+    - Página vertical (carta), no horizontal como la v1 -- ya no hace falta el ancho de 7 columnas
+      de día, y el contenido (nombre + tabla de ingredientes por receta) es naturalmente vertical.
+  - **`nutriguia/pdf_semanal.py` no toca Mongo** -- recibe `asignacion`/`menus_por_nombre`/
+    `catalogo` ya resueltos desde `views/menu_semanal.py` (mismo patrón que
+    `nutriguia/validation.py`), para poder probarlo con datos sintéticos
+    (`tests/test_pdf_semanal.py`) sin una base real. `catalogo` es nuevo en el rediseño -- hace
+    falta para resolver la cantidad real de cada ingrediente, no solo su conteo de equivalentes.
   - **Sin emoji en el PDF**: las fuentes base de ReportLab (Helvetica) no traen esos glifos y
     salen como cuadros negros -- a diferencia de Streamlit, donde sí se ven bien. Los íconos de
     tiempo (🌅🍳🍎🍽️🌙) se quedan solo en la app; el PDF usa nombres de tiempo en texto plano.
-  - Es una primera prueba, no la versión final de FR-003/Fase 5 -- ajustar tamaños de letra o
-    diseño según feedback de uso real antes de darla por terminada.
+  - Sigue siendo una primera versión de FR-003/Fase 5, no la definitiva -- ajustar según feedback
+    de uso real antes de darla por terminada.
 
 ## Página "Configuración" (2026-08-29, a pedido del usuario)
 

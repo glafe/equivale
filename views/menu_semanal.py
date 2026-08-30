@@ -17,7 +17,7 @@ import streamlit as st
 
 from nutriguia.colores import GRUPO_ETIQUETA, chip_html
 from nutriguia.pdf_semanal import generar_pdf_semanal
-from nutriguia.streamlit_data import cargar_objetivo, cargar_personas, db
+from nutriguia.streamlit_data import cargar_catalogo, cargar_objetivo, cargar_personas, db
 
 DIAS = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
 DIA_LABEL = {
@@ -93,12 +93,15 @@ def render() -> None:
 
     st.download_button(
         "📄 Descargar PDF para imprimir",
-        data=generar_pdf_semanal(persona, cargar_objetivo(persona), asignacion, menus_por_nombre),
+        data=generar_pdf_semanal(
+            persona, cargar_objetivo(persona), asignacion, menus_por_nombre, cargar_catalogo()
+        ),
         file_name=f"menu-semanal-{persona}.pdf",
         mime="application/pdf",
         help=(
-            "Letra grande y colores por grupo, pensado para pegar en la cocina -- solo nombres "
-            "de receta, sin ingredientes ni porciones (eso se sigue viendo en \"Menú del día\")."
+            "Un bloque por menú (nombre, a qué días aplica, y sus recetas con ingredientes y "
+            "cantidades reales agrupados por grupo SMAE) -- mismo formato que el Excel que "
+            "usabas antes, con los colores estandarizados de EquiVale."
         ),
     )
 
