@@ -482,42 +482,65 @@ del banco (86 recetas).
 ### Detailed Entries
 
 #### FR-009
-**Title:** "¿Qué puedo cocinar?" — sugerir recetas del banco según los ingredientes que tienes a mano
+**Title:** "EquiVale ChefBOT" — descubrir qué se puede cocinar según los ingredientes que usas
+seguido
 **Date Requested:** 2026-08-30
-**Status:** Proposed
+**Status:** Proposed (investigado, sin decidir todavía entre dos variantes -- ver abajo)
 
 ##### Exec Description
-Inspirado en [supercook.com](https://www.supercook.com/): marcar qué alimentos del catálogo se
-tienen a mano ahora mismo (una "despensa") y que EquiVale muestre qué recetas del banco se pueden
-cocinar ya, o casi (falta 1-2 ingredientes) -- limitado a recetas de máximo 6 ingredientes, porque
-las más largas del banco no aplican para "qué hago ya con lo que tengo". A diferencia de
-supercook.com (que busca en una base de recetas externa gigante), esto es **procedural sobre
-nuestros propios datos** -- el banco de `recetas` ya existente y el catálogo de alimentos, sin
-integrar ningún servicio externo ni scraping.
+Inspirado en [supercook.com](https://www.supercook.com/), como un sub-modo de "EquiVale Chef"
+(el editor de recetas): marcar qué alimentos usas seguido (no necesariamente "lo que tienes en
+este momento", sino tus básicos habituales) y un botón "Descubrir platillos" que sugiere cuáles
+se pueden cocinar ya, o casi (falta 1-2 ingredientes) -- limitado a recetas de máximo 6
+ingredientes. Cada sugerencia mostrada ya viene "digerida" en equivalentes SMAE (grupo/cantidad
+por ingrediente), y trae un botón para usarla directo.
 
-##### Eng Description
-- **"Despensa"**: qué alimentos del catálogo tiene la persona a mano ahora mismo. Se recomienda
-  persistirla por persona (colección nueva `despensa`: `{persona, alimentos: [string, ...]}`, un
-  documento por persona, se sobreescribe) en vez de un checklist que se resetea cada vez que se
-  abre la página -- lo que hay en la alacena cambia poco día a día, tiene más sentido mantenerlo
-  que volver a marcarlo cada vez. Un `st.multiselect` sobre `cargar_nombres_alimentos()` para
-  editarla.
-- **Filtro de longitud**: solo recetas con `len(receta["ingredientes"]) <= 6` (a pedido del
-  usuario) entran a la comparación -- las demás ni se evalúan.
-- **Coincidencia**: para cada receta que pasa el filtro, contar cuántos de sus ingredientes
-  (`ingredientes[].alimento`) NO están en la despensa de la persona -- 0 faltantes = "✅ la puedes
-  hacer ya", 1-2 faltantes = "🔺 casi, te falta(n): X, Y" (vale la pena mostrarla igual, como hace
-  supercook.com con sus recetas "casi completas"), 3+ faltantes = no se muestra. Los placeholders
-  genéricos (`"Fruta"`/`"Fruta suelta"` con cantidad `"1"`, ver regla 6 de `CLAUDE.md`) cuentan
-  como "siempre disponibles" -- no tiene sentido pedir que se marquen a mano en la despensa.
-  Función pura, testable con datos sintéticos (mismo patrón que `nutriguia/validation.py`), sin
-  Mongo -- recibe la despensa y el banco de recetas ya resueltos desde la vista.
-- Página nueva, probablemente en "Tus recetas" (junto a "Recetas"/"Ingredientes") ya que no arma
-  ni edita un día -- es una herramienta de consulta/descubrimiento, parecida en espíritu a
-  Configuración pero para el usuario final, no para mantenimiento de datos.
+##### Investigación de viabilidad (2026-08-30, a pedido del usuario, antes de decidir el diseño)
+**Supercook.com no tiene API pública** -- no publica documentación para desarrolladores, y bloquea
+acceso automatizado directo al sitio (403 fuera de un navegador normal); tampoco se encontró
+ninguna API no-oficial mantenida. Integrarlo de verdad requeriría scraping frágil y probablemente
+en contra de sus términos de servicio -- **no se recomienda**.
+
+La alternativa real con API oficial es **Spoonacular** (endpoint `Find Recipes by Ingredients`,
+bien documentado), pero con costos/complejidad relevantes para este proyecto: tier gratis de solo
+50 puntos/día (probablemente un puñado de búsquedas), $29/mes el siguiente escalón; sus datos
+están en inglés, así que cada receta importada necesitaría mapear sus ingredientes a mano contra
+nuestro catálogo en español antes de poder "digerirla" en equivalentes (parecido a `asuncion:
+true`, pero mucho más trabajo por receta); y agrega una dependencia externa nueva (API key,
+`.env`, límites) para una app de 1-2 usuarios.
+
+Dos variantes posibles, sin decidir todavía cuál construir:
+
+**Variante A -- solo contra nuestro propio banco (procedural, gratis, sin dependencias)**
+- **Ingredientes habituales**: qué alimentos del catálogo usa la persona seguido. Persistir por
+  persona (colección nueva, ej. `ingredientes_habituales`: `{persona, alimentos: [string, ...]}`,
+  un documento por persona, se sobreescribe) en vez de un checklist que se resetea cada vez --
+  cambia poco día a día. Un `st.multiselect` sobre `cargar_nombres_alimentos()` para editarla.
+- **Filtro de longitud**: solo recetas con `len(receta["ingredientes"]) <= 6` entran a la
+  comparación.
+- **Coincidencia**: para cada receta que pasa el filtro, contar cuántos de sus ingredientes NO
+  están en los habituales de la persona -- 0 faltantes = "✅ la puedes hacer ya", 1-2 faltantes =
+  "🔺 casi, te falta(n): X, Y" (como supercook.com con sus recetas "casi completas"), 3+ no se
+  muestra. Los placeholders genéricos (`"Fruta"`/`"Fruta suelta"`, regla 6 de `CLAUDE.md`) cuentan
+  como "siempre disponibles". Función pura, testable con datos sintéticos, sin Mongo.
+- Como la receta sugerida YA es de nuestro banco, "agregar a mi recetario" no aplica tal cual (ya
+  está ahí) -- el botón sería más bien "Usar en Menú del día" (agrega esa receta al tiempo que se
+  esté armando, mismo mecanismo que el picker de recetas ya existente).
+- Limitación honesta: solo redescubre las 86 recetas que ya existen en el banco, no trae nada
+  nuevo -- el valor es "recuérdame qué de lo que ya cocino aplica hoy", no descubrimiento real.
+
+**Variante B -- integrar Spoonacular (descubrimiento real de recetas nuevas)**
+- Mismo mecanismo de "ingredientes habituales", pero la búsqueda va contra la API de Spoonacular
+  en vez del banco propio -- si trae algo interesante, "Agregar a mi recetario" sí tendría sentido
+  literal: crear una receta nueva en `recetas` a partir del resultado, con sus ingredientes
+  mapeados a mano (o con `asuncion: true` + revisión) al catálogo antes de guardarla.
+  Requiere: cuenta/API key de Spoonacular, manejo de su límite diario, y una pantalla de mapeo
+  ingrediente-por-ingrediente antes de poder guardar (no se puede automatizar bien el
+  español↔inglés + unidades sin revisión humana).
 
 ##### Dependencies
-`recetas`/`catalogo_alimentos` (ya existen). Ninguna dependencia nueva.
+Variante A: `recetas`/`catalogo_alimentos` (ya existen), ninguna dependencia nueva. Variante B:
+cuenta de Spoonacular (o similar) + `.env` nuevo.
 
 #### FR-008 · [STATUS: Shipped 0.19.0]
 > **Shipped en 0.19.0 (2026-08-30)** — botón "🧬 Clonar" (`st.popover`) junto a "Abrir" en el
