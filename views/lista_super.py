@@ -15,7 +15,7 @@ Ver UI-BUILD-YOUR-MENU.md → "Lista del súper" para la especificación complet
 import streamlit as st
 
 from nutriguia.colores import GRUPO_ETIQUETA, chip_html
-from nutriguia.html_lista_super import agrupar_alimentos_por_grupo, generar_html_lista_super
+from nutriguia.html_lista_super import SIN_CATALOGAR, agrupar_alimentos_por_grupo, generar_html_lista_super
 from nutriguia.streamlit_data import cargar_catalogo, cargar_personas, db
 from nutriguia.validation import sumar_por_grupo
 
@@ -114,7 +114,13 @@ def render() -> None:
     # Vista previa en pantalla, agrupada igual que el HTML descargable -- misma función
     # (`agrupar_alimentos_por_grupo()`) para no mantener dos criterios de agrupación en paralelo.
     for grupo, items in agrupar_alimentos_por_grupo(resumen_por_alimento, catalogo):
-        st.markdown(chip_html(grupo, GRUPO_ETIQUETA.get(grupo, "Sin grupo / libre")), unsafe_allow_html=True)
+        if grupo == SIN_CATALOGAR:
+            # BUG-013: un alimento huérfano (ni siquiera está en el catálogo) no es lo mismo que
+            # "libre a propósito" -- se marca aparte con st.warning() en vez de un chip normal,
+            # para no verse como una categoría más.
+            st.warning("⚠️ Sin catalogar -- revisar en Configuración (\"Ingredientes huérfanos\")")
+        else:
+            st.markdown(chip_html(grupo, GRUPO_ETIQUETA.get(grupo, "Sin grupo / libre")), unsafe_allow_html=True)
         for alimento, equivalentes in items:
             st.markdown(f"- {alimento} — *{equivalentes} equivalente(s)*")
 

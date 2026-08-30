@@ -77,6 +77,23 @@ def fusionar_ingredientes_duplicados(ingredientes: list[dict]) -> list[dict]:
     que la receta YA tenía dejaba dos filas con el mismo 'alimento' en vez de fusionarlas
     (detectado 2026-08-30).
     """
+
+def renombrar_ingrediente_en_menu_guardado(documento: dict, nombre_viejo: str, nombre_nuevo: str) -> bool:
+    """
+    Renombra 'nombre_viejo' -> 'nombre_nuevo' dentro de un 'menus_construidos' YA GUARDADO
+    (mutado in place, ver schema.md -- un día guardado es un snapshot completo, no una referencia
+    viva al banco de recetas). Devuelve True si 'nombre_viejo' aparecía en algún ingrediente (y ya
+    mutó 'documento'), False si no había nada que hacer. Aplica 'fusionar_ingredientes_duplicados()'
+    por instancia (mismo caso que arriba: la receta ya podía tener un ingrediente con el nombre
+    nuevo) y recalcula 'actual'/'actual_diario'/'delta_diario'/'estado' -- 'objetivo_diario' NO se
+    toca, sigue siendo el snapshot original de cuando se guardó ese día. Usada en
+    `views/configuracion.py` y `views/editor_ingredientes.py` junto con
+    `fusionar_ingredientes_duplicados()` -- limpiar/renombrar un alimento del catálogo solo tocaba
+    `recetas`, dejando el nombre viejo huérfano para siempre en cualquier día ya guardado que lo
+    usara (BUG-013, detectado 2026-08-30: "Leche"/"Leche semi" fusionadas a "Leche descremada" en
+    el catálogo y en `recetas`, pero "Lista del súper" las seguía mostrando como "Sin grupo /
+    libre" en vez de AOA porque los días ya guardados nunca se tocaron).
+    """
 ```
 
 ## Regla de prueba de regresión (obligatoria antes de tocar la UI)

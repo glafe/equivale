@@ -24,7 +24,11 @@ from nutriguia.streamlit_data import (
     invalidar_cache_recetas,
 )
 from nutriguia.texto import normalizar_busqueda
-from nutriguia.validation import fusionar_ingredientes_duplicados, sumar_por_grupo
+from nutriguia.validation import (
+    fusionar_ingredientes_duplicados,
+    renombrar_ingrediente_en_menu_guardado,
+    sumar_por_grupo,
+)
 
 TIEMPO_LABEL = {
     "al_despertar": "Al despertar", "desayuno": "Desayuno", "colacion": "Colación",
@@ -74,6 +78,30 @@ def _renombrar_en_recetas(nombre_viejo: str, nombre_nuevo: str) -> int:
     if tocadas:
         invalidar_cache_recetas()
     return tocadas
+
+
+def _renombrar_en_menus_construidos(nombre_viejo: str, nombre_nuevo: str) -> int:
+    """Cascada de `_renombrar_en_recetas()` hacia `menus_construidos` -- un día ya guardado es un
+    snapshot completo (ver schema.md), no una referencia viva al banco, así que renombrar solo en
+    `recetas` no lo alcanza: el nombre viejo queda huérfano para siempre en cualquier día ya
+    guardado que lo usara, aunque el banco ya esté limpio (BUG-013, detectado 2026-08-30 -- "Lista
+    del súper" mostraba "Leche"/"Leche semi" huérfanas como "Sin grupo / libre" en vez de AOA)."""
+    tocados = 0
+    for documento in db().menus_construidos.find({}):
+        if renombrar_ingrediente_en_menu_guardado(documento, nombre_viejo, nombre_nuevo):
+            db().menus_construidos.update_one(
+                {"persona": documento["persona"], "fecha": documento["fecha"]},
+                {
+                    "$set": {
+                        "tiempos": documento["tiempos"],
+                        "actual_diario": documento["actual_diario"],
+                        "delta_diario": documento["delta_diario"],
+                        "estado": documento["estado"],
+                    }
+                },
+            )
+            tocados += 1
+    return tocados
 
 
 def _normalizar_par(a: str, b: str) -> tuple[str, str]:
@@ -146,33 +174,52 @@ def _buscar_uso_de_receta():
 # ---------------------------------------------------------------------------
 
 def _check_ingredientes_huerfanos():
-    with st.expander("🥕 Ingredientes de recetas que ya no están en el catálogo", expanded=True):
+    with st.expander("🥕 Ingredientes que ya no están en el catálogo", expanded=True):
         st.caption(
-            "Una receta guarda cada ingrediente por nombre -- si ese alimento se elimina del "
-            "catálogo (o nunca se catalogó), el ingrediente se vuelve \"no ajustable\" en vez de "
-            "romperse, pero puede pasar desapercibido. Catalogarlo aquí arregla todas las recetas "
-            "que lo usan a la vez."
+            "Una receta (o un día ya guardado de \"Menú del día\") guarda cada ingrediente por "
+            "nombre -- si ese alimento se elimina del catálogo (o nunca se catalogó), el "
+            "ingrediente se vuelve \"no ajustable\" en la UI y aparece como \"Sin grupo / libre\" "
+            "en \"Lista del súper\" en vez de su grupo real, pero puede pasar desapercibido. "
+            "Catalogarlo aquí lo arregla en todos lados a la vez."
         )
         catalogo = cargar_catalogo()
         por_alimento: dict[str, dict] = {}
         for r in cargar_recetas():
             for ing in r["ingredientes"]:
                 if ing["alimento"] not in catalogo:
-                    entry = por_alimento.setdefault(ing["alimento"], {"grupo": ing.get("grupo_smae"), "recetas": set()})
+                    entry = por_alimento.setdefault(
+                        ing["alimento"], {"grupo": ing.get("grupo_smae"), "recetas": set(), "dias": set()}
+                    )
                     entry["recetas"].add(r["nombre"])
+        # BUG-013 (2026-08-30): un día ya guardado es un snapshot completo, no una referencia viva
+        # al banco de recetas -- limpiar/renombrar en `recetas` no lo alcanza, así que un alimento
+        # puede quedar huérfano SOLO en `menus_construidos` (el banco ya limpio no lo delata).
+        for doc in db().menus_construidos.find({}):
+            for tiempo, datos in doc.get("tiempos", {}).items():
+                for inst in datos.get("seleccion", []):
+                    for ing in inst["ingredientes"]:
+                        if ing["alimento"] not in catalogo:
+                            entry = por_alimento.setdefault(
+                                ing["alimento"], {"grupo": ing.get("grupo_smae"), "recetas": set(), "dias": set()}
+                            )
+                            etiqueta_dia = f"{doc['persona']} · {doc.get('nombre') or doc['fecha']}"
+                            entry["dias"].add(etiqueta_dia)
 
         if not por_alimento:
             st.success("Sin ingredientes huérfanos.")
             return
 
-        total_recetas = len({nombre for info in por_alimento.values() for nombre in info["recetas"]})
-        st.warning(f"{len(por_alimento)} alimento(s) sin catalogar, en {total_recetas} receta(s) en total.")
+        total_usos = sum(len(info["recetas"]) + len(info["dias"]) for info in por_alimento.values())
+        st.warning(f"{len(por_alimento)} alimento(s) sin catalogar, en {total_usos} lugar(es) en total.")
         opciones_existentes = [SIN_SELECCION] + sorted(catalogo.keys())
         for alimento, info in sorted(por_alimento.items()):
             with st.container(border=True):
                 grupo_txt = GRUPO_ETIQUETA.get(info["grupo"], info["grupo"]) if info["grupo"] else "(libre)"
                 st.markdown(f"**{alimento}** — grupo declarado: {grupo_txt}")
-                st.caption("En: " + ", ".join(sorted(info["recetas"])))
+                if info["recetas"]:
+                    st.caption("En recetas: " + ", ".join(sorted(info["recetas"])))
+                if info["dias"]:
+                    st.caption("En días ya guardados: " + ", ".join(sorted(info["dias"])))
 
                 st.caption("Opción A — catalogarlo como alimento nuevo:")
                 c1, c2 = st.columns([3, 1])
@@ -199,9 +246,16 @@ def _check_ingredientes_huerfanos():
                     "🔗 Usar este", key=f"reemplazar_btn_{alimento}",
                     disabled=elegido_existente == SIN_SELECCION,
                 ):
-                    tocadas = _renombrar_en_recetas(alimento, elegido_existente)
+                    tocadas_recetas = _renombrar_en_recetas(alimento, elegido_existente)
+                    tocados_dias = _renombrar_en_menus_construidos(alimento, elegido_existente)
+                    partes = []
+                    if tocadas_recetas:
+                        partes.append(f"{tocadas_recetas} receta(s)")
+                    if tocados_dias:
+                        partes.append(f"{tocados_dias} día(s) ya guardado(s)")
+                    detalle = " y ".join(partes) if partes else "0 lugares"
                     st.session_state["_flash_config"] = (
-                        f"'{alimento}' reemplazado por '{elegido_existente}' en {tocadas} receta(s)."
+                        f"'{alimento}' reemplazado por '{elegido_existente}' en {detalle}."
                     )
                     st.rerun()
 

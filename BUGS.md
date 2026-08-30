@@ -13,7 +13,7 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
   [BUG-003](#bug-003--status-rv), [BUG-004](#bug-004--status-rv), [BUG-005](#bug-005--status-rv),
   [BUG-006](#bug-006--status-rv), [BUG-007](#bug-007--status-rv), [BUG-008](#bug-008--status-c),
   [BUG-009](#bug-009--status-rv), [BUG-010](#bug-010--status-rv), [BUG-011](#bug-011--status-rv),
-  [BUG-012](#bug-012--status-rv)
+  [BUG-012](#bug-012--status-rv), [BUG-013](#bug-013--status-rv)
 
 ### Known Caveats
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002), [KC-003](#kc-003), [KC-004](#kc-004)
@@ -39,6 +39,55 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 ## Bugs
 
 ### Detailed Entries
+
+#### BUG-013 · [STATUS: RV]
+**Title:** Ingredientes fusionados/renombrados en el catálogo quedaban huérfanos en días ya
+guardados, mostrados como "Sin grupo / libre" en "Lista del súper"
+**Severity:** Medium
+**Reported Date:** 2026-08-30
+**Release Fixed:** 0.24.0
+
+##### Observable Problem
+El usuario reportó, tras organizar/fusionar entradas de "Leche" en el catálogo (a "Leche
+descremada"), que "Lista del súper" mostraba esa leche como "Sin grupo / libre" en vez de AOA --
+como si no hiciera falta comprar una cantidad real, cuando sí la hace.
+
+##### Fix Explanation (Exec Level — No Code)
+Renombrar o fusionar un alimento en el catálogo (Editor de ingredientes, o "🔗 Usar este" en
+Configuración) solo actualizaba el banco de recetas -- pero un día ya guardado en "Menú del día"
+es una fotografía completa de cómo quedó ese día, no una referencia que se actualice sola cuando
+cambia el banco. "Leche"/"Leche semi" se habían fusionado correctamente a "Leche descremada" en el
+catálogo y en las recetas, pero varios días ya guardados seguían con el nombre viejo -- y como ese
+nombre viejo ya no existía en el catálogo, se veía como "libre" en vez de como lo que realmente es
+(AOA). Además, el chequeo de Configuración que detecta este tipo de problema solo miraba el banco
+de recetas, así que este caso en particular (huérfano SOLO en días guardados, banco ya limpio) no
+aparecía en ningún lado para poder corregirlo.
+
+##### Fix Details (Technical)
+Nueva función pura `renombrar_ingrediente_en_menu_guardado()` en `nutriguia/validation.py` (ver
+`VALIDATION.md`): renombra un ingrediente dentro de un `menus_construidos` ya guardado, fusiona
+duplicados por instancia con `fusionar_ingredientes_duplicados()` (mismo caso que `BUG-009`, pero
+aplicado a un día guardado en vez de a una receta del banco) y recalcula `actual`/`actual_diario`/
+`delta_diario`/`estado` -- `objetivo_diario` no se toca, sigue siendo el snapshot original.
+`_renombrar_en_menus_construidos()` (duplicada en `views/configuracion.py` y
+`views/editor_ingredientes.py`, mismo patrón que `_renombrar_en_recetas()`) la aplica sobre todos
+los días guardados y escribe de vuelta. Se llama junto con `_renombrar_en_recetas()` en los tres
+lugares donde se puede renombrar/fusionar un alimento (el flujo de "Editar un alimento" en el
+Editor de ingredientes, y "🔗 Usar este" en Configuración). El chequeo "🥕 Ingredientes que ya no
+están en el catálogo" (antes "... de recetas que ya no están...") ahora también escanea
+`menus_construidos`, mostrando por separado en dónde aparece cada huérfano ("En recetas: ..." /
+"En días ya guardados: ..."), para que un caso como este sí se pueda encontrar y corregir con un
+clic. De paso, `agrupar_alimentos_por_grupo()` (`nutriguia/html_lista_super.py`) distingue ahora
+un alimento **huérfano** (`SIN_CATALOGAR`, nueva sección "⚠️ Sin catalogar") de uno **libre a
+propósito** (`grupo: null` en el catálogo, ej. una especia) -- antes ambos cayían en la misma
+sección "Sin grupo / libre", ocultando el problema incluso después de corregirlo en otro lugar
+distinto a como se reportó originalmente. Las 8 apariciones ya afectadas en producción ("Leche"/
+"Leche semi" en 5 días guardados de Dan y Pau) se corrigieron con la misma herramienta ya
+desplegada, no con un script aparte.
+
+##### Workaround
+Ninguno necesario tras el fix -- antes, revisar a mano cada día guardado desde "Menú del día" y
+corregir el ingrediente ahí.
 
 #### BUG-012 · [STATUS: RV]
 **Title:** "Agregar de SMAE" mostraba nombres con acentos corruptos ("CafÃ©") y no encontraba

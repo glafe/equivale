@@ -17,7 +17,11 @@ from nutriguia.streamlit_data import (
     invalidar_cache_recetas,
 )
 from nutriguia.texto import normalizar_busqueda
-from nutriguia.validation import fusionar_ingredientes_duplicados, sumar_por_grupo
+from nutriguia.validation import (
+    fusionar_ingredientes_duplicados,
+    renombrar_ingrediente_en_menu_guardado,
+    sumar_por_grupo,
+)
 
 GRUPOS_CANONICOS = ["AOA", "Cereal", "Verdura", "Fruta", "Aceite s/p", "Aceite c/p", "Leguminosa"]
 LIBRE = "(libre, sin grupo)"
@@ -67,6 +71,30 @@ def _renombrar_en_recetas(nombre_viejo: str, nombre_nuevo: str) -> int:
     if tocadas:
         invalidar_cache_recetas()
     return tocadas
+
+
+def _renombrar_en_menus_construidos(nombre_viejo: str, nombre_nuevo: str) -> int:
+    """Cascada de `_renombrar_en_recetas()` hacia `menus_construidos` -- un día ya guardado es un
+    snapshot completo (ver schema.md), no una referencia viva al banco, así que renombrar solo en
+    `recetas` no lo alcanza: el nombre viejo queda huérfano para siempre en cualquier día ya
+    guardado que lo usara, aunque el banco ya esté limpio (BUG-013, detectado 2026-08-30 -- "Lista
+    del súper" mostraba "Leche"/"Leche semi" huérfanas como "Sin grupo / libre" en vez de AOA)."""
+    tocados = 0
+    for documento in db().menus_construidos.find({}):
+        if renombrar_ingrediente_en_menu_guardado(documento, nombre_viejo, nombre_nuevo):
+            db().menus_construidos.update_one(
+                {"persona": documento["persona"], "fecha": documento["fecha"]},
+                {
+                    "$set": {
+                        "tiempos": documento["tiempos"],
+                        "actual_diario": documento["actual_diario"],
+                        "delta_diario": documento["delta_diario"],
+                        "estado": documento["estado"],
+                    }
+                },
+            )
+            tocados += 1
+    return tocados
 
 
 def _quitar_de_recetas(nombre: str) -> int:
@@ -198,11 +226,13 @@ def render() -> None:
                 # mismo alimento real con distinta ortografía.
                 db().catalogo_alimentos.delete_one({"alimento": elegido})
                 tocadas = _renombrar_en_recetas(elegido, nombre_final)
+                tocados_dias = _renombrar_en_menus_construidos(elegido, nombre_final)
                 invalidar_cache_catalogo()
-                st.session_state["_flash_ingredientes"] = (
-                    f"'{elegido}' se fusionó con '{nombre_final}' (ya existía) -- "
-                    f"{tocadas} receta(s) actualizada(s)."
-                )
+                mensaje = f"'{elegido}' se fusionó con '{nombre_final}' (ya existía) -- {tocadas} receta(s)"
+                if tocados_dias:
+                    mensaje += f" y {tocados_dias} día(s) ya guardado(s)"
+                mensaje += " actualizada(s)."
+                st.session_state["_flash_ingredientes"] = mensaje
                 st.session_state["_pendiente_ing_editar_selector"] = SIN_SELECCION
                 st.rerun()
             else:
@@ -217,12 +247,16 @@ def render() -> None:
                     },
                 )
                 tocadas = 0
+                tocados_dias = 0
                 if nombre_final != elegido:
                     tocadas = _renombrar_en_recetas(elegido, nombre_final)
+                    tocados_dias = _renombrar_en_menus_construidos(elegido, nombre_final)
                 invalidar_cache_catalogo()
                 mensaje = f"'{elegido}' actualizado."
                 if tocadas:
                     mensaje += f" Se renombró en {tocadas} receta(s) que lo usaban."
+                if tocados_dias:
+                    mensaje += f" También en {tocados_dias} día(s) ya guardado(s)."
                 st.session_state["_flash_ingredientes"] = mensaje
                 st.session_state["_pendiente_ing_editar_selector"] = SIN_SELECCION
                 st.rerun()

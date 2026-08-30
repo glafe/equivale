@@ -1,7 +1,7 @@
 """nutriguia/html_lista_super.py no toca Mongo -- estas pruebas usan datos sintéticos (nombres
 inventados, no reales de ninguna persona) para poder correr en cualquier clon del repo."""
 
-from nutriguia.html_lista_super import agrupar_alimentos_por_grupo, generar_html_lista_super
+from nutriguia.html_lista_super import SIN_CATALOGAR, agrupar_alimentos_por_grupo, generar_html_lista_super
 
 CATALOGO_EJEMPLO = {
     "Pollo": {"alimento": "Pollo", "grupo": "AOA", "cantidad_por_equivalente": "30 g"},
@@ -57,9 +57,10 @@ def test_notas_se_incluyen_y_se_escapan():
     assert "&lt;script&gt;" in pagina
 
 
-def test_alimento_sin_catalogo_usa_fallback_y_va_a_sin_grupo():
-    """"Fruta fantasma" no está en CATALOGO_EJEMPLO -- no debe tronar, cae al fallback "N equiv."
-    y se agrupa como "Sin grupo / libre", no se pierde de la lista."""
+def test_alimento_sin_catalogo_usa_fallback_y_va_a_sin_catalogar():
+    """BUG-013: "Fruta fantasma" no está en CATALOGO_EJEMPLO (huérfana) -- no debe tronar, cae al
+    fallback "N equiv." y se agrupa aparte como "Sin catalogar" -- NO junto con "Sin grupo / libre"
+    (eso es para alimentos libres A PROPÓSITO, ej. especias, no huérfanos)."""
     pagina = generar_html_lista_super(
         personas=["Persona de prueba"],
         equivalentes_por_alimento={"Fruta fantasma": 2},
@@ -69,7 +70,19 @@ def test_alimento_sin_catalogo_usa_fallback_y_va_a_sin_grupo():
     assert _es_html_valido(pagina)
     assert "Fruta fantasma" in pagina
     assert "2 equiv." in pagina
-    assert "Sin grupo / libre" in pagina
+    assert "Sin catalogar" in pagina
+    assert "Sin grupo / libre" not in pagina  # no debe aparecer esa sección si no hay libres de verdad
+
+
+def test_huerfano_y_libre_de_verdad_van_a_secciones_distintas():
+    """BUG-013: un alimento huérfano (no está en el catálogo) y uno libre a propósito
+    (`grupo: null` en el catálogo, ej. una especia) NO deben mezclarse en la misma sección."""
+    grupos = agrupar_alimentos_por_grupo(
+        {"Fruta fantasma": 2, "Canela en polvo": 1}, CATALOGO_EJEMPLO
+    )
+    por_grupo = dict(grupos)
+    assert [a for a, _ in por_grupo[SIN_CATALOGAR]] == ["Fruta fantasma"]
+    assert [a for a, _ in por_grupo[None]] == ["Canela en polvo"]
 
 
 def test_alimento_libre_grupo_none_no_imprime_none():

@@ -20,6 +20,27 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.24.0] - 2026-08-30
+
+### Fixed
+- **BUG-013**: renombrar/fusionar un alimento en el catálogo (Editor de ingredientes, o "🔗 Usar
+  este" en Configuración) solo actualizaba el banco de `recetas` -- un día ya guardado en
+  `menus_construidos` es una fotografía completa, no una referencia viva, así que quedaba con el
+  nombre viejo huérfano para siempre. Reportado por el usuario: tras fusionar "Leche"/"Leche semi"
+  a "Leche descremada", "Lista del súper" mostraba esa leche como "Sin grupo / libre" en vez de
+  AOA. Nueva `renombrar_ingrediente_en_menu_guardado()` en `nutriguia/validation.py` (recalcula
+  `actual`/`actual_diario`/`delta_diario`/`estado`, fusiona duplicados por instancia igual que
+  `BUG-009`) + `_renombrar_en_menus_construidos()` en `views/configuracion.py` y
+  `views/editor_ingredientes.py`, llamada junto a `_renombrar_en_recetas()` en los tres lugares
+  donde se puede renombrar/fusionar un alimento.
+  - El chequeo "🥕 Ingredientes que ya no están en el catálogo" (Configuración) ahora también
+    escanea `menus_construidos`, no solo `recetas` -- mostrando por separado dónde aparece cada
+    huérfano ("En recetas" / "En días ya guardados").
+  - "Lista del súper" distingue un alimento **huérfano** (nueva sección "⚠️ Sin catalogar") de uno
+    **libre a propósito** (sección "Sin grupo / libre") -- antes se mezclaban, ocultando el
+    problema.
+  - Las 8 apariciones ya afectadas en producción se corrigieron con la misma herramienta.
+
 ## [0.23.0] - 2026-08-30
 
 ### Fixed

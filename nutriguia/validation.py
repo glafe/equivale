@@ -104,3 +104,55 @@ def fusionar_ingredientes_duplicados(ingredientes: list[dict]) -> list[dict]:
                 fusionado[bandera] = True
         resultado.append(fusionado)
     return resultado
+
+
+def renombrar_ingrediente_en_menu_guardado(documento: dict, nombre_viejo: str, nombre_nuevo: str) -> bool:
+    """Renombra `nombre_viejo` -> `nombre_nuevo` dentro de un `menus_construidos` YA GUARDADO
+    (mutado in place) -- necesario porque limpiar/fusionar el catálogo (`views/editor_ingredientes
+    .py`, `views/configuracion.py`) solo tocaba `recetas` (el banco): un día ya guardado es un
+    snapshot completo, no una referencia viva al banco (ver schema.md), así que renombrar ahí NO
+    lo alcanza -- el ingrediente viejo queda huérfano para siempre en cualquier día que lo usara,
+    aunque el banco ya esté limpio (BUG-013, detectado 2026-08-30: "Leche"/"Leche semi" fusionadas
+    a "Leche descremada" en el catálogo y en `recetas`, pero seguían huérfanas en días ya
+    guardados -- "Lista del súper" las mostraba como "Sin grupo / libre" en vez de AOA).
+
+    Devuelve True si `nombre_viejo` aparecía en algún ingrediente (y ya mutó `documento`), False si
+    no había nada que hacer -- así el caller sabe si vale la pena escribir de vuelta a Mongo.
+    Aplica `fusionar_ingredientes_duplicados()` por instancia (mismo caso que BUG-009: la receta
+    ya podía tener un ingrediente con el nombre nuevo) y recalcula `actual`/`actual_diario`/
+    `delta_diario`/`estado` -- `objetivo_diario` NO se toca, sigue siendo el snapshot original de
+    cuando se guardó ese día (ver schema.md)."""
+    hubo_cambio = False
+    for datos in documento.get("tiempos", {}).values():
+        tiempo_cambio = False
+        for inst in datos.get("seleccion", []):
+            renombrado = False
+            for ing in inst["ingredientes"]:
+                if ing["alimento"] == nombre_viejo:
+                    ing["alimento"] = nombre_nuevo
+                    renombrado = True
+            if renombrado:
+                inst["ingredientes"] = fusionar_ingredientes_duplicados(inst["ingredientes"])
+                tiempo_cambio = True
+        if tiempo_cambio:
+            incluidos = [
+                ing
+                for inst in datos.get("seleccion", [])
+                for ing in inst["ingredientes"]
+                if ing.get("incluido", True)
+            ]
+            datos["actual"] = sumar_por_grupo(incluidos, "grupo_smae", "equivalentes")
+            hubo_cambio = True
+
+    if not hubo_cambio:
+        return False
+
+    actual_diario: dict[str, int] = {}
+    for datos in documento.get("tiempos", {}).values():
+        for grupo, cantidad in datos.get("actual", {}).items():
+            actual_diario[grupo] = actual_diario.get(grupo, 0) + cantidad
+    documento["actual_diario"] = actual_diario
+    delta_diario = delta_objetivo(documento.get("objetivo_diario", {}), actual_diario)
+    documento["delta_diario"] = delta_diario
+    documento["estado"] = "completo" if delta_diario and all(v == 0 for v in delta_diario.values()) else "en_progreso"
+    return True

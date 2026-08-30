@@ -16,14 +16,33 @@ from nutriguia.colores import COLOR_POR_DEFECTO, GRUPO_COLOR, GRUPO_ETIQUETA, co
 # Orden de aparición fijo (no alfabético) -- mismo criterio en toda la app (ver colores.py).
 ORDEN_GRUPOS = ["AOA", "Cereal", "Verdura", "Fruta", "Aceite s/p", "Aceite c/p", "Leguminosa"]
 
+# Sentinel != None -- un alimento sin catalogar (huérfano, ni siquiera existe en
+# `catalogo_alimentos`) NO es lo mismo que un alimento libre a propósito (`grupo: null`, ej. una
+# especia) -- antes ambos caían en el mismo bucket "Sin grupo / libre" y un huérfano se veía como
+# si de verdad no hiciera falta comprarlo (BUG-013, 2026-08-30: "Leche"/"Leche semi" huérfanas en
+# días ya guardados se mostraban así en vez de como AOA). Es un string, no un `object()`, para que
+# siga siendo comparable/ordenable si algún día convive con otro string en la misma lista.
+SIN_CATALOGAR = "_sin_catalogar"
+
 _INK = "#2B2621"
 _MUTED = "#6B6459"
 _BORDE = "#DAD3C4"
 _TEAL = "#3C6E68"
+_COLOR_SIN_CATALOGAR = "#6B4C9A"  # distinto de los 7 GRUPO_COLOR y del gris de "Libre" -- llama
+# la atención a propósito, es un problema de datos a corregir, no una categoría normal.
 
 
 def _esc(valor) -> str:
     return html.escape(str(valor))
+
+
+def etiqueta_y_color_grupo(grupo: str | None) -> tuple[str, str]:
+    """(etiqueta, color_hex) para mostrar un grupo en "Lista del súper" -- centraliza el caso
+    especial de `SIN_CATALOGAR` para que el HTML descargable y la vista previa en pantalla
+    (`views/lista_super.py`) no dupliquen ese criterio."""
+    if grupo == SIN_CATALOGAR:
+        return "⚠️ Sin catalogar (revisar en Configuración)", _COLOR_SIN_CATALOGAR
+    return GRUPO_ETIQUETA.get(grupo, "Sin grupo / libre"), GRUPO_COLOR.get(grupo, COLOR_POR_DEFECTO)
 
 
 def agrupar_alimentos_por_grupo(
@@ -31,33 +50,37 @@ def agrupar_alimentos_por_grupo(
 ) -> list[tuple[str | None, list[tuple[str, int]]]]:
     """[(grupo, [(alimento, equivalentes), ...]), ...] -- grupo resuelto desde
     `catalogo[alimento]["grupo"]` (no desde un `grupo_smae` de ingrediente, que ya no se conserva
-    tras sumar por alimento). `None` = libre (ej. especias) o alimento ya no está en el catálogo
-    (referencia huérfana) -- ambos casos se agrupan como "Sin grupo / libre" al final. Orden fijo
-    de grupos (`ORDEN_GRUPOS`), alfabético dentro de cada uno. Un alimento con un `grupo` que no es
+    tras sumar por alimento). `None` = libre a propósito (`grupo: null` en el catálogo, ej. una
+    especia). `SIN_CATALOGAR` = el alimento ni siquiera está en `catalogo_alimentos` (huérfano) --
+    va en su PROPIA sección, distinta de "Libre" (ver `SIN_CATALOGAR` arriba). Orden fijo de
+    grupos (`ORDEN_GRUPOS`), alfabético dentro de cada uno. Un alimento con un `grupo` que no es
     ninguno de los 7 canónicos (no debería pasar según `schema.md`, pero si el catálogo llegara a
-    tener un dato sucio) igual aparece -- en su propia sección al final, alfabético por nombre de
-    grupo -- en vez de perderse silenciosamente de la lista de compras."""
+    tener un dato sucio) igual aparece -- en su propia sección, alfabético por nombre de grupo --
+    en vez de perderse silenciosamente de la lista de compras."""
     por_grupo: dict[str | None, list[tuple[str, int]]] = {}
     for alimento, equivalentes in equivalentes_por_alimento.items():
-        grupo = catalogo.get(alimento, {}).get("grupo")
+        grupo = catalogo[alimento].get("grupo") if alimento in catalogo else SIN_CATALOGAR
         por_grupo.setdefault(grupo, []).append((alimento, equivalentes))
 
     resultado = []
     for grupo in ORDEN_GRUPOS:
         if grupo in por_grupo:
             resultado.append((grupo, sorted(por_grupo[grupo])))
-    grupos_no_canonicos = sorted(g for g in por_grupo if g is not None and g not in ORDEN_GRUPOS)
+    grupos_no_canonicos = sorted(
+        g for g in por_grupo if g not in ORDEN_GRUPOS and g is not None and g != SIN_CATALOGAR
+    )
     for grupo in grupos_no_canonicos:
         resultado.append((grupo, sorted(por_grupo[grupo])))
     if None in por_grupo:
         resultado.append((None, sorted(por_grupo[None])))
+    if SIN_CATALOGAR in por_grupo:
+        resultado.append((SIN_CATALOGAR, sorted(por_grupo[SIN_CATALOGAR])))
     return resultado
 
 
 def _seccion_grupo_html(grupo: str | None, items: list[tuple[str, int]], catalogo: dict) -> str:
-    color = GRUPO_COLOR.get(grupo, COLOR_POR_DEFECTO)
+    etiqueta, color = etiqueta_y_color_grupo(grupo)
     color_texto = color_texto_legible(color)
-    etiqueta = GRUPO_ETIQUETA.get(grupo, "Sin grupo / libre")
     filas = "".join(
         '<tr><td class="celda-check">☐</td>'
         f'<td class="celda-cantidad">{_esc(cantidad_real(alimento, equivalentes, catalogo))}</td>'

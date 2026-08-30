@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.23.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.24.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -149,6 +149,21 @@ Latin-1, así que las filas en UTF-8 quedan con "mojibake"; eso además rompía 
 lo suficiente como para que "café" no coincidiera con "CafÃ©". Nueva `_reparar_mojibake()` en
 `nutriguia/smae_csv.py` (heurística estándar de re-codificar a Latin-1 y volver a intentar
 decodificar como UTF-8, sin dependencia nueva) aplicada a `alimento`/`unidad`/`tipo_original`.
+
+**`BUG-013` corregido (0.24.0, 2026-08-30)**: el usuario reportó que, tras fusionar entradas de
+"Leche" en el catálogo (a "Leche descremada"), "Lista del súper" mostraba esa leche como "Sin
+grupo / libre" en vez de AOA. Causa: renombrar/fusionar en el catálogo solo tocaba el banco de
+`recetas` -- un día ya guardado en `menus_construidos` es una fotografía completa, no una
+referencia viva, así que quedaba con el nombre viejo huérfano para siempre aunque el banco ya
+estuviera limpio. Nueva `renombrar_ingrediente_en_menu_guardado()` en `nutriguia/validation.py`
+(recalcula `actual`/`actual_diario`/`delta_diario`/`estado`) + `_renombrar_en_menus_construidos()`
+en ambos archivos que ya tenían `_renombrar_en_recetas()`, llamada junto con ella en los tres
+lugares donde se puede renombrar/fusionar un alimento. El chequeo de Configuración ahora también
+escanea `menus_construidos`, no solo `recetas` -- si no, este caso (huérfano SOLO en días
+guardados) no aparecía en ningún lado para poder corregirlo. De paso, "Lista del súper" distingue
+un alimento **huérfano** (`SIN_CATALOGAR`, sección "⚠️ Sin catalogar") de uno **libre a
+propósito** (sección "Sin grupo / libre") -- antes se mezclaban. Las 8 apariciones ya afectadas en
+producción se corrigieron con la misma herramienta ya desplegada.
 
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,

@@ -302,13 +302,21 @@ falta un día por asignar, se arregla ahí, no aquí.
   resuelve contra `catalogo_alimentos.grupo` (no contra el `grupo_smae` de ningún ingrediente en
   particular, que ya no se conserva tras sumar por alimento) -- mismo `GRUPO_COLOR`/`GRUPO_ETIQUETA`
   de siempre, orden fijo de grupos (no alfabético), alfabético dentro de cada grupo. Un alimento
-  libre (`grupo: null`, ej. una especia) o que ya no está en el catálogo (referencia huérfana) cae
-  en una sección final "Sin grupo / libre" -- no se pierde de la lista, solo no tiene un grupo con
-  el que colorear su encabezado. **Corregido `BUG-010` (0.21.0)**: `agrupar_alimentos_por_grupo()`
+  libre a propósito (`grupo: null` en el catálogo, ej. una especia) cae en una sección final "Sin
+  grupo / libre" -- no se pierde de la lista, solo no tiene un grupo con el que colorear su
+  encabezado. **Corregido `BUG-010` (0.21.0)**: `agrupar_alimentos_por_grupo()`
   (`nutriguia/html_lista_super.py`, pública) es la ÚNICA función que hace este agrupamiento --
   antes la vista previa en pantalla tenía su propia copia de la misma lógica, con el mismo bug
   (un alimento con un `grupo` que no fuera ninguno de los 7 canónicos desaparecía en silencio de
   ambas, en vez de caer en una sección propia al final).
+  - **Corregido `BUG-013` (0.24.0)**: un alimento **huérfano** (ni siquiera está en el catálogo --
+    típicamente porque se renombró/fusionó ahí pero un día ya guardado se quedó con el nombre
+    viejo, ver "Configuración" arriba) ya NO se mezcla con "Sin grupo / libre" -- antes ambos casos
+    caían en la misma sección y un huérfano se veía como si de verdad no hiciera falta comprarlo
+    (ej. "Leche" huérfana mostrándose como libre en vez de como AOA). Ahora tiene su propia sección
+    "⚠️ Sin catalogar" (`SIN_CATALOGAR`, sentinel interno distinto de `None`), con un color de
+    alerta (`#6B4C9A`, distinto de los 7 `GRUPO_COLOR` y del gris de "Libre") en el HTML
+    descargable, y un `st.warning()` en la vista previa en pantalla en vez de un chip normal.
 - **Cantidad real**, no solo el conteo de equivalentes: `cantidad_real()` (factorizado 2026-08-30 a
   `nutriguia/cantidades.py` desde el antiguo `_cantidad_real()` privado de `html_semanal.py`, para
   compartirlo entre ambos) -- mismo fallback "`N` equiv." si el alimento no está en el catálogo.
@@ -349,14 +357,24 @@ de administración a futuro, no solo limpieza de datos.
   - "¿Dónde se usa una receta?" — selectbox de `recetas`, lista los días guardados de "Menú del
     día" y los menús de "Menú semanal" que la incluyen.
 - **Chequeos automáticos** (cada uno independiente, con éxito en verde si no hay problemas):
-  - **Ingredientes huérfanos**: un `ingrediente.alimento` de alguna receta que ya no está en
-    `catalogo_alimentos`. Dos opciones por alimento (2026-08-29, a pedido del usuario):
-    **Opción A** catalogarlo como alimento nuevo (nombre + grupo ya vienen de la receta, solo
-    falta la cantidad por equivalente) — arregla todas las recetas que lo usan a la vez; **Opción
-    B** declarar que ya es el mismo que un alimento existente (`_renombrar_en_recetas()`, mismo
-    mecanismo que la fusión del Editor de ingredientes) — para cuando el ingrediente huérfano es
-    solo una variante de escritura de algo que ya tienes catalogado, en vez de crear un
-    duplicado.
+  - **Ingredientes huérfanos** (renombrado a "🥕 Ingredientes que ya no están en el catálogo",
+    2026-08-30 -- ver `BUG-013`): un `ingrediente.alimento`, ya sea de alguna receta del banco O
+    de un día ya guardado en `menus_construidos`, que ya no está en `catalogo_alimentos`. Escanea
+    ambas colecciones (antes solo miraba `recetas` -- un alimento fusionado/renombrado en el
+    catálogo quedaba huérfano PARA SIEMPRE en cualquier día ya guardado que lo usara, aunque el
+    banco ya estuviera limpio, y ese caso no aparecía en ningún lado para corregirlo) y muestra por
+    separado dónde aparece cada uno ("En recetas: ..." / "En días ya guardados: ..."). Dos opciones
+    por alimento (2026-08-29, a pedido del usuario): **Opción A** catalogarlo como alimento nuevo
+    (nombre + grupo ya vienen de donde se detectó, solo falta la cantidad por equivalente) —
+    arregla todo lo que lo usa a la vez, en ambas colecciones, sin necesitar renombrar nada (una
+    vez que existe en el catálogo, deja de ser huérfano en cualquier lado); **Opción B** declarar
+    que ya es el mismo que un alimento existente (`_renombrar_en_recetas()` +
+    `_renombrar_en_menus_construidos()`, mismo mecanismo que la fusión del Editor de ingredientes)
+    — para cuando el ingrediente huérfano es solo una variante de escritura de algo que ya tienes
+    catalogado, en vez de crear un duplicado. `_renombrar_en_menus_construidos()`
+    (`nutriguia/validation.py` → `renombrar_ingrediente_en_menu_guardado()`) recalcula
+    `actual`/`actual_diario`/`delta_diario`/`estado` de cada día tocado -- `objetivo_diario` no se
+    toca, sigue siendo el snapshot original de cuando se guardó ese día.
   - **Referencias a recetas eliminadas**: un `receta_id` en `menus_construidos` (corregido
     2026-08-30 -- este chequeo nunca miró `plantillas_semana`, esa colección ya no existe desde
     0.9.0) que ya no existe en `recetas`. Los días guardados de "Menú del día" son bitácora
