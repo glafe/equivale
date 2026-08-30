@@ -202,10 +202,14 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
                     seleccion.remove(instancia)
                     st.rerun()
             # Colapsado = solo se ve el nombre (para revisar de un vistazo qué ya se agregó);
-            # expandido = se pueden ajustar porciones. `expanded=True` solo aplica la primera vez
-            # que existe esta key (ver botón "+ Agregar" arriba) -- después manda el toggle del
-            # usuario, como cualquier otro widget con estado de Streamlit.
-            with col_exp, st.expander(instancia["nombre"], expanded=True, key=f"exp_receta_{instancia['instancia_id']}"):
+            # expandido = se pueden ajustar porciones. A diferencia de otros widgets con estado
+            # (ej. st.checkbox), st.expander NO ignora `expanded=` en reruns posteriores solo
+            # porque su `key` ya existe -- hay que leer nosotros mismos el último valor que se
+            # dejó en session_state (el botón "+ Agregar" de arriba lo sobreescribe a False para
+            # las recetas ya existentes antes de cada rerun) y pasarlo explícito, o el toggle del
+            # usuario/la colapsada forzada no se respetarían.
+            exp_key = f"exp_receta_{instancia['instancia_id']}"
+            with col_exp, st.expander(instancia["nombre"], expanded=st.session_state.get(exp_key, True), key=exp_key):
                 for i, ing in enumerate(instancia["ingredientes"]):
                     if i > 0:
                         st.markdown(
