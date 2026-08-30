@@ -177,21 +177,27 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
                 unsafe_allow_html=True,
             )
     seleccion = dia["tiempos"][tiempo]
+    # `st.expander` no es un widget "de valor" como st.checkbox -- una vez que su `key` existe,
+    # Streamlit recuerda el toggle real del usuario en el navegador y el argumento `expanded=` deja
+    # de tener efecto en reruns futuros (a diferencia de st.checkbox/st.text_input, donde pasar un
+    # `value=`/`expanded=` distinto simplemente se ignora si el usuario nunca lo tocó, pero SÍ se
+    # puede forzar sobreescribiendo session_state -- con expander eso no alcanza, hace falta que la
+    # key sea nueva). Para forzar una receta ya agregada a colapsarse, la única forma confiable es
+    # darle una key NUEVA (un "epoch" que sube cada vez que se agrega otra receta) -- así Streamlit
+    # la trata como un expander recién creado y sí respeta `expanded=` una vez más.
+    epoch_por_instancia = st.session_state.setdefault("_receta_epoch", {})
     with col2:
         st.write("")
         st.write("")
         if st.button("+ Agregar", key=f"agregar_{tiempo}", disabled=receta_id_elegida is None):
-            # Colapsar las recetas ya agregadas para que la lista no se vuelva interminable de
-            # steppers -- la recién agregada es la única que vale la pena ver expandida de
-            # entrada (a pedido del usuario, 2026-08-29). Los expanders de las demás ya existen
-            # en session_state desde que se agregaron -- sobreescribirlo ANTES del rerun es la
-            # forma soportada de forzar su estado (mismo patrón que _fecha_pendiente más abajo).
             for inst in seleccion:
-                st.session_state[f"exp_receta_{inst['instancia_id']}"] = False
+                iid = inst["instancia_id"]
+                epoch_por_instancia[iid] = epoch_por_instancia.get(iid, 0) + 1
             seleccion.append(_nueva_instancia(opciones[receta_id_elegida]))
             st.rerun()
 
-    for instancia in list(seleccion):
+    seleccion_actual = list(seleccion)
+    for idx, instancia in enumerate(seleccion_actual):
         with st.container(border=True, key=f"receta_card_{instancia['instancia_id']}"):
             col_exp, col_quitar = st.columns([6, 1])
             with col_quitar:
@@ -202,14 +208,13 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
                     seleccion.remove(instancia)
                     st.rerun()
             # Colapsado = solo se ve el nombre (para revisar de un vistazo qué ya se agregó);
-            # expandido = se pueden ajustar porciones. A diferencia de otros widgets con estado
-            # (ej. st.checkbox), st.expander NO ignora `expanded=` en reruns posteriores solo
-            # porque su `key` ya existe -- hay que leer nosotros mismos el último valor que se
-            # dejó en session_state (el botón "+ Agregar" de arriba lo sobreescribe a False para
-            # las recetas ya existentes antes de cada rerun) y pasarlo explícito, o el toggle del
-            # usuario/la colapsada forzada no se respetarían.
-            exp_key = f"exp_receta_{instancia['instancia_id']}"
-            with col_exp, st.expander(instancia["nombre"], expanded=st.session_state.get(exp_key, True), key=exp_key):
+            # expandido = se pueden ajustar porciones. Solo la última de la lista (la más
+            # reciente) arranca expandida -- ver nota de "epoch" arriba sobre por qué la key
+            # incluye ese número.
+            epoch = epoch_por_instancia.get(instancia["instancia_id"], 0)
+            exp_key = f"exp_receta_{instancia['instancia_id']}_{epoch}"
+            es_la_mas_reciente = idx == len(seleccion_actual) - 1
+            with col_exp, st.expander(instancia["nombre"], expanded=es_la_mas_reciente, key=exp_key):
                 for i, ing in enumerate(instancia["ingredientes"]):
                     if i > 0:
                         st.markdown(

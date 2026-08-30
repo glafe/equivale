@@ -17,8 +17,11 @@ Convención de `key=` para que este CSS los alcance (ver views/menu_del_dia.py):
 - contenedor del panel de estado (por tiempo o del día): key que empieza con "status_"
 - expander colapsable de ingredientes de una receta agregada (2026-08-29): key que empieza con
   "exp_receta_" -- no tiene CSS propio, pero comparte la regla general `.stExpander` de abajo
-  (radio "de barro"); el `key=` se usa para poder forzar su estado colapsado/expandido desde
-  Python (ver `_renderizar_tiempo()` en `views/menu_del_dia.py`), no para apuntarle con CSS.
+  (radio "de barro"). El `key=` incluye un número de "epoch" (`f"exp_receta_{id}_{epoch}"`) que
+  sube cada vez que se agrega otra receta al mismo tiempo -- `st.expander` no respeta `expanded=`
+  en reruns donde su key ya existía (a diferencia de widgets "de valor" como `st.checkbox`), así
+  que forzar el colapso de una receta ya agregada requiere una key nueva, no solo cambiar
+  `session_state` (ver `_renderizar_tiempo()` en `views/menu_del_dia.py`).
 """
 
 import streamlit as st

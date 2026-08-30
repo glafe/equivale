@@ -26,11 +26,18 @@ y un resumen de una línea).
 - **"Menú del día" → "Ver recetas de todas las personas" arranca marcado por default**, a pedido
   del usuario (antes arrancaba desmarcado).
 - **Cada receta agregada a un tiempo ahora colapsa/expande su detalle de ingredientes**, a pedido
-  del usuario: el contenido vive en un `st.expander` con `key=f"exp_receta_{instancia_id}"`. Al
-  agregar una receta nueva, las demás de ese tiempo se colapsan solas (sobreescribiendo su
-  `session_state` antes del rerun) y la recién agregada queda expandida -- así la lista no se
-  vuelve interminable de steppers conforme se arma el día. El botón "quitar" (ahora un ícono 🗑️)
-  se movió fuera del expander para poder quitar una receta sin tener que expandirla primero.
+  del usuario: el contenido vive en un `st.expander`. Al agregar una receta nueva, las demás de
+  ese tiempo se colapsan solas y la recién agregada queda expandida -- así la lista no se vuelve
+  interminable de steppers conforme se arma el día. El botón "quitar" (ahora un ícono 🗑️) se movió
+  fuera del expander para poder quitar una receta sin tener que expandirla primero.
+  - **Corregido el mismo día tras QA en vivo**: el primer intento sobreescribía
+    `st.session_state[key]` antes del rerun (mismo patrón que `_fecha_pendiente`), pero
+    `st.expander` no es un widget "de valor" como `st.checkbox` -- una vez que su `key` existe,
+    el navegador recuerda el toggle real del usuario y `expanded=` deja de tener efecto en
+    reruns futuros, sin importar qué se deje en `session_state`. La única forma confiable de
+    forzar el colapso es darle una key NUEVA a cada rerecuento ("epoch" que sube cada vez que se
+    agrega otra receta, `st.session_state["_receta_epoch"]`) para que Streamlit trate el
+    expander como recién creado y sí respete `expanded=` una vez más.
 
 ## [0.12.0] - 2026-08-29
 

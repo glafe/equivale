@@ -62,13 +62,22 @@ Ajustes       -> Configuración
       históricos casi siempre tienen 2 platillos).
    c.1. **Cada receta agregada colapsa/expande su detalle** (2026-08-29, a pedido del usuario, para
       que la lista no se vuelva interminable de steppers conforme se agregan más platillos): el
-      contenido de ingredientes/steppers vive dentro de un `st.expander(nombre_receta,
-      key=f"exp_receta_{instancia_id}")` -- colapsado se ve solo el nombre (repaso rápido de qué
-      ya se agregó), expandido se pueden ajustar porciones. Al hacer clic en "+ Agregar", TODAS
-      las recetas ya presentes en ese tiempo se colapsan (`st.session_state[...] = False` antes de
-      `st.rerun()`, mismo patrón que `_fecha_pendiente`) y la recién agregada queda expandida por
-      default. El botón "quitar" (ahora un ícono 🗑️) vive FUERA del expander, en una columna
-      angosta al lado, para poder quitar una receta sin necesidad de expandirla primero.
+      contenido de ingredientes/steppers vive dentro de un `st.expander(nombre_receta, key=...)`
+      -- colapsado se ve solo el nombre (repaso rápido de qué ya se agregó), expandido se pueden
+      ajustar porciones. Solo la última receta de la lista (la más reciente) arranca expandida;
+      el resto arranca colapsado. El botón "quitar" (ahora un ícono 🗑️) vive FUERA del expander,
+      en una columna angosta al lado, para poder quitar una receta sin necesidad de expandirla
+      primero.
+      - **Corregido el mismo día tras QA en vivo**: `st.expander` no es un widget "de valor" como
+        `st.checkbox` -- una vez que su `key` existe, el navegador recuerda el toggle real del
+        usuario y `expanded=` deja de tener efecto en reruns futuros, sin importar qué se deje en
+        `session_state` (a diferencia de widgets como `st.checkbox`/`st.text_input`, donde SÍ
+        alcanza con sobreescribir `session_state` antes de un `st.rerun()` -- mismo patrón que
+        `_fecha_pendiente`, que no sirvió aquí). La solución fue darle una key con un "epoch"
+        (`st.session_state["_receta_epoch"]`, un contador por `instancia_id` que sube cada vez
+        que se agrega otra receta al mismo tiempo) -- así cada vez que hace falta forzar el
+        colapso, la key cambia y Streamlit trata el expander como recién creado, respetando
+        `expanded=` una vez más.
    d. Por cada receta agregada, listar sus ingredientes (dentro del expander de arriba). Para cada
       ingrediente **ajustable** (`paso_equivalente()` no da `None`): un control +/- (`st.button("-")`
       / `st.button("+")` a los lados de un número, NO `st.slider`) que sube/baja de 1 en 1
