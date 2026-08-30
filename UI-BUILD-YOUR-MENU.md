@@ -150,6 +150,31 @@ pasó a ser puramente una herramienta de **asignación y consulta**, no de const
   advertencia visual en "Cobertura de la semana", pero no se limpia sola (ver "Configuración",
   `_check_asignacion_rota()`, que la detecta explícitamente; corregirla es volver a abrir el
   expander "Editar asignación de días" y reasignar ese día).
+- **"📄 Descargar PDF para imprimir"** (2026-08-29, a pedido del usuario -- primera pieza de FR-003
+  "exportar imprimible", adelantada antes del resto de la Fase 5 porque el usuario la pidió
+  explícitamente como prueba): `st.download_button` justo debajo de "Cobertura de la semana",
+  generado con `nutriguia/pdf_semanal.py` (ReportLab, agregado como dependencia nueva -- ver
+  `requirements.txt`). Pensado para reemplazar el uso que el usuario le daba antes a un Excel
+  armado a mano (fuera de git) para tener el menú de la semana visible de lejos, pegado en la
+  cocina:
+  - **Una página horizontal** (landscape carta): filas = los 5 tiempos, columnas = los 7 días,
+    con el nombre de cada receta en letra grande y negrita -- nada de ingredientes ni porciones
+    (ese detalle se sigue viendo solo en "Menú del día"). Un día "Libre" o con una referencia rota
+    (mismo caso que arriba) se dibuja fusionado verticalmente sobre las 5 filas de tiempo, con el
+    texto correspondiente en vez de recetas.
+  - **Colores estandarizados de EquiVale, no una paleta nueva para el PDF**: la fila superior
+    "Objetivo diario" y la fila inferior "Total del día" (equivalentes reales, `actual_diario` de
+    cada `menus_construidos`) usan los mismos `GRUPO_COLOR`/`GRUPO_ETIQUETA` de `colores.py` que
+    ya se ven en toda la app -- mismo criterio de texto claro/oscuro legible por contraste
+    (`color_texto_legible()`, factorizado de `chip_html()` para poder compartirlo con el PDF).
+  - **`nutriguia/pdf_semanal.py` no toca Mongo** -- recibe `asignacion`/`menus_por_nombre` ya
+    resueltos desde `views/menu_semanal.py` (mismo patrón que `nutriguia/validation.py`), para
+    poder probarlo con datos sintéticos (`tests/test_pdf_semanal.py`) sin una base real.
+  - **Sin emoji en el PDF**: las fuentes base de ReportLab (Helvetica) no traen esos glifos y
+    salen como cuadros negros -- a diferencia de Streamlit, donde sí se ven bien. Los íconos de
+    tiempo (🌅🍳🍎🍽️🌙) se quedan solo en la app; el PDF usa nombres de tiempo en texto plano.
+  - Es una primera prueba, no la versión final de FR-003/Fase 5 -- ajustar tamaños de letra o
+    diseño según feedback de uso real antes de darla por terminada.
 
 ## Página "Configuración" (2026-08-29, a pedido del usuario)
 
@@ -157,7 +182,8 @@ El usuario sigue encontrando datos inconsistentes/repetidos a nivel práctico mi
 (ver regla 9 de `CLAUDE.md`) y pidió una herramienta dedicada a **identificar y corregir
 relaciones rotas entre colecciones** — Mongo no las valida solo, son referencias por
 nombre/id sueltas, no llaves foráneas (`recetas.ingredientes[].alimento` -> `catalogo_alimentos`,
-`*.receta_id` -> `recetas`, `asignacion_semanal.dias.*` -> `plantillas_semana`). Página nueva al
+`*.receta_id` -> `recetas`, `asignacion_semanal.dias.*` -> `menus_construidos.nombre` -- corregido
+2026-08-29, era `plantillas_semana` antes de retirar esa colección). Página nueva al
 final de la barra lateral (ícono de engrane), pensada como punto de entrada para más herramientas
 de administración a futuro, no solo limpieza de datos.
 
@@ -294,8 +320,9 @@ de una referencia visual del usuario; ajustar si no calzan exactamente:
 | Aceite c/p      | `#6D6E71` | Aceite c/proteína      |
 
 Pastilla (`border-radius: 999px`) con texto oscuro o claro elegido automáticamente según la
-luminancia del color de fondo (`_luminancia_relativa()` en `colores.py`) — así un color claro
-como Fruta no queda con texto blanco ilegible sin tener que listar excepciones a mano. Esto es la
+luminancia del color de fondo (`luminancia_relativa()`/`color_texto_legible()` en `colores.py`,
+compartidas con el PDF de "Menú semanal" -- ver más abajo) — así un color claro como Fruta no
+queda con texto blanco ilegible sin tener que listar excepciones a mano. Esto es la
 identidad visual del GRUPO — es independiente del color de ESTADO (✅/🔺/🔻ícono de
 exacto/falta/excedido); el estado se muestra aparte, no reemplazando el color del grupo. Vive en
 `nutriguia/colores.py` como single source of truth para no repetir hex en cada página.

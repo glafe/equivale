@@ -20,6 +20,23 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.12.0] - 2026-08-29
+
+### Added
+- **"Menú semanal" → "📄 Descargar PDF para imprimir"**, a pedido del usuario (primera pieza de
+  FR-003/Fase 5, adelantada como prueba): página horizontal (landscape carta) con los 7 días como
+  columnas y los 5 tiempos como filas, letra grande y en negrita pensada para leerse de lejos
+  (pegada en la cocina, reemplazando el uso que se le daba antes a un Excel armado a mano fuera de
+  git). Usa los mismos `GRUPO_COLOR`/`GRUPO_ETIQUETA` de siempre -- no una paleta nueva -- para la
+  fila de "Objetivo diario" (arriba) y "Total del día" (`actual_diario`, abajo de cada columna).
+  Un día libre o con una referencia de menú rota se dibuja fusionado sobre las 5 filas de tiempo.
+  Nuevo módulo `nutriguia/pdf_semanal.py` (ReportLab, agregado a `requirements.txt`) que no toca
+  Mongo -- recibe los datos ya resueltos desde `views/menu_semanal.py`, mismo patrón que
+  `nutriguia/validation.py`, con `tests/test_pdf_semanal.py` sobre datos sintéticos.
+- `nutriguia/colores.py`: `color_texto_legible()` factorizado de la lógica interna de `chip_html()`
+  (antes `_luminancia_relativa()` privada) para poder compartir el mismo criterio de contraste
+  entre los chips HTML de la app y las tablas de color del PDF.
+
 ## [0.11.0] - 2026-08-29
 
 ### Added

@@ -1,6 +1,6 @@
 # EquiVale
 
-**Versión actual: `0.11.0`** (ver [`CHANGELOG.md`](CHANGELOG.md) — [Versionado Semántico](https://semver.org/lang/es/))
+**Versión actual: `0.12.0`** (ver [`CHANGELOG.md`](CHANGELOG.md) — [Versionado Semántico](https://semver.org/lang/es/))
 
 Sistema personal de planeación de menús basado en **Equivalentes SMAE** (Sistema Mexicano de
 Alimentos Equivalentes), para dos personas. La app ("Menú del día") arma el día eligiendo
@@ -21,9 +21,10 @@ semanal", "Recetas", "Ingredientes", "Personas", "Configuración", agrupada en s
 barra lateral) desplegada y corriendo en producción como servicio systemd. "Menú del día" arma y
 guarda un día por fecha con historial, y admite ponerle un nombre opcional para reutilizarlo;
 "Menú semanal" asigna esos días nombrados a los días de la semana (de solo lectura — armar/editar
-recetas sigue siendo trabajo de "Menú del día"); "Configuración" junta herramientas de limpieza/integridad de datos;
-"Guía" trae un diagrama interactivo de cómo se relaciona todo. Sigue la Fase 5 (pulido, solo tras
-uso real). Ver el checklist completo en `BUILD-PLAN.md`.
+recetas sigue siendo trabajo de "Menú del día") y puede exportar la semana a un PDF grande para
+imprimir; "Configuración" junta herramientas de limpieza/integridad de datos;
+"Guía" trae un diagrama interactivo de cómo se relaciona todo. Sigue el resto de la Fase 5
+(pulido, solo tras uso real). Ver el checklist completo en `BUILD-PLAN.md`.
 
 ## Documentación — leer en este orden
 

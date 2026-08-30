@@ -17,7 +17,8 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002)
 
 ### Feature Requests
-- Propuestos: [FR-001](#fr-001), [FR-003](#fr-003), [FR-004](#fr-004), [FR-005](#fr-005), [FR-006](#fr-006)
+- Propuestos: [FR-001](#fr-001), [FR-004](#fr-004), [FR-005](#fr-005), [FR-006](#fr-006)
+- Parcialmente Shipped: [FR-003](#fr-003)
 - Shipped: [FR-002](#fr-002)
 
 ## Severity guide
@@ -339,7 +340,9 @@ día de `menus_construidos`.
 #### FR-003
 **Title:** Fase 5 — pulido (semana completa, exportar imprimible, sugerencia automática de hueco)
 **Date Requested:** 2026-08-24
-**Status:** Proposed — bloqueado a propósito hasta usar la Fase 4 en la vida real unos días
+**Status:** Parcialmente Shipped -- "exportar imprimible" salió en 0.12.0 (2026-08-29), adelantada
+a pedido explícito del usuario como prueba, sin esperar al resto de la Fase 5. Las otras dos
+(repetir semana completa, sugerencia automática de hueco) siguen bloqueadas a propósito.
 
 ##### Exec Description
 Tres mejoras de pulido: repetir el flujo de día completo por semana (con aviso de repetición),
@@ -347,8 +350,13 @@ exportar un plan a formato imprimible, y sugerir automáticamente un ingrediente
 catálogo cuando ningún combo del banco de recetas cuadra exacto con un objetivo.
 
 ##### Eng Description
-Ver `BUILD-PLAN.md` → Fase 5 para el detalle de cada una. No empezar sin haber usado la Fase 4
-en la vida real — puede cambiar qué vale la pena pulir primero.
+Ver `BUILD-PLAN.md` → Fase 5 para el detalle de cada una. No empezar el resto sin haber usado la
+Fase 4 en la vida real — puede cambiar qué vale la pena pulir primero.
+
+> **"Exportar imprimible" shipped en 0.12.0** — `nutriguia/pdf_semanal.py` (ReportLab), botón en
+> "Menú semanal". Ver `CHANGELOG.md` 0.12.0 y `UI-BUILD-YOUR-MENU.md` → "Menú semanal" para el
+> detalle. Es una primera versión ("hagamos la prueba", palabras del usuario) -- falta ajustar
+> tamaños/diseño según feedback de uso real antes de darla por terminada del todo.
 
 ##### Dependencies
 Fase 4 (día completo + guardado + historial) — completa desde 2026-08-27.

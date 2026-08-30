@@ -26,11 +26,19 @@ GRUPO_ETIQUETA = {
 COLOR_POR_DEFECTO = "#555555"
 
 
-def _luminancia_relativa(color_hex: str) -> float:
+def luminancia_relativa(color_hex: str) -> float:
     """Luminancia percibida (0-1) de un color hex, para elegir texto claro/oscuro legible."""
     color_hex = color_hex.lstrip("#")
     r, g, b = (int(color_hex[i : i + 2], 16) / 255 for i in (0, 2, 4))
     return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def color_texto_legible(color_hex: str) -> str:
+    """Hex de texto (casi negro u casi blanco "Barro") legible sobre `color_hex` de fondo -- mismo
+    criterio en todos los usos de GRUPO_COLOR, para no listar excepciones a mano (ej. Fruta es
+    claro y necesita texto oscuro). Compartido entre `chip_html` (HTML) y `nutriguia/pdf_semanal.py`
+    (PDF del "Menú semanal") para que un mismo grupo se vea igual de legible en ambos formatos."""
+    return "#2B2621" if luminancia_relativa(color_hex) > 0.6 else "#F7F4EE"
 
 
 def chip_html(grupo: str, texto: str) -> str:
@@ -40,8 +48,8 @@ def chip_html(grupo: str, texto: str) -> str:
     contraste legible sin tener que listar excepciones a mano.
     """
     color = GRUPO_COLOR.get(grupo, COLOR_POR_DEFECTO)
-    es_claro = _luminancia_relativa(color) > 0.6
-    color_texto = "#2B2621" if es_claro else "#F7F4EE"
+    color_texto = color_texto_legible(color)
+    es_claro = color_texto == "#2B2621"
     color_punto = "rgba(43,38,33,.35)" if es_claro else "rgba(255,255,255,.65)"
     return (
         f'<span style="background-color:{color}; color:{color_texto}; font-weight:600; '
