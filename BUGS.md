@@ -323,16 +323,18 @@ Un botón que suma los ingredientes de un día o de una semana planeada en una l
 compras (ej. "Pollo: 90 g", "Tortilla: 6 piezas"), en vez de tener que releer cada receta.
 
 ##### Eng Description
-Con `plantillas_semana` + `asignacion_semanal` (ver `schema.md`, 2026-08-29) ya existe de dónde
-sacar "qué se come toda la semana": multiplicar el `vector`/ingredientes de cada plantilla por
-cuántos días de la semana se le asignaron, sumar por alimento (no solo por grupo — hace falta una
-función nueva tipo `sumar_por_alimento`, ver `nutriguia/validation.py` si se generaliza), y
-formatear la cantidad total con `escalar_cantidad()`. También podría operar solo sobre un día de
-`menus_construidos` sin esperar a tener una semana completa armada.
+Con `menus_construidos.nombre` + `asignacion_semanal` (ver `schema.md`, corregido 2026-08-29) ya
+existe de dónde sacar "qué se come toda la semana": para cada día de la semana con un nombre
+asignado, resolver el `menus_construidos` correspondiente (por `persona`+`nombre`), sumar sus
+ingredientes reales (no solo el vector por grupo — hace falta una función nueva tipo
+`sumar_por_alimento`, ver `nutriguia/validation.py` si se generaliza), y formatear la cantidad
+total con `escalar_cantidad()`. También podría operar solo sobre un día de `menus_construidos`
+sin esperar a tener una semana completa armada.
 
 ##### Dependencies
-`plantillas_semana`/`asignacion_semanal` (Shipped 2026-08-29) para la versión semanal; ninguna
-para una versión que solo opere sobre un día de `menus_construidos`.
+`menus_construidos.nombre`/`asignacion_semanal` (Shipped 2026-08-29, corregido el mismo día — ver
+`CHANGELOG.md` 0.9.0) para la versión semanal; ninguna para una versión que solo opere sobre un
+día de `menus_construidos`.
 
 #### FR-003
 **Title:** Fase 5 — pulido (semana completa, exportar imprimible, sugerencia automática de hueco)

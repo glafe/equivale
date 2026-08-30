@@ -70,15 +70,29 @@ def _sumar_dicts(dicts: list[dict[str, int]]) -> dict[str, int]:
 
 
 def _dia_vacio(persona: str) -> dict:
-    return {"persona": persona, "fecha": date.today(), "tiempos": {t: [] for t in TIEMPOS}}
+    return {"persona": persona, "fecha": date.today(), "nombre": "", "tiempos": {t: [] for t in TIEMPOS}}
 
 
 def _cargar_plan_guardado(doc: dict) -> dict:
-    dia = {"persona": doc["persona"], "fecha": date.fromisoformat(doc["fecha"]), "tiempos": {t: [] for t in TIEMPOS}}
+    dia = {
+        "persona": doc["persona"],
+        "fecha": date.fromisoformat(doc["fecha"]),
+        "nombre": doc.get("nombre") or "",
+        "tiempos": {t: [] for t in TIEMPOS},
+    }
     for t, datos in doc.get("tiempos", {}).items():
         if t in dia["tiempos"]:
             dia["tiempos"][t] = [_instancia_desde_guardado(i) for i in datos.get("seleccion", [])]
     return dia
+
+
+def _nombre_en_uso_por_otra_fecha(persona: str, nombre: str, fecha_iso: str) -> str | None:
+    """Un nombre debe identificar UN solo menú por persona (para poder elegirlo sin ambigüedad
+    en "Menú semanal") -- si ya lo usa otra fecha, regresa esa fecha para poder avisar."""
+    otro = db().menus_construidos.find_one(
+        {"persona": persona, "nombre": nombre, "fecha": {"$ne": fecha_iso}}, {"fecha": 1}
+    )
+    return otro["fecha"] if otro else None
 
 
 def _cargar_historial(persona: str) -> list[dict]:
@@ -211,10 +225,12 @@ def render() -> None:
     st.caption("Arma tu día completo, guarda un plan por fecha, y revisa tu historial.")
 
     # Un botón "Abrir" del historial (más abajo, en un render anterior) puede haber pedido
-    # cambiar la fecha -- aplicarlo ANTES de instanciar el widget de fecha en este run (después ya
-    # no se puede tocar su session_state).
+    # cambiar la fecha/nombre -- aplicarlo ANTES de instanciar esos widgets en este run (después
+    # ya no se puede tocar su session_state).
     if "_fecha_pendiente" in st.session_state:
         st.session_state["fecha_input"] = st.session_state.pop("_fecha_pendiente")
+    if "_nombre_pendiente" in st.session_state:
+        st.session_state["nombre_input"] = st.session_state.pop("_nombre_pendiente")
 
     personas = cargar_personas()
     persona = st.selectbox("Persona", personas)
@@ -223,6 +239,7 @@ def render() -> None:
         st.session_state["_persona_actual"] = persona
         st.session_state["dia"] = _dia_vacio(persona)
         st.session_state["fecha_input"] = date.today()
+        st.session_state["nombre_input"] = ""
 
     dia = st.session_state["dia"]
     objetivo_diario = cargar_objetivo(persona)
@@ -234,7 +251,15 @@ def render() -> None:
         unsafe_allow_html=True,
     )
 
-    dia["fecha"] = st.date_input("Fecha de este plan", key="fecha_input")
+    c_fecha, c_nombre = st.columns([1, 2])
+    dia["fecha"] = c_fecha.date_input("Fecha de este plan", key="fecha_input")
+    dia["nombre"] = c_nombre.text_input(
+        "Nombre (opcional)", key="nombre_input",
+        placeholder="ej. Menú 1 -- para reutilizarlo en Menú semanal",
+        help="Dale un nombre si quieres poder asignar este día a días de la semana en "
+             "\"Menú semanal\" más adelante. Sin nombre, este plan solo queda guardado para "
+             "esta fecha.",
+    )
 
     st.divider()
 
@@ -267,9 +292,21 @@ def render() -> None:
 
     if st.button("💾 Guardar menú del día", type="primary"):
         fecha_iso = dia["fecha"].isoformat()
+        nombre_final = dia["nombre"].strip()
+        fecha_en_conflicto = (
+            _nombre_en_uso_por_otra_fecha(persona, nombre_final, fecha_iso) if nombre_final else None
+        )
+        if fecha_en_conflicto:
+            st.error(
+                f"Ya hay un plan de {persona} llamado '{nombre_final}' guardado para "
+                f"{fecha_en_conflicto} -- cambia el nombre o abre ese plan desde el historial "
+                "para editarlo en vez de crear otro con el mismo nombre."
+            )
+            st.stop()
         documento = {
             "persona": persona,
             "fecha": fecha_iso,
+            "nombre": nombre_final or None,
             "estado": "completo" if dia_completo else "en_progreso",
             "objetivo_diario": objetivo_diario,
             "actual_diario": actual_diario,
@@ -292,7 +329,10 @@ def render() -> None:
         }
         db().menus_construidos.create_index([("persona", 1), ("fecha", 1)], unique=True)
         db().menus_construidos.replace_one({"persona": persona, "fecha": fecha_iso}, documento, upsert=True)
-        st.success(f"Guardado: plan de {persona} para {fecha_iso} ({documento['estado']}).")
+        mensaje = f"Guardado: plan de {persona} para {fecha_iso} ({documento['estado']})."
+        if nombre_final:
+            mensaje += f" Guardado también como '{nombre_final}' -- ya se puede asignar en \"Menú semanal\"."
+        st.success(mensaje)
 
     st.divider()
     with st.expander("📜 Historial de planes guardados"):
@@ -301,11 +341,14 @@ def render() -> None:
             st.caption("Todavía no hay planes guardados para esta persona.")
         for doc in historial:
             c1, c2, c3 = st.columns([2, 2, 1])
-            c1.write(doc["fecha"])
+            etiqueta_fecha = doc["fecha"] + (f" · **{doc['nombre']}**" if doc.get("nombre") else "")
+            c1.markdown(etiqueta_fecha)
             c2.write("✅ completo" if doc["estado"] == "completo" else "🔺 en progreso")
             if c3.button("Abrir", key=f"abrir_{doc['fecha']}"):
-                st.session_state["dia"] = _cargar_plan_guardado(doc)
+                plan = _cargar_plan_guardado(doc)
+                st.session_state["dia"] = plan
                 st.session_state["_fecha_pendiente"] = date.fromisoformat(doc["fecha"])
+                st.session_state["_nombre_pendiente"] = plan["nombre"]
                 st.rerun()
 
 

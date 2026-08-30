@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.8.3` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.9.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -31,22 +31,26 @@ desde "Build your menu" el 2026-08-29 para homologar el idioma de toda la app) y
 completo (los 5 tiempos vía tabs), guarda por `(persona, fecha)` en `menus_construidos`, y tiene
 historial de planes guardados con round-trip verificado. El "Editor de ingredientes" (2026-08-27)
 permite limpiar/fusionar el catálogo de alimentos (con cascada de renombrado a `recetas`) y
-agregar alimentos nuevos desde `SMAE_CONSULTA.csv` (commiteado al repo). "Menú semanal"
-(2026-08-29, ver `schema.md` → `plantillas_semana`/`asignacion_semanal`) define menús reutilizables
-por persona (versión simple a propósito: solo elige recetas por tiempo, sin ajustar ingredientes)
-y su asignación a los 7 días de la semana, con un resumen de cobertura — pensado como base para
-una futura lista de súper (`BUGS.md` FR-004), no integrado todavía con `menus_construidos`.
-"Configuración" (2026-08-29, ícono de engrane al final de la barra lateral) junta herramientas de
+agregar alimentos nuevos desde `SMAE_CONSULTA.csv` (commiteado al repo). "Menú del día" ahora
+también acepta un **nombre opcional** por día guardado (único por persona entre los días con
+nombre) — eso es lo que lo vuelve reutilizable. "Menú semanal" (2026-08-29, corregida el mismo
+día tras aclaración del usuario — ver `schema.md` → `asignacion_semanal`) asigna esos días
+nombrados a los 7 días de la semana y muestra un resumen de cobertura; su sección "Tus menús" es
+de **solo lectura** (nombre/fecha/equivalentes reales, con acceso directo a "Menú del día" para
+crear o editar) — no tiene su propio constructor de recetas. La primera versión sí tenía uno
+(colección `plantillas_semana`), pero se retiró el mismo día por no reflejar el flujo real del
+usuario (ver `CHANGELOG.md` 0.9.0); pensado como base para una futura lista de súper (`BUGS.md`
+FR-004). "Configuración" (2026-08-29, ícono de engrane al final de la barra lateral) junta herramientas de
 administración: buscar en qué recetas se usa un ingrediente o dónde se usa una receta, y chequeos
 automáticos de integridad entre colecciones (ingredientes huérfanos, referencias a recetas
 eliminadas, vector de equivalentes desincronizado, posibles duplicados en el catálogo, personas
 sin objetivo, asignación semanal rota) — ver "Página Configuración" en `UI-BUILD-YOUR-MENU.md`.
 "Guía" (2026-08-29, primera en la barra lateral pero NO la página de entrada — esa sigue siendo
-"Menú del día") trae un diagrama interactivo de cómo se relacionan Personas/Ingredientes/Recetas/
-Menú semanal/Menú del día (enlaces reales + resaltado por CSS puro con `:has()`, sin JavaScript
-— ver nota de `BUG-005` sobre por qué no usar `<script>` con `unsafe_allow_html`) más una guía
-corta en pasos. Falta Fase 5 (pulido) — no empezarla sin haber usado la Fase 4 unos días en la
-vida real.
+"Menú del día") trae un diagrama interactivo de la cadena lineal Ingredientes → Recetas → Menú
+del día → Menú semanal (con Personas alimentando a Menú del día) — enlaces reales + resaltado por
+CSS puro con `:has()`, sin JavaScript (ver nota de `BUG-005` sobre por qué no usar `<script>` con
+`unsafe_allow_html`) — más una guía corta en pasos. Falta Fase 5 (pulido) — no empezarla sin haber
+usado la Fase 4 unos días en la vida real.
 
 **Identidad visual "Barro" (2026-08-27)**: paleta/tipografía/radios propios sobre los 7 colores
 de grupo SMAE (que NO cambiaron — son funcionales). Aprobada primero como maqueta interactiva

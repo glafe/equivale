@@ -20,6 +20,32 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.9.0] - 2026-08-29
+
+### Changed
+- **Corrección de diseño en "Menú semanal"**, a pedido del usuario: el flujo real es armar un día
+  completo en "Menú del día" y darle un **nombre** ahí mismo para reutilizarlo, no mantener un
+  segundo picker de recetas más simple en "Menú semanal". Se retiró por completo la colección
+  `plantillas_semana` (nunca llegó a tener datos reales) y "Menú semanal" pasó a ser una
+  herramienta puramente de asignación/consulta:
+  - `menus_construidos` gana un campo opcional `nombre` (único por persona entre los días CON
+    nombre, validado en código al guardar — no es un índice de Mongo). "Menú del día" ahora tiene
+    un campo "Nombre (opcional)" junto a la fecha; ponerle nombre a un día es lo que lo vuelve
+    elegible en "Menú semanal".
+  - "Menú semanal" perdió su editor de menús (nombre + tabs de recetas sin steppers); "Tus menús"
+    ahora es de solo lectura (nombre, fecha, equivalentes reales de cada día guardado), con un
+    `st.page_link` directo a "Menú del día" para crear o editar.
+  - "Configuración" actualizado: `_buscar_uso_de_receta()` y `_check_recetas_huerfanas()` ya no
+    revisan `plantillas_semana` (colección retirada); `_check_asignacion_rota()` ahora compara
+    `asignacion_semanal.dias` contra los nombres vigentes en `menus_construidos` en vez de
+    `plantillas_semana`.
+  - Diagrama de "Guía" simplificado de dos ramas a una cadena lineal (Ingredientes → Recetas →
+    Menú del día → Menú semanal, con Personas alimentando a Menú del día) para reflejar que
+    "Menú semanal" ya no arma recetas por su cuenta; corregido también el paso 4 de la guía en
+    pasos, que describía el modelo viejo.
+  - Ver `schema.md` para el detalle de `menus_construidos.nombre` y la nota de retiro de
+    `plantillas_semana`.
+
 ## [0.8.3] - 2026-08-29
 
 ### Fixed

@@ -120,30 +120,19 @@ def _buscar_uso_de_receta():
 
     dias = list(db().menus_construidos.find({}, {"_id": 0}))
     en_dias = [
-        (doc["persona"], doc["fecha"], tiempo)
+        (doc["persona"], doc["fecha"], doc.get("nombre"), tiempo)
         for doc in dias
         for tiempo, datos in doc.get("tiempos", {}).items()
         if any(inst["receta_id"] == elegido for inst in datos.get("seleccion", []))
     ]
-    plantillas = list(db().plantillas_semana.find({}, {"_id": 0}))
-    en_plantillas = [
-        (p["persona"], p["nombre"], tiempo)
-        for p in plantillas
-        for tiempo, lista in p["tiempos"].items()
-        if any(r["receta_id"] == elegido for r in lista)
-    ]
 
-    if not en_dias and not en_plantillas:
-        st.caption("No aparece en ningún día guardado ni menú semanal todavía.")
+    if not en_dias:
+        st.caption("No aparece en ningún día guardado todavía.")
         return
-    if en_plantillas:
-        st.caption(f"En {len(en_plantillas)} menú(s) semanal(es):")
-        for persona, nombre, tiempo in en_plantillas:
-            st.markdown(f"- **{nombre}** ({persona}) — {TIEMPO_LABEL.get(tiempo, tiempo)}")
-    if en_dias:
-        st.caption(f"En {len(en_dias)} día(s) guardado(s) de 'Menú del día':")
-        for persona, fecha, tiempo in en_dias:
-            st.markdown(f"- {persona} — {fecha} — {TIEMPO_LABEL.get(tiempo, tiempo)}")
+    st.caption(f"En {len(en_dias)} día(s) guardado(s) de 'Menú del día':")
+    for persona, fecha, nombre, tiempo in en_dias:
+        etiqueta_nombre = f" — **{nombre}**" if nombre else ""
+        st.markdown(f"- {persona} — {fecha}{etiqueta_nombre} — {TIEMPO_LABEL.get(tiempo, tiempo)}")
 
 
 # ---------------------------------------------------------------------------
@@ -214,20 +203,12 @@ def _check_ingredientes_huerfanos():
 def _check_recetas_huerfanas():
     with st.expander("🍽️ Referencias a recetas que ya no existen"):
         st.caption(
-            "Los menús semanales y los días guardados guardan un `receta_id` -- si esa receta se "
-            "elimina del banco, la referencia queda huérfana. Los días guardados de \"Menú del "
-            "día\" son bitácora histórica y solo se muestran aquí (no se editan); los menús "
-            "semanales sí se pueden limpiar directo."
+            "Cada día guardado de \"Menú del día\" (con nombre o sin él) guarda un `receta_id` "
+            "por cada receta elegida -- si esa receta se elimina del banco, la referencia queda "
+            "huérfana. Se corrige abriendo ese día desde \"Menú del día\" y quitando el "
+            "ingrediente ahí, no desde aquí."
         )
         recetas_ids = {r["receta_id"] for r in cargar_recetas()}
-
-        problemas_plantillas = [
-            (p, tiempo, r)
-            for p in db().plantillas_semana.find({}, {"_id": 0})
-            for tiempo, lista in p["tiempos"].items()
-            for r in lista
-            if r["receta_id"] not in recetas_ids
-        ]
         problemas_dias = [
             (doc, tiempo, inst)
             for doc in db().menus_construidos.find({}, {"_id": 0})
@@ -236,30 +217,17 @@ def _check_recetas_huerfanas():
             if inst["receta_id"] not in recetas_ids
         ]
 
-        if not problemas_plantillas and not problemas_dias:
+        if not problemas_dias:
             st.success("Sin referencias huérfanas a recetas eliminadas.")
             return
 
-        if problemas_plantillas:
-            st.warning(f"{len(problemas_plantillas)} referencia(s) huérfana(s) en menús semanales.")
-            for p, tiempo, r in problemas_plantillas:
-                c1, c2 = st.columns([3, 1])
-                c1.markdown(
-                    f"**{r['nombre']}** _(eliminada)_ en menú **{p['nombre']}** "
-                    f"({p['persona']}) — {TIEMPO_LABEL.get(tiempo, tiempo)}"
-                )
-                if c2.button("Quitar", key=f"quitar_huerfana_{p['persona']}_{p['nombre']}_{tiempo}_{r['receta_id']}"):
-                    db().plantillas_semana.update_one(
-                        {"persona": p["persona"], "nombre": p["nombre"]},
-                        {"$pull": {f"tiempos.{tiempo}": {"receta_id": r["receta_id"]}}},
-                    )
-                    st.session_state["_flash_config"] = f"Referencia a '{r['nombre']}' quitada de '{p['nombre']}'."
-                    st.rerun()
-
-        if problemas_dias:
-            st.info(f"{len(problemas_dias)} referencia(s) huérfana(s) en días guardados (histórico, no editable):")
-            for doc, tiempo, inst in problemas_dias:
-                st.caption(f"- {inst['nombre']} (eliminada) — {doc['persona']} / {doc['fecha']} / {TIEMPO_LABEL.get(tiempo, tiempo)}")
+        st.warning(f"{len(problemas_dias)} referencia(s) huérfana(s) en días guardados:")
+        for doc, tiempo, inst in problemas_dias:
+            etiqueta_nombre = f" — **{doc['nombre']}**" if doc.get("nombre") else ""
+            st.caption(
+                f"- {inst['nombre']} (eliminada) — {doc['persona']} / {doc['fecha']}"
+                f"{etiqueta_nombre} / {TIEMPO_LABEL.get(tiempo, tiempo)}"
+            )
 
 
 def _check_vector_desincronizado():
@@ -366,11 +334,14 @@ def _check_asignacion_rota():
         st.caption("Un día de la semana puede quedar apuntando a un menú que ya se eliminó.")
         problemas = []
         for doc in db().asignacion_semanal.find({}, {"_id": 0}):
-            plantillas_persona = {
-                p["nombre"] for p in db().plantillas_semana.find({"persona": doc["persona"]}, {"nombre": 1})
+            nombres_persona = {
+                m["nombre"]
+                for m in db().menus_construidos.find(
+                    {"persona": doc["persona"], "nombre": {"$ne": None}}, {"nombre": 1}
+                )
             }
             for dia, nombre in doc.get("dias", {}).items():
-                if nombre and nombre not in plantillas_persona:
+                if nombre and nombre not in nombres_persona:
                     problemas.append((doc["persona"], dia, nombre))
 
         if not problemas:

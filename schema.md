@@ -222,6 +222,13 @@ exacto, criterio de "hecho" explícito de `BUILD-PLAN.md` → Fase 4).
   "fecha": string,                  // fecha ISO del día -- ya NO es opcional en Fase 4 (a pedido
                                      // del usuario: varios planes por persona, uno por fecha, con
                                      // historial). Único índice recomendado: (persona, fecha).
+  "nombre": string | null,          // opcional (2026-08-29) -- si se le pone un nombre (ej.
+                                     // "Menú 1"), este día se vuelve reutilizable/asignable desde
+                                     // "Menú semanal" (ver más abajo). Único por persona entre
+                                     // los documentos CON nombre (validado en la app, no con un
+                                     // índice de Mongo -- ver views/menu_del_dia.py
+                                     // `_nombre_en_uso_por_otra_fecha()`). null = solo bitácora
+                                     // de esa fecha, no aparece en "Menú semanal".
   "estado": string,                 // "completo" si delta_diario da todo cero, si no "en_progreso"
   "objetivo_diario": { grupo: int, ... },  // snapshot del objetivo vigente al momento de guardar
                                             // (por si el objetivo de la persona cambia después)
@@ -250,40 +257,18 @@ nivel del documento es lo que sí se valida. El presupuesto restante por tiempo 
 vivo en la UI (objetivo diario menos lo ya usado en otros tiempos) es una vista calculada al vuelo,
 no algo que se persiste.
 
-## Colección `plantillas_semana` — menús reutilizables, no atados a una fecha (2026-08-29)
+## ~~Colección `plantillas_semana`~~ — removida el mismo día (2026-08-29)
 
-A pedido del usuario: en la vida real, no arma un día distinto cada vez -- alterna entre un
-puñado de menús fijos (ej. "Menú 1" lunes/miércoles/viernes, "Menú 2" martes/jueves/sábado,
-domingo libre/"cheat day"). `menus_construidos` (arriba) sigue siendo la bitácora real de "qué se
-guardó para tal fecha"; esta colección es la plantilla reutilizable de la que esa bitácora podría
-partir (la página "Menú semanal" no escribe a `menus_construidos` -- son colecciones
-independientes por ahora, ver `UI-BUILD-YOUR-MENU.md` → "Menú semanal" para la razón).
+**Historia breve, para no repetir el mismo diseño dos veces**: la primera versión de "Menú
+semanal" introdujo esta colección como una versión simplificada de una receta-por-tiempo, sin
+ajuste de ingredientes, pensada como "más simple" que `menus_construidos`. El usuario aclaró el
+mismo día que el flujo real que tenía en mente era otro: **primero armar un día normal en "Menú
+del día" (con todo su detalle) y darle un nombre para poder reutilizarlo**, no mantener un
+segundo picker de recetas más pobre en paralelo. Se quitó esta colección por completo — no quedó
+ningún dato real en ella (se detectó y corrigió antes de que el usuario llegara a usarla). Ver
+`menus_construidos.nombre` (arriba) y `asignacion_semanal` (abajo) para el diseño vigente.
 
-Versión intencionalmente más simple que `menus_construidos`: solo guarda QUÉ recetas van en cada
-tiempo, no el ajuste fino de ingredientes/equivalentes por receta (eso sigue siendo trabajo de
-"Menú del día" el día que corresponda).
-
-```
-{
-  "persona": string,
-  "nombre": string,                 // ej. "Menú 1" -- identifica la plantilla, único por persona
-  "tiempos": {
-    "al_despertar": [ RecetaResumen, ... ],
-    "desayuno": [ RecetaResumen, ... ],
-    "colacion": [ RecetaResumen, ... ],
-    "comida": [ RecetaResumen, ... ],
-    "cena": [ RecetaResumen, ... ]
-  }
-}
-```
-**RecetaResumen**: `{ "receta_id": string, "nombre": string, "vector_equivalentes": {grupo: int} }`
-— snapshot ligero tomado de `recetas` al agregarla (no una referencia viva: si la receta se edita
-después, la plantilla conserva el vector con el que se agregó, igual que ya pasa hoy con
-`RecetaInstancia` en `menus_construidos`).
-
-Índice recomendado: único compuesto `(persona, nombre)`.
-
-## Colección `asignacion_semanal` — qué plantilla aplica a cada día, por persona (2026-08-29)
+## Colección `asignacion_semanal` — qué día con nombre aplica a cada día de la semana (2026-08-29)
 
 Un documento por persona (se sobreescribe, no se versiona por ahora).
 
@@ -291,7 +276,7 @@ Un documento por persona (se sobreescribe, no se versiona por ahora).
 {
   "persona": string,                // único índice
   "dias": {
-    "lunes": string | null,         // "nombre" de una plantillas_semana de esa persona, o
+    "lunes": string | null,         // el "nombre" de un menus_construidos de esa persona, o
     "martes": string | null,        // null = libre/descanso (ej. el domingo "cheat day")
     "miercoles": string | null,
     "jueves": string | null,
@@ -301,10 +286,12 @@ Un documento por persona (se sobreescribe, no se versiona por ahora).
   }
 }
 ```
-Referencia por `nombre`, no por id (mismo patrón que `recetas.ingredientes[].alimento` apuntando a
-`catalogo_alimentos.alimento`) — si se renombra o elimina una plantilla, `views/menu_semanal.py`
-actualiza/limpia estas referencias en cascada (`_renombrar_en_asignacion()` /
-`_quitar_de_asignacion()`), igual que el editor de ingredientes lo hace para `recetas`.
+Referencia por `nombre` (de un `menus_construidos` con `nombre` no nulo), no por `fecha` ni por
+id — mismo patrón que `recetas.ingredientes[].alimento` apuntando a `catalogo_alimentos.alimento`.
+`views/menu_semanal.py` **no** arma ni edita menús (esa colección/UI se quitó, ver arriba); si un
+día con nombre cambia de nombre o se queda sin él, la referencia queda apuntando a algo que ya no
+existe — la página "Configuración" lo detecta (`_check_asignacion_rota()`) pero no lo edita
+automáticamente, solo ofrece marcar ese día como libre.
 
 **RecetaInstancia** — snapshot completo de la receta tal como quedó tras los ajustes del usuario
 (ya NO delta-encoded contra la receta base — se cambió a guardar el estado completo para garantizar

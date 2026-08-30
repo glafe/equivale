@@ -75,6 +75,12 @@ Ajustes       -> Configuración
    `menus_construidos` (ver `schema.md`) — si ya existe un plan guardado para esa persona+fecha, lo
    sobreescribe (no crea un duplicado). `estado` se infiere solo: `"completo"` si el delta diario
    total es exacto en todos los grupos, si no `"en_progreso"`.
+5.1. **Nombre opcional** (2026-08-29, a pedido del usuario, junto a la fecha): un `text_input`
+   para darle un nombre al día (ej. "Menú 1"). Ponerle nombre es lo que lo vuelve elegible desde
+   "Menú semanal" (ver esa sección abajo) — sin nombre, el día se guarda igual pero solo queda
+   como bitácora de esa fecha. El nombre debe ser único por persona entre los días CON nombre
+   (`_nombre_en_uso_por_otra_fecha()` valida esto al guardar; si choca, error inline y no se
+   guarda — el usuario decide si cambia el nombre o abre el otro día desde el historial).
 6. **Historial** (2026-08-27, a pedido del usuario: una persona puede tener varios planes
    guardados, uno por fecha, y poder volver a verlos): sección/expander que lista los
    `menus_construidos` ya guardados de la persona seleccionada, ordenados por `fecha` descendente
@@ -98,37 +104,40 @@ persona —" / persona existente).
 - No hay botón de eliminar persona en esta fase — borrar una persona dejaría huérfanas referencias
   en `menus`/`recetas.personas_vistas`/`menus_construidos`, fuera de alcance por ahora.
 
-## Página "Menú semanal" (2026-08-29, a pedido del usuario)
+## Página "Menú semanal" (2026-08-29, a pedido del usuario; corregida el mismo día)
 
 El usuario en la vida real no arma un día distinto cada vez — alterna entre un ciclo fijo de
 menús (ej. "Menú 1" lunes/miércoles/viernes, "Menú 2" martes/jueves/sábado, domingo libre/"cheat
 day"). Antes de construir la lista de súper (ver "Ideas para más adelante" en `BUILD-PLAN.md`)
-hacía falta poder configurar y **ver de un vistazo** ese ciclo — de ahí esta página, separada de
-"Menú del día" (que sigue siendo la bitácora real de "qué se guardó para tal fecha", ver
-`schema.md` → `menus_construidos`).
+hacía falta poder configurar y **ver de un vistazo** ese ciclo — de ahí esta página.
+
+**Corregida el mismo día tras aclaración del usuario**: la primera versión traía su propio picker
+de recetas simplificado (sin steppers ni opcionales), guardado en una colección aparte
+(`plantillas_semana`). El usuario aclaró que el flujo real que tenía en mente era otro: primero
+armar un día normal y completo en **"Menú del día"** (con todo su detalle — steppers,
+ingredientes opcionales, comparación contra el objetivo) y ponerle un **nombre** ahí mismo para
+poder reutilizarlo, en vez de mantener un segundo constructor de menús más pobre en paralelo. Se
+retiró `plantillas_semana` por completo (ver `schema.md` → sección "removida") y "Menú semanal"
+pasó a ser puramente una herramienta de **asignación y consulta**, no de construcción:
 
 - **Cobertura de la semana** (arriba de todo, es la pregunta que motivó la página): 7 columnas
-  Lun-Dom, cada una mostrando el nombre del menú asignado o "Libre". Un expander aparte
-  ("Ver equivalentes totales por menú") lista el vector agregado de cada menú, para comparar a
-  ojo contra el objetivo diario de la persona.
-- **Asignar menús a los días**: un `st.selectbox` por día (Lun-Dom) con las plantillas de esa
-  persona + "Libre/descanso"; un solo botón "Guardar asignación" para los 7 a la vez.
-- **Editor de menús** (selector "— Nuevo menú —" / uno existente, mismo patrón que el Editor de
-  recetas): nombre + tabs por tiempo (`al_despertar`/`desayuno`/`colacion`/`comida`/`cena`), cada
-  tab con un buscador de recetas (`ver_todas` como en "Menú del día") y un botón "+ Agregar".
-  **A propósito NO tiene steppers de ajuste de ingrediente ni checkbox de "incluir" para
-  opcionales** (a diferencia de "Menú del día") — el usuario pidió explícitamente una versión más
-  simple para esta primera pasada; una receta agregada cuenta con su `vector_equivalentes` base tal
-  cual. Si hace falta ajustar una porción específica, eso se sigue haciendo en "Menú del día" el
-  día que corresponda, no aquí.
-- **Renombrar un menú hace cascada a la asignación** (mismo criterio que el editor de ingredientes
-  con `recetas`): si el nuevo nombre ya lo usaba algún día de la semana, se actualiza esa
-  referencia; si se elimina un menú, los días que lo tenían asignado pasan a "Libre".
-- **Por qué es una colección aparte de `menus_construidos`, no una integración directa todavía**:
-  mantiene la primera versión simple y de bajo riesgo (no toca código de "Menú del día" que ya
-  está en producción). Cargar automáticamente la plantilla del día al abrir "Menú del día" para
-  una fecha dada es una extensión natural, pero no se pidió en esta pasada — anotarlo si hace
-  falta después.
+  Lun-Dom, cada una mostrando el nombre del menú asignado o "Libre" (o una advertencia si el
+  nombre asignado ya no corresponde a ningún día guardado — ver "Configuración" más abajo).
+- **Asignar menús a los días**: un `st.selectbox` por día (Lun-Dom), con opciones = los nombres de
+  los días de esa persona guardados con nombre en `menus_construidos` + "Libre/descanso"; un solo
+  botón "Guardar asignación" para los 7 a la vez. Esto sigue viviendo en `asignacion_semanal` (ver
+  `schema.md`), solo cambió de dónde saca los nombres válidos.
+- **"Tus menús" es de solo lectura**: lista cada día guardado con nombre de la persona
+  seleccionada (nombre, fecha, chips de equivalentes reales — `actual_diario`, no el objetivo).
+  No hay botón para agregar, editar ni borrar recetas desde aquí — un `st.page_link` lleva
+  directo a "Menú del día" para eso. Si `actual_diario` no cuadra con el objetivo, se nota en los
+  chips igual que en "Menú del día" — esta página no vuelve a validar nada, solo muestra lo que ya
+  se guardó ahí.
+- **Qué pasa si un menú asignado se borra o se le quita el nombre**: la referencia en
+  `asignacion_semanal.dias` queda apuntando a un nombre que ya no existe — se marca con una
+  advertencia visual en "Cobertura de la semana", pero no se limpia sola (ver "Configuración",
+  `_check_asignacion_rota()`, que la detecta explícitamente; corregirla es volver a abrir el
+  expander "Editar asignación de días" y reasignar ese día).
 
 ## Página "Configuración" (2026-08-29, a pedido del usuario)
 
