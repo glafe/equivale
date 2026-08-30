@@ -54,6 +54,7 @@ ETIQUETA_CORTA = {
     "AOA": "AOA",
     "Aceite s/p": "Aceite s/p",
     "Aceite c/p": "Aceite c/p",
+    None: "Libre",  # alimento libre (ej. especias, "al gusto") -- sin grupo SMAE, no cuenta EQ
 }
 
 _INK = colors.HexColor("#2B2621")
@@ -72,11 +73,14 @@ _ESTILO_VACIO = ParagraphStyle("vacio", fontName="Helvetica-Oblique", fontSize=9
 _ESTILO_NOTA = ParagraphStyle("nota", fontName="Helvetica", fontSize=10, leading=13, textColor=_MUTED)
 
 
-def _chip_grupo_texto(grupo: str, eq: int) -> tuple[str, colors.Color, colors.Color]:
+def _chip_grupo_texto(grupo: str | None, eq: int) -> tuple[str, colors.Color, colors.Color]:
+    """`grupo` es None para un alimento libre (ej. especias, "al gusto") dentro de una receta --
+    sin esto, `f"{grupo} {eq}"` literalmente imprimía "None 0" en el PDF (detectado en QA en vivo
+    contra datos reales, 2026-08-30). Ese caso no lleva el conteo de EQ (siempre 0, no aporta
+    información) -- solo la etiqueta "Libre"."""
     color_fondo = GRUPO_COLOR.get(grupo, "#555555")
-    return f"{ETIQUETA_CORTA.get(grupo, grupo)} {eq}", colors.HexColor(color_fondo), colors.HexColor(
-        color_texto_legible(color_fondo)
-    )
+    texto = ETIQUETA_CORTA[None] if grupo is None else f"{ETIQUETA_CORTA.get(grupo, grupo)} {eq}"
+    return texto, colors.HexColor(color_fondo), colors.HexColor(color_texto_legible(color_fondo))
 
 
 def _chips_horizontales(vector: dict[str, int], ancho_total: float):

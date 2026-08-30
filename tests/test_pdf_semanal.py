@@ -117,3 +117,37 @@ def test_ingrediente_sin_catalogo_usa_fallback_de_equivalentes():
 
     assert _cantidad_real("Fruta libre", 1, CATALOGO_EJEMPLO) == "1 equiv."
     assert _cantidad_real("Avena en hojuelas", 2, CATALOGO_EJEMPLO) == "1/2 taza"
+
+
+def test_ingrediente_libre_no_imprime_none():
+    """Un ingrediente sin grupo_smae (alimento libre, ej. especias) NO debe imprimir "None 0" --
+    detectado en QA en vivo contra datos reales, 2026-08-30 (ver _chip_grupo_texto())."""
+    from nutriguia.pdf_semanal import _chip_grupo_texto
+
+    texto, _, _ = _chip_grupo_texto(None, 0)
+    assert texto == "Libre"
+    assert "None" not in texto
+
+    menu_con_libre = {
+        "actual_diario": {},
+        "tiempos": {
+            "desayuno": {
+                "seleccion": [
+                    {
+                        "nombre": "Café",
+                        "ingredientes": [
+                            {"alimento": "Canela en polvo", "grupo_smae": None, "equivalentes": 0, "incluido": True},
+                        ],
+                    }
+                ]
+            }
+        },
+    }
+    pdf = generar_pdf_semanal(
+        persona="Persona de prueba",
+        objetivo_diario={},
+        asignacion={"lunes": "Con libre", **{d: None for d in list(ASIGNACION_MIXTA)[1:]}},
+        menus_por_nombre={"Con libre": menu_con_libre},
+        catalogo={},
+    )
+    assert _es_pdf_valido(pdf)
