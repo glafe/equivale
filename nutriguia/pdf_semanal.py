@@ -189,6 +189,49 @@ def _tabla_receta(receta: dict, catalogo: dict, ancho_total: float) -> Table:
     return tabla
 
 
+_GUTTER_COLUMNAS = 6 * mm
+
+
+def _bloque_recetas(recetas: list[dict], catalogo: dict, ancho_util: float) -> list:
+    """Las recetas de UN tiempo, en pares a dos columnas para aprovechar todo el ancho de la hoja
+    (a pedido del usuario, 2026-08-30 -- antes se apilaban una debajo de otra dejando la mitad
+    derecha de la página en blanco). Si el tiempo tiene un número impar de recetas, la última va
+    sola a ancho completo en vez de dejar una columna vacía. Cada par se envuelve en
+    `KeepTogether` para que las dos recetas de esa fila no se separen en un salto de página."""
+    ancho_col = (ancho_util - _GUTTER_COLUMNAS) / 2
+    flowables: list = []
+    for i in range(0, len(recetas), 2):
+        par = recetas[i : i + 2]
+        if len(par) == 1:
+            receta = par[0]
+            flowables.append(
+                KeepTogether([
+                    Paragraph(receta["nombre"], _ESTILO_RECETA),
+                    _tabla_receta(receta, catalogo, ancho_util),
+                ])
+            )
+        else:
+            celda_izq = [Paragraph(par[0]["nombre"], _ESTILO_RECETA), _tabla_receta(par[0], catalogo, ancho_col)]
+            celda_der = [Paragraph(par[1]["nombre"], _ESTILO_RECETA), _tabla_receta(par[1], catalogo, ancho_col)]
+            fila = Table([[celda_izq, celda_der]], colWidths=[ancho_col, ancho_col])
+            fila.setStyle(
+                TableStyle(
+                    [
+                        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                        ("LEFTPADDING", (0, 0), (0, 0), 0),
+                        ("RIGHTPADDING", (0, 0), (0, 0), _GUTTER_COLUMNAS),
+                        ("LEFTPADDING", (1, 0), (1, 0), 0),
+                        ("RIGHTPADDING", (1, 0), (1, 0), 0),
+                        ("TOPPADDING", (0, 0), (-1, -1), 0),
+                        ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+                    ]
+                )
+            )
+            flowables.append(KeepTogether([fila]))
+        flowables.append(Spacer(1, 1.5 * mm))
+    return flowables
+
+
 def generar_pdf_semanal(
     persona: str,
     objetivo_diario: dict[str, int],
@@ -263,14 +306,7 @@ def generar_pdf_semanal(
             if not recetas:
                 continue
             story.append(Paragraph(TIEMPO_LABEL[tiempo], _ESTILO_TIEMPO))
-            for receta in recetas:
-                story.append(
-                    KeepTogether([
-                        Paragraph(receta["nombre"], _ESTILO_RECETA),
-                        _tabla_receta(receta, catalogo, ancho_util),
-                    ])
-                )
-                story.append(Spacer(1, 1.5 * mm))
+            story.extend(_bloque_recetas(recetas, catalogo, ancho_util))
             story.append(Spacer(1, 1 * mm))
 
         actual_diario = menu.get("actual_diario", {})

@@ -20,6 +20,16 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.16.0] - 2026-08-30
+
+### Changed
+- **Las recetas de un mismo tiempo en el PDF de "Menú semanal" ahora se acomodan a dos
+  columnas**, a pedido del usuario (seguía sobrando la mitad derecha de la hoja tras el afinado
+  de 0.15.0): `_bloque_recetas()` (nuevo en `pdf_semanal.py`) empareja las recetas de dos en dos,
+  lado a lado, con cada tabla a la mitad del ancho de página; si el tiempo tiene un número impar
+  de recetas, la última va sola a ancho completo en vez de dejar una columna vacía. Cada par (o
+  la receta suelta) va en un `KeepTogether` para que no se separen en un salto de página.
+
 ## [0.15.0] - 2026-08-30
 
 ### Changed

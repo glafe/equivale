@@ -151,3 +151,47 @@ def test_ingrediente_libre_no_imprime_none():
         catalogo={},
     )
     assert _es_pdf_valido(pdf)
+
+
+def _receta(nombre: str, n_ingredientes: int = 1) -> dict:
+    return {
+        "nombre": nombre,
+        "ingredientes": [
+            {"alimento": "Pollo", "grupo_smae": "AOA", "equivalentes": 1, "incluido": True}
+            for _ in range(n_ingredientes)
+        ],
+    }
+
+
+def test_bloque_recetas_par_va_a_dos_columnas():
+    """Dos recetas en el mismo tiempo -- a pedido del usuario, 2026-08-30, deben ir lado a lado
+    (dos columnas) en vez de apiladas, para aprovechar el ancho completo de la hoja."""
+    from nutriguia.pdf_semanal import _bloque_recetas
+
+    flowables = _bloque_recetas([_receta("A"), _receta("B")], {}, 180)
+    # 1 KeepTogether con la fila de 2 columnas + 1 Spacer -- no dos bloques por separado.
+    assert len(flowables) == 2
+
+
+def test_bloque_recetas_impar_dernier_a_ancho_completo():
+    """Con un número impar de recetas, la última va sola a ancho completo (no una columna vacía)."""
+    from nutriguia.pdf_semanal import _bloque_recetas
+
+    flowables = _bloque_recetas([_receta("A"), _receta("B"), _receta("C")], {}, 180)
+    # 1 par (KeepTogether + Spacer) + 1 receta sola (KeepTogether + Spacer) = 4 flowables.
+    assert len(flowables) == 4
+
+
+def test_pdf_con_recetas_pareadas_no_truena():
+    menu = {
+        "actual_diario": {"AOA": 3},
+        "tiempos": {"desayuno": {"seleccion": [_receta("A"), _receta("B"), _receta("C")]}},
+    }
+    pdf = generar_pdf_semanal(
+        persona="Persona de prueba",
+        objetivo_diario={},
+        asignacion={"lunes": "M", **{d: None for d in list(ASIGNACION_MIXTA)[1:]}},
+        menus_por_nombre={"M": menu},
+        catalogo={},
+    )
+    assert _es_pdf_valido(pdf)

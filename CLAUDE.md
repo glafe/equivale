@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.15.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.16.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -67,7 +67,10 @@ aplica, y sus recetas con el detalle de ingredientes reales agrupado por grupo S
 (`nutriguia/pdf_semanal.py`, ReportLab); **afinado el mismo 2026-08-30** a pedido del usuario --
 Grupo/Cantidad/Alimento en columnas separadas (una fila por ingrediente, no varios apilados), letra
 más chica, y sin salto de página forzado entre menús (fluyen uno tras otro) para usar menos papel
-al imprimir. En "Menú del día" (2026-08-29,
+al imprimir; **las recetas de un mismo tiempo ahora se acomodan de a dos por fila** (a dos
+columnas, `_bloque_recetas()`) en vez de apiladas una debajo de otra -- aprovecha el ancho
+completo de la hoja; si un tiempo tiene un número impar de recetas, la última va sola a ancho
+completo. En "Menú del día" (2026-08-29,
 a pedido del usuario), "Ver recetas de todas las personas" ahora arranca marcado por default, y
 cada receta agregada a un tiempo colapsa/expande su detalle de ingredientes (`st.expander` con
 `key=f"exp_receta_{instancia_id}"`) — al agregar una receta nueva, las demás de ese tiempo se

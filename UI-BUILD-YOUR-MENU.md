@@ -215,6 +215,11 @@ pasó a ser puramente una herramienta de **asignación y consulta**, no de const
       solo pasa de página cuando de verdad no cabe más contenido, en vez de gastar una hoja
       completa por cada menú corto. Cada receta (nombre + tabla) va en un `KeepTogether` para que
       no se corte a la mitad justo en un salto de página.
+    - **Recetas a dos columnas** (`_bloque_recetas()`, mismo día -- seguía sobrando la mitad
+      derecha de la hoja): las recetas de un mismo tiempo se emparejan de dos en dos, lado a lado,
+      cada tabla a la mitad del ancho de página (con un `gutter` de 6mm entre ambas). Si el tiempo
+      tiene un número impar de recetas, la última va sola a ancho completo en vez de dejar una
+      columna vacía. Cada par (o la receta suelta) va en su propio `KeepTogether`.
   - **`nutriguia/pdf_semanal.py` no toca Mongo** -- recibe `asignacion`/`menus_por_nombre`/
     `catalogo` ya resueltos desde `views/menu_semanal.py` (mismo patrón que
     `nutriguia/validation.py`), para poder probarlo con datos sintéticos
