@@ -15,7 +15,7 @@ Ver UI-BUILD-YOUR-MENU.md → "Lista del súper" para la especificación complet
 import streamlit as st
 
 from nutriguia.colores import GRUPO_ETIQUETA, chip_html
-from nutriguia.html_lista_super import generar_html_lista_super
+from nutriguia.html_lista_super import agrupar_alimentos_por_grupo, generar_html_lista_super
 from nutriguia.streamlit_data import cargar_catalogo, cargar_personas, db
 from nutriguia.validation import sumar_por_grupo
 
@@ -24,7 +24,6 @@ DIA_LABEL = {
     "lunes": "Lunes", "martes": "Martes", "miercoles": "Miércoles", "jueves": "Jueves",
     "viernes": "Viernes", "sabado": "Sábado", "domingo": "Domingo",
 }
-ORDEN_GRUPOS = ["AOA", "Cereal", "Verdura", "Fruta", "Aceite s/p", "Aceite c/p", "Leguminosa"]
 
 
 def _cargar_asignacion(persona: str) -> dict[str, str | None]:
@@ -112,19 +111,11 @@ def render() -> None:
 
     st.divider()
 
-    # Vista previa en pantalla, agrupada igual que el HTML descargable.
-    por_grupo: dict[str | None, list[tuple[str, int]]] = {}
-    for alimento, equivalentes in resumen_por_alimento.items():
-        grupo = catalogo.get(alimento, {}).get("grupo")
-        por_grupo.setdefault(grupo, []).append((alimento, equivalentes))
-
-    grupos_en_orden = [g for g in ORDEN_GRUPOS if g in por_grupo]
-    if None in por_grupo:
-        grupos_en_orden.append(None)
-
-    for grupo in grupos_en_orden:
+    # Vista previa en pantalla, agrupada igual que el HTML descargable -- misma función
+    # (`agrupar_alimentos_por_grupo()`) para no mantener dos criterios de agrupación en paralelo.
+    for grupo, items in agrupar_alimentos_por_grupo(resumen_por_alimento, catalogo):
         st.markdown(chip_html(grupo, GRUPO_ETIQUETA.get(grupo, "Sin grupo / libre")), unsafe_allow_html=True)
-        for alimento, equivalentes in sorted(por_grupo[grupo]):
+        for alimento, equivalentes in items:
             st.markdown(f"- {alimento} — *{equivalentes} equivalente(s)*")
 
 

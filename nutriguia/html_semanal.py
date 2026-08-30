@@ -16,7 +16,7 @@ import html
 from datetime import date
 
 from nutriguia.cantidades import cantidad_real
-from nutriguia.colores import GRUPO_COLOR, color_texto_legible
+from nutriguia.colores import COLOR_POR_DEFECTO, GRUPO_COLOR, color_texto_legible
 
 DIAS = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
 DIA_LABEL = {
@@ -61,7 +61,7 @@ def _chip_grupo_html(grupo: str | None, eq: int) -> str:
     """`grupo` es None para un alimento libre (ej. especias, "al gusto") dentro de una receta --
     ese caso no lleva el conteo de EQ (siempre 0, no aporta información), solo la etiqueta
     "Libre" (mismo criterio que la versión ReportLab, ver CHANGELOG 0.14.0)."""
-    color = GRUPO_COLOR.get(grupo, "#555555")
+    color = GRUPO_COLOR.get(grupo, COLOR_POR_DEFECTO)
     color_texto = color_texto_legible(color)
     texto = ETIQUETA_CORTA[None] if grupo is None else f"{ETIQUETA_CORTA.get(grupo, grupo)} {eq}"
     return f'<span class="chip" style="background:{color};color:{color_texto};">{_esc(texto)}</span>'
@@ -103,7 +103,7 @@ def _tabla_receta_html(receta: dict, catalogo: dict) -> str:
         return '<table class="tabla-receta"><tr><td class="vacio" colspan="3">Sin ingredientes incluidos.</td></tr></table>'
     filas = []
     for grupo, eq, ings in grupos:
-        color = GRUPO_COLOR.get(grupo, "#555555")
+        color = GRUPO_COLOR.get(grupo, COLOR_POR_DEFECTO)
         color_texto = color_texto_legible(color)
         texto_chip = ETIQUETA_CORTA[None] if grupo is None else f"{ETIQUETA_CORTA.get(grupo, grupo)} {eq}"
         n = len(ings)

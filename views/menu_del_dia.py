@@ -546,6 +546,21 @@ def render() -> None:
                         "Fecha para el plan clonado", value=date.today(),
                         key=f"clonar_fecha_{doc['fecha']}",
                     )
+                    # Aviso si ya existe un plan de destino para esa fecha -- clonar lo
+                    # sobreescribe (mismo upsert por (persona, fecha) que "Guardar"), pero a
+                    # diferencia de "Guardar" (donde el usuario ve en pantalla lo que va a
+                    # reemplazar) aquí el plan de destino no es visible antes de confirmar, así
+                    # que sí vale la pena avisar explícitamente.
+                    existente = db().menus_construidos.find_one(
+                        {"persona": destino, "fecha": fecha_destino.isoformat()},
+                        {"nombre": 1},
+                    )
+                    if existente:
+                        etiqueta_existente = f" ('{existente['nombre']}')" if existente.get("nombre") else ""
+                        st.warning(
+                            f"⚠️ {destino} ya tiene un plan guardado para el "
+                            f"{fecha_destino.isoformat()}{etiqueta_existente} -- clonar lo sobreescribe."
+                        )
                     if st.button("Clonar", key=f"clonar_btn_{doc['fecha']}", type="primary"):
                         conflicto = _clonar_a_persona(doc, destino, fecha_destino)
                         mensaje = (

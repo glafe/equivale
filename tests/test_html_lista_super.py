@@ -1,7 +1,7 @@
 """nutriguia/html_lista_super.py no toca Mongo -- estas pruebas usan datos sintéticos (nombres
 inventados, no reales de ninguna persona) para poder correr en cualquier clon del repo."""
 
-from nutriguia.html_lista_super import _agrupar_por_grupo, generar_html_lista_super
+from nutriguia.html_lista_super import agrupar_alimentos_por_grupo, generar_html_lista_super
 
 CATALOGO_EJEMPLO = {
     "Pollo": {"alimento": "Pollo", "grupo": "AOA", "cantidad_por_equivalente": "30 g"},
@@ -83,21 +83,32 @@ def test_alimento_libre_grupo_none_no_imprime_none():
     assert ">None<" not in pagina
 
 
-def test_agrupar_por_grupo_orden_fijo_no_alfabetico():
+def test_agrupar_alimentos_por_grupo_orden_fijo_no_alfabetico():
     """AOA antes que Cereal antes que Verdura... (ORDEN_GRUPOS), no alfabético ("AOA" < "Aceite"
     alfabéticamente pero el orden fijo pone AOA primero de todas formas -- aquí se prueba con
     Cereal antes que AOA en el dict de entrada para confirmar que el orden de salida no depende
     del orden de inserción ni del alfabético)."""
-    grupos = _agrupar_por_grupo(
+    grupos = agrupar_alimentos_por_grupo(
         {"Avena en hojuelas": 1, "Pollo": 1, "Manzana": 1}, CATALOGO_EJEMPLO
     )
     orden_obtenido = [g for g, _ in grupos]
     assert orden_obtenido == ["AOA", "Cereal", "Fruta"]
 
 
-def test_agrupar_por_grupo_alfabetico_dentro_del_grupo():
+def test_agrupar_alimentos_por_grupo_no_pierde_alimentos_con_grupo_no_canonico():
+    """Un `grupo` que no es ninguno de los 7 canónicos (dato sucio en el catálogo -- no debería
+    pasar según schema.md, pero si pasa) no debe hacer que el alimento desaparezca silenciosamente
+    de la lista de compras -- debe aparecer en su propia sección al final."""
+    catalogo = {"Cosa rara": {"alimento": "Cosa rara", "grupo": "Grupo Inventado"}}
+    grupos = agrupar_alimentos_por_grupo({"Cosa rara": 2}, catalogo)
+    alimentos_totales = [a for _, items in grupos for a, _ in items]
+    assert "Cosa rara" in alimentos_totales
+    assert ("Grupo Inventado", [("Cosa rara", 2)]) in grupos
+
+
+def test_agrupar_alimentos_por_grupo_alfabetico_dentro_del_grupo():
     catalogo = dict(CATALOGO_EJEMPLO)
     catalogo["Zanahoria"] = {"alimento": "Zanahoria", "grupo": "Fruta", "cantidad_por_equivalente": "1 pieza"}
-    grupos = _agrupar_por_grupo({"Zanahoria": 1, "Manzana": 1}, catalogo)
+    grupos = agrupar_alimentos_por_grupo({"Zanahoria": 1, "Manzana": 1}, catalogo)
     fruta = next(items for g, items in grupos if g == "Fruta")
     assert [alimento for alimento, _ in fruta] == ["Manzana", "Zanahoria"]

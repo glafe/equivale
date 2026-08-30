@@ -11,7 +11,7 @@ import html
 from datetime import date
 
 from nutriguia.cantidades import cantidad_real
-from nutriguia.colores import GRUPO_COLOR, GRUPO_ETIQUETA, color_texto_legible
+from nutriguia.colores import COLOR_POR_DEFECTO, GRUPO_COLOR, GRUPO_ETIQUETA, color_texto_legible
 
 # Orden de aparición fijo (no alfabético) -- mismo criterio en toda la app (ver colores.py).
 ORDEN_GRUPOS = ["AOA", "Cereal", "Verdura", "Fruta", "Aceite s/p", "Aceite c/p", "Leguminosa"]
@@ -26,14 +26,17 @@ def _esc(valor) -> str:
     return html.escape(str(valor))
 
 
-def _agrupar_por_grupo(
+def agrupar_alimentos_por_grupo(
     equivalentes_por_alimento: dict[str, int], catalogo: dict
 ) -> list[tuple[str | None, list[tuple[str, int]]]]:
     """[(grupo, [(alimento, equivalentes), ...]), ...] -- grupo resuelto desde
     `catalogo[alimento]["grupo"]` (no desde un `grupo_smae` de ingrediente, que ya no se conserva
     tras sumar por alimento). `None` = libre (ej. especias) o alimento ya no está en el catálogo
     (referencia huérfana) -- ambos casos se agrupan como "Sin grupo / libre" al final. Orden fijo
-    de grupos (`ORDEN_GRUPOS`), alfabético dentro de cada uno."""
+    de grupos (`ORDEN_GRUPOS`), alfabético dentro de cada uno. Un alimento con un `grupo` que no es
+    ninguno de los 7 canónicos (no debería pasar según `schema.md`, pero si el catálogo llegara a
+    tener un dato sucio) igual aparece -- en su propia sección al final, alfabético por nombre de
+    grupo -- en vez de perderse silenciosamente de la lista de compras."""
     por_grupo: dict[str | None, list[tuple[str, int]]] = {}
     for alimento, equivalentes in equivalentes_por_alimento.items():
         grupo = catalogo.get(alimento, {}).get("grupo")
@@ -43,13 +46,16 @@ def _agrupar_por_grupo(
     for grupo in ORDEN_GRUPOS:
         if grupo in por_grupo:
             resultado.append((grupo, sorted(por_grupo[grupo])))
+    grupos_no_canonicos = sorted(g for g in por_grupo if g is not None and g not in ORDEN_GRUPOS)
+    for grupo in grupos_no_canonicos:
+        resultado.append((grupo, sorted(por_grupo[grupo])))
     if None in por_grupo:
         resultado.append((None, sorted(por_grupo[None])))
     return resultado
 
 
 def _seccion_grupo_html(grupo: str | None, items: list[tuple[str, int]], catalogo: dict) -> str:
-    color = GRUPO_COLOR.get(grupo, "#8A8378")
+    color = GRUPO_COLOR.get(grupo, COLOR_POR_DEFECTO)
     color_texto = color_texto_legible(color)
     etiqueta = GRUPO_ETIQUETA.get(grupo, "Sin grupo / libre")
     filas = "".join(
@@ -129,7 +135,7 @@ def generar_html_lista_super(
     "equivalentes")` sobre los ingredientes de la semana de todas ellas). `notas`: texto libre ya
     armado por la vista (ej. referencias rotas en "Menú semanal") -- este módulo no vuelve a
     resolver Mongo, solo renderiza."""
-    secciones = _agrupar_por_grupo(equivalentes_por_alimento, catalogo)
+    secciones = agrupar_alimentos_por_grupo(equivalentes_por_alimento, catalogo)
     cuerpo = (
         "".join(_seccion_grupo_html(g, items, catalogo) for g, items in secciones)
         if secciones

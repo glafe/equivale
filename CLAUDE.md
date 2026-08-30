@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.20.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.21.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -102,8 +102,16 @@ sola línea). Una ocurrencia de cada ingrediente por cada DÍA que use ese menú
 (si un menú aplica a 3 días, sus ingredientes cuentan 3 veces). "🖨️ Descargar HTML para imprimir"
 con `nutriguia/html_lista_super.py` (mismo patrón que `nutriguia/html_semanal.py`, con un
 checkbox `☐` por alimento para tachar en el súper); `cantidad_real()` se factorizó ese mismo día a
-`nutriguia/cantidades.py` para compartirse entre ambos módulos HTML. Falta el resto de Fase 5
-(pulido) — no empezarla sin haber usado la Fase 4 unos días en la vida real.
+`nutriguia/cantidades.py` para compartirse entre ambos módulos HTML. **Revisión de código previa a
+un release, a pedido del usuario (0.21.0, 2026-08-30)** — el usuario pidió validar todo lo de
+arriba (0.17.0–0.20.0) antes de un "major release"; encontró y corrigió `BUG-010` (un alimento con
+`grupo` no canónico podía perderse en silencio de "Lista del súper", con la misma lógica de
+agrupación duplicada y rota en dos archivos — ahora `agrupar_alimentos_por_grupo()` es la única
+fuente) y `BUG-011` ("🧬 Clonar" podía sobreescribir sin aviso un plan ya existente de la persona
+destino). **La app se queda en `0.x` a propósito** — 1.0.0 sigue reservado para cuando la Fase 5
+esté completa y estas funciones (recién escritas el mismo día) se hayan usado en la vida real sin
+sorpresas, ver criterio en `CHANGELOG.md`. Falta el resto de Fase 5 (pulido) — no empezarla sin
+haber usado la Fase 4 unos días en la vida real.
 
 **Identidad visual "Barro" (2026-08-27)**: paleta/tipografía/radios propios sobre los 7 colores
 de grupo SMAE (que NO cambiaron — son funcionales). Aprobada primero como maqueta interactiva

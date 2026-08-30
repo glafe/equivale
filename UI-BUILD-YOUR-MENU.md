@@ -131,7 +131,11 @@ Ajustes       -> Configuración
    justo la parte que se espera hacer después. Si el `nombre` original ya está en uso por otra
    fecha de la persona destino, se guarda **sin nombre** (para no violar "nombre único por
    persona") y el mensaje de éxito lo avisa explícitamente. Funciona sobre cualquier día del
-   historial, tenga nombre o no.
+   historial, tenga nombre o no. **Corregido `BUG-011` (0.21.0)**: si la persona destino ya tiene
+   un plan guardado para la fecha elegida, el popover lo avisa con `st.warning()` (nombre del
+   plan existente incluido, si tiene) ANTES de mostrar el botón "Clonar" -- antes clonar
+   sobreescribía ese plan sin ningún aviso, a diferencia de "Guardar" (donde lo que se
+   sobreescribe siempre está a la vista en pantalla).
 6.2. **Ingrediente suelto sin receta** (2026-08-30, a pedido del usuario -- cierra `FR-007`): un
    `st.expander("➕ Agregar un ingrediente suelto (sin receta)")` colapsado, debajo del picker de
    recetas de cada tiempo -- para alimentos que conviene comer directo (ej. una fruta) sin crear
@@ -300,7 +304,11 @@ falta un día por asignar, se arregla ahí, no aquí.
   de siempre, orden fijo de grupos (no alfabético), alfabético dentro de cada grupo. Un alimento
   libre (`grupo: null`, ej. una especia) o que ya no está en el catálogo (referencia huérfana) cae
   en una sección final "Sin grupo / libre" -- no se pierde de la lista, solo no tiene un grupo con
-  el que colorear su encabezado.
+  el que colorear su encabezado. **Corregido `BUG-010` (0.21.0)**: `agrupar_alimentos_por_grupo()`
+  (`nutriguia/html_lista_super.py`, pública) es la ÚNICA función que hace este agrupamiento --
+  antes la vista previa en pantalla tenía su propia copia de la misma lógica, con el mismo bug
+  (un alimento con un `grupo` que no fuera ninguno de los 7 canónicos desaparecía en silencio de
+  ambas, en vez de caer en una sección propia al final).
 - **Cantidad real**, no solo el conteo de equivalentes: `cantidad_real()` (factorizado 2026-08-30 a
   `nutriguia/cantidades.py` desde el antiguo `_cantidad_real()` privado de `html_semanal.py`, para
   compartirlo entre ambos) -- mismo fallback "`N` equiv." si el alimento no está en el catálogo.

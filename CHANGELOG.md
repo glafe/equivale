@@ -20,6 +20,28 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.21.0] - 2026-08-30
+
+Revisión de código a pedido del usuario ("revisa y valida antes de liberar") sobre todo lo shipeado
+en 0.17.0–0.20.0 antes de considerar un release mayor. Se decidió quedarse en `0.x` -- `1.0.0`
+sigue reservado para cuando la Fase 5 esté completa y estas funciones (recién escritas) se hayan
+usado en la vida real sin sorpresas, ver el criterio de versionado al inicio de este archivo.
+
+### Fixed
+- **BUG-010**: "Lista del súper" podía perder en silencio un alimento cuyo `grupo` en el catálogo
+  no fuera uno de los 7 canónicos -- la misma lógica de agrupación estaba duplicada (y rota igual)
+  en el HTML descargable y en la vista previa en pantalla. `agrupar_alimentos_por_grupo()`
+  (`nutriguia/html_lista_super.py`, ahora pública) es la única función que agrupa, y agrega una
+  sección de respaldo para cualquier grupo no reconocido en vez de descartarlo.
+- **BUG-011**: "🧬 Clonar" (Menú del día → historial) podía sobreescribir sin aviso un plan ya
+  guardado de la persona destino para la fecha elegida. El popover ahora avisa con `st.warning()`
+  si ya existe uno, antes de mostrar el botón de confirmar.
+
+### Changed
+- Color de fallback ("sin grupo reconocido") unificado a `COLOR_POR_DEFECTO`
+  (`nutriguia/colores.py`) en `html_semanal.py` y `html_lista_super.py` -- antes cada uno tenía su
+  propio hex hardcodeado ligeramente distinto (inconsistencia menor, sin impacto funcional).
+
 ## [0.20.0] - 2026-08-30
 
 ### Added

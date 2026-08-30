@@ -12,7 +12,7 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 - Resueltos: [BUG-001](#bug-001--status-rv), [BUG-002](#bug-002--status-rv),
   [BUG-003](#bug-003--status-rv), [BUG-004](#bug-004--status-rv), [BUG-005](#bug-005--status-rv),
   [BUG-006](#bug-006--status-rv), [BUG-007](#bug-007--status-rv), [BUG-008](#bug-008--status-c),
-  [BUG-009](#bug-009--status-rv)
+  [BUG-009](#bug-009--status-rv), [BUG-010](#bug-010--status-rv), [BUG-011](#bug-011--status-rv)
 
 ### Known Caveats
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002), [KC-003](#kc-003)
@@ -38,6 +38,73 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 ## Bugs
 
 ### Detailed Entries
+
+#### BUG-011 · [STATUS: RV]
+**Title:** "🧬 Clonar" (Menú del día) podía sobreescribir sin aviso un plan ya guardado de la
+persona destino
+**Severity:** Medium
+**Reported Date:** 2026-08-30
+**Release Fixed:** 0.21.0
+
+##### Observable Problem
+Encontrado en revisión de código previa a un release (a pedido del usuario, "revisa y valida
+antes de liberar"), no reportado por uso real. Al clonar un día a otra persona (`FR-008`, shipped
+0.19.0), si esa persona YA tenía un plan guardado para la fecha elegida (default: hoy), clonar lo
+sobreescribía sin ningún aviso -- a diferencia de "Guardar menú del día", donde lo que se va a
+sobreescribir está a la vista en pantalla (es el mismo plan que se está editando), acá el plan de
+la persona destino nunca se muestra antes de confirmar.
+
+##### Fix Explanation (Exec Level — No Code)
+El popover "🧬 Clonar" ahora revisa si la persona destino ya tiene un plan para la fecha elegida
+antes de mostrar el botón de confirmar, y si lo hay, avisa con el nombre de ese plan (si tiene) y
+dice explícitamente que clonar lo va a sobreescribir -- igual se puede confirmar (mismo criterio
+de "avisar, no bloquear" que el resto de la app), pero ya no a ciegas.
+
+##### Fix Details (Technical)
+`db().menus_construidos.find_one({"persona": destino, "fecha": fecha_destino.isoformat()})` justo
+antes del botón "Clonar", dentro del mismo popover -- `st.warning()` si existe. No cambia
+`_clonar_a_persona()`, que sigue haciendo el mismo upsert por `(persona, fecha)`.
+
+##### Workaround
+Ninguno necesario tras el fix -- antes, revisar a mano el historial de la persona destino antes
+de clonar.
+
+#### BUG-010 · [STATUS: RV]
+**Title:** "Lista del súper" podía perder un alimento silenciosamente si su grupo no era uno de
+los 7 canónicos
+**Severity:** Low
+**Reported Date:** 2026-08-30
+**Release Fixed:** 0.21.0
+
+##### Observable Problem
+Encontrado en revisión de código previa a un release (a pedido del usuario, "revisa y valida
+antes de liberar"), no reportado por uso real -- no debería pasar con datos limpios (`schema.md`
+exige que `catalogo_alimentos.grupo` sea uno de los 7 grupos canónicos o `null`), pero si el
+catálogo llegara a tener un dato sucio (ej. un typo de grupo), ese alimento desaparecía de la
+lista de compras sin ningún aviso, en vez de aparecer en una sección "no reconocida" -- tanto en
+el HTML descargable como en la vista previa en pantalla, que además duplicaban la misma lógica de
+agrupación en dos archivos distintos (con el mismo bug en ambos, encontrado y corregido a la vez).
+
+##### Fix Explanation (Exec Level — No Code)
+La función que agrupa los alimentos de la lista por grupo SMAE ahora nunca descarta uno --
+cualquier grupo que no sea de los 7 canónicos (ni `null`/libre) aparece en su propia sección al
+final, en vez de perderse. De paso, la vista previa en pantalla de "Lista del súper" dejó de tener
+su propia copia de esta lógica (que tenía el mismo bug) y ahora usa la misma función que el HTML
+descargable -- una sola fuente de verdad.
+
+##### Fix Details (Technical)
+`agrupar_alimentos_por_grupo()` en `nutriguia/html_lista_super.py` (renombrada de `_agrupar_por_
+grupo`, ahora pública) agrega un tercer bloque -- grupos no listados en `ORDEN_GRUPOS` y distintos
+de `None`, ordenados alfabéticamente -- antes de la sección final `None`/libre.
+`views/lista_super.py` ya no arma su propio `por_grupo`/`grupos_en_orden` a mano para la vista
+previa, importa y llama a `agrupar_alimentos_por_grupo()` directamente. De paso se unificó el
+color de fallback ("Sin grupo/no reconocido") a `COLOR_POR_DEFECTO` (`nutriguia/colores.py`) en
+`html_lista_super.py` y `html_semanal.py`, que antes tenían cada uno su propio hex hardcodeado
+(`#8A8378` vs `#555555`) -- inconsistencia menor, sin impacto funcional, corregida de paso.
+
+##### Workaround
+Ninguno necesario tras el fix -- antes, revisar "Posibles duplicados en el catálogo" en
+Configuración para detectar el dato sucio a mano.
 
 #### BUG-009 · [STATUS: RV]
 **Title:** "🔗 Usar este" (reemplazar huérfano) dejaba ingredientes duplicados dentro de una receta
