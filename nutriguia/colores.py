@@ -52,3 +52,16 @@ def chip_html(grupo: str, texto: str) -> str:
         f'<span style="width:8px;height:8px;border-radius:50%;background:{color_punto};'
         f'display:inline-block;flex-shrink:0;"></span>{texto}</span>'
     )
+
+
+def chip_muted_html(texto: str) -> str:
+    """Badge HTML neutro y de menor saturación que `chip_html` -- para info secundaria que NO es
+    un grupo SMAE (ej. en qué tiempo típico se ve normalmente una receta que no es la que se está
+    armando ahora mismo; ver "Menú del día" -> selector de recetas)."""
+    return (
+        '<span style="background-color:rgba(43,38,33,.06); color:rgba(43,38,33,.62); '
+        "font-weight:500; padding:.3rem .7rem; border-radius:999px; display:inline-flex; "
+        "align-items:center; font-size:.82rem; font-family:'Figtree',ui-sans-serif,sans-serif; "
+        'border:1px solid rgba(43,38,33,.14); white-space:nowrap;">'
+        f"{texto}</span>"
+    )

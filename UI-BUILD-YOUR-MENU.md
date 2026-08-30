@@ -41,10 +41,22 @@ Ajustes       -> Configuración
       una fila de referencia fija arriba — no un objetivo fijo de este tiempo en particular. El
       reparto entre comidas es libre: no importa si la persona come todo en un solo tiempo o en
       seis, solo el total del día (decisión confirmada con el usuario, 2026-08-24).
-   b. **Picker de receta**: `st.selectbox` filtrado por `tiempo_tipico` que incluya este tiempo Y
-      (`personas_vistas` incluya la persona seleccionada, con opción de "ver todas" — un platillo
-      probado para una persona puede servir de punto de partida para la otra). Mostrar nombre + su
-      `vector_equivalentes` como preview antes de agregar.
+   b. **Picker de receta** (2026-08-29, corregido a pedido del usuario: antes filtraba de forma
+      estricta y un platillo típico de otro tiempo simplemente no aparecía): `st.selectbox` sobre
+      TODO el banco filtrado solo por `personas_vistas` incluya la persona seleccionada (con
+      opción de "ver todas" — un platillo probado para una persona puede servir de punto de
+      partida para la otra) — sin excluir por `tiempo_tipico`, porque nada impide usar un
+      platillo típico de otro tiempo si conviene. Orden de las opciones: primero las recetas cuyo
+      `tiempo_tipico` incluye este tiempo (alfabético), luego el resto del banco (también
+      alfabético) con su primer `tiempo_tipico` como sufijo de texto (ej. "Pan Francés  ·
+      Desayuno") para que se note que no es lo típico de este tiempo — `st.selectbox` no soporta
+      HTML por opción, así que no hay color ni columna real ahí, solo el sufijo. Al elegir una
+      receta que no es típica de este tiempo, la línea de preview del `vector_equivalentes` se
+      completa con un chip gris ("Normalmente: {tiempo}", `chip_muted_html()` en `colores.py`)
+      justificado a la derecha vía flexbox — ahí sí hay color/alineación real, porque esa línea es
+      markdown propio, no una opción del selectbox. Ver nota de sincronización `al_despertar`/
+      `desayuno` en `schema.md`, que hace que ambos tiempos casi siempre aparezcan juntos en el
+      grupo "coincide".
    c. Botón "Agregar al tiempo" — permite agregar más de una receta al mismo tiempo (los tiempos
       históricos casi siempre tienen 2 platillos).
    d. Por cada receta agregada, listar sus ingredientes. Para cada ingrediente **ajustable**

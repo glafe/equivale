@@ -20,6 +20,26 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.10.0] - 2026-08-29
+
+### Changed
+- **Picker de recetas de "Menú del día" ya no filtra estrictamente por tiempo**, a pedido del
+  usuario: antes, un platillo etiquetado solo para "comida" simplemente no aparecía al armar
+  "Cena", aunque en la práctica cualquiera puede servir. Ahora el `st.selectbox` muestra TODO el
+  banco (filtrado solo por persona, como antes) — primero las recetas típicas de este tiempo en
+  orden alfabético, luego el resto también alfabético con su primer tiempo típico como sufijo
+  (ej. "Pan Francés · Desayuno"). Al elegir una receta que no es típica del tiempo actual, la
+  línea de preview del vector de equivalentes muestra además un chip gris "Normalmente: {tiempo}"
+  justificado a la derecha (`chip_muted_html()`, nuevo en `nutriguia/colores.py`) — el
+  `st.selectbox` de Streamlit no soporta HTML por opción, así que el color/alineación real solo es
+  posible en esa línea de preview, no dentro de la lista desplegable en sí.
+- **Sincronizados los tags `al_despertar`/`desayuno` en `recetas.tiempo_tipico`**, a pedido del
+  usuario: no todas las personas distinguen esos dos tiempos (algunos periodos de origen solo
+  registraron uno para lo que es, en la práctica, la primera comida del día). Toda receta con uno
+  de los dos ahora tiene también el otro — 31 recetas actualizadas
+  (`scripts/migraciones/2026-08-29-sincronizar-al-despertar-desayuno.py`, ejecutado una vez sobre
+  los datos existentes). Ver nota en `schema.md` para mantener la convención en recetas nuevas.
+
 ## [0.9.0] - 2026-08-29
 
 ### Changed

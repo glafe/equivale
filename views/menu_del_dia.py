@@ -10,7 +10,7 @@ from datetime import date
 import streamlit as st
 
 from nutriguia.cantidades import escalar_cantidad
-from nutriguia.colores import GRUPO_ETIQUETA, chip_html
+from nutriguia.colores import GRUPO_ETIQUETA, chip_html, chip_muted_html
 from nutriguia.streamlit_data import cargar_catalogo, cargar_objetivo, cargar_personas, cargar_recetas, db
 from nutriguia.validation import delta_objetivo, estado_por_grupo, paso_equivalente, sumar_por_grupo
 
@@ -21,6 +21,15 @@ TIEMPO_LABEL = {
     "colacion": "🍎 Colación",
     "comida": "🍽️ Comida",
     "cena": "🌙 Cena",
+}
+# Versión sin emoji de TIEMPO_LABEL, para usar como sufijo de texto dentro del picker de recetas
+# (ver _renderizar_tiempo) y otros lugares donde el emoji no aporta.
+TIEMPO_LABEL_PLAIN = {
+    "al_despertar": "Al despertar",
+    "desayuno": "Desayuno",
+    "colacion": "Colación",
+    "comida": "Comida",
+    "cena": "Cena",
 }
 
 ICONO_POR_ESTADO = {"exacto": "✅", "falta": "🔺", "excedido": "🔻"}
@@ -117,10 +126,28 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
     restante = delta_objetivo(objetivo_diario, actual_otros)
 
     ver_todas = st.checkbox("Ver recetas de todas las personas", key=f"ver_todas_{tiempo}")
-    recetas = cargar_recetas(tiempo)
+    # No se filtra estrictamente por tiempo -- se ordena con las recetas de este tiempo primero
+    # (alfabético) y luego el resto del banco (también alfabético, con su primer tiempo típico
+    # como referencia), porque nada impide usar un platillo típico de otro tiempo si conviene.
+    todas_recetas = cargar_recetas()
     if not ver_todas:
-        recetas = [r for r in recetas if dia["persona"] in r.get("personas_vistas", [])]
-    opciones = {r["receta_id"]: r for r in recetas}
+        todas_recetas = [r for r in todas_recetas if dia["persona"] in r.get("personas_vistas", [])]
+    coinciden = sorted(
+        (r for r in todas_recetas if tiempo in r.get("tiempo_tipico", [])), key=lambda r: r["nombre"]
+    )
+    otras = sorted(
+        (r for r in todas_recetas if tiempo not in r.get("tiempo_tipico", [])), key=lambda r: r["nombre"]
+    )
+    ids_coinciden = {r["receta_id"] for r in coinciden}
+    opciones = {r["receta_id"]: r for r in coinciden + otras}
+
+    def _etiqueta_opcion(rid: str) -> str:
+        receta = opciones[rid]
+        if rid in ids_coinciden:
+            return receta["nombre"]
+        primer_tiempo = next(iter(receta.get("tiempo_tipico", [])), None)
+        etiqueta_tiempo = TIEMPO_LABEL_PLAIN.get(primer_tiempo, primer_tiempo)
+        return f"{receta['nombre']}  ·  {etiqueta_tiempo}" if etiqueta_tiempo else receta["nombre"]
 
     col1, col2 = st.columns([3, 1])
     with col1:
@@ -128,14 +155,25 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
             "Selecciona una receta",
             list(opciones.keys()),
             key=f"receta_sel_{tiempo}",
-            format_func=lambda rid: opciones[rid]["nombre"],
+            format_func=_etiqueta_opcion,
         )
     if receta_id_elegida:
-        preview = opciones[receta_id_elegida]["vector_equivalentes"]
-        st.markdown(
-            "Vector: " + " ".join(chip_html(g, f"{GRUPO_ETIQUETA.get(g, g)} {c}") for g, c in sorted(preview.items())),
-            unsafe_allow_html=True,
+        receta_elegida = opciones[receta_id_elegida]
+        preview = receta_elegida["vector_equivalentes"]
+        chips_vector = "Vector: " + " ".join(
+            chip_html(g, f"{GRUPO_ETIQUETA.get(g, g)} {c}") for g, c in sorted(preview.items())
         )
+        if receta_id_elegida in ids_coinciden:
+            st.markdown(chips_vector, unsafe_allow_html=True)
+        else:
+            primer_tiempo = next(iter(receta_elegida.get("tiempo_tipico", [])), None)
+            etiqueta_tiempo = TIEMPO_LABEL_PLAIN.get(primer_tiempo, primer_tiempo) or "sin tiempo típico"
+            st.markdown(
+                '<div style="display:flex; justify-content:space-between; align-items:center; '
+                f'gap:.6rem; flex-wrap:wrap;"><div>{chips_vector}</div>'
+                f"{chip_muted_html('Normalmente: ' + etiqueta_tiempo)}</div>",
+                unsafe_allow_html=True,
+            )
     with col2:
         st.write("")
         st.write("")

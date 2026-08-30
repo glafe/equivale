@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.9.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.10.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -49,8 +49,13 @@ sin objetivo, asignación semanal rota) — ver "Página Configuración" en `UI-
 "Menú del día") trae un diagrama interactivo de la cadena lineal Ingredientes → Recetas → Menú
 del día → Menú semanal (con Personas alimentando a Menú del día) — enlaces reales + resaltado por
 CSS puro con `:has()`, sin JavaScript (ver nota de `BUG-005` sobre por qué no usar `<script>` con
-`unsafe_allow_html`) — más una guía corta en pasos. Falta Fase 5 (pulido) — no empezarla sin haber
-usado la Fase 4 unos días en la vida real.
+`unsafe_allow_html`) — más una guía corta en pasos. El picker de recetas de "Menú del día"
+(2026-08-29, a pedido del usuario) ya no filtra estrictamente por tiempo típico — muestra todo el
+banco, primero las recetas típicas de ese tiempo (alfabético) y luego el resto (alfabético, con su
+primer tiempo típico como referencia) — y de paso se sincronizaron los tags `al_despertar`/
+`desayuno` en `recetas.tiempo_tipico` (31 recetas — no todas las personas distinguen esos dos
+tiempos, ver `schema.md`). Falta Fase 5 (pulido) — no empezarla sin haber usado la Fase 4 unos
+días en la vida real.
 
 **Identidad visual "Barro" (2026-08-27)**: paleta/tipografía/radios propios sobre los 7 colores
 de grupo SMAE (que NO cambiaron — son funcionales). Aprobada primero como maqueta interactiva

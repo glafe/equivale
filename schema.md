@@ -161,6 +161,14 @@ usan como bloques de construcción, en vez de inventar ingredientes/cantidades d
 }
 ```
 
+**Sincronización `al_despertar`/`desayuno` (2026-08-29)**: no todas las personas distinguen esos
+dos tiempos en la vida real (algunos periodos de origen solo registraron uno de los dos para lo
+que es, en la práctica, la primera comida del día) — por convención, toda receta con uno de los
+dos en `tiempo_tipico` debe tener también el otro (`scripts/migraciones/2026-08-29-sincronizar-
+al-despertar-desayuno.py`, ejecutado una vez sobre los datos existentes). Si agregas una receta
+nueva a mano con cualquiera de los dos tiempos, agrega también el otro para no reintroducir la
+inconsistencia.
+
 Cuando el mismo `nombre` de platillo tiene más de una combinación de ingredientes distinta (ej.
 porción más chica para una persona, o variantes de fruta/verdura de acompañamiento a lo largo de
 los meses), cada combinación es una receta separada con sufijo `-v1`, `-v2`, etc. — 44 de los 98
