@@ -20,6 +20,22 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.15.0] - 2026-08-30
+
+### Changed
+- **Afinado el PDF de "Menú semanal"**, a pedido del usuario, mismo día del rediseño de 0.14.0:
+  - La tabla de cada receta ahora separa **Grupo | Cantidad | Alimento** en columnas propias (una
+    fila por ingrediente) en vez de "cantidad — alimento" apilados dentro de una sola celda de
+    texto. La celda de Grupo se fusiona verticalmente sobre las filas de ese grupo (`SPAN`), sin
+    repetir el chip de color por ingrediente.
+  - Letra más chica en todo el documento (título, nombre de menú, tiempos, recetas, ingredientes)
+    para que quepa más contenido por hoja.
+  - **Ya no hay salto de página forzado entre menús** -- fluyen uno tras otro (separados por una
+    línea delgada) y ReportLab solo pasa de página cuando de verdad no cabe más, para no gastar
+    una hoja completa por cada menú corto. Cada receta (nombre + tabla) va en un `KeepTogether`
+    para que no se corte a la mitad justo en un salto de página.
+  - Márgenes de página reducidos (16mm -> 10mm) para aprovechar más el ancho/alto disponible.
+
 ## [0.14.0] - 2026-08-30
 
 ### Changed

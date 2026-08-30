@@ -24,7 +24,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import mm
-from reportlab.platypus import PageBreak, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import HRFlowable, KeepTogether, Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 from nutriguia.cantidades import escalar_cantidad
 from nutriguia.colores import GRUPO_COLOR, color_texto_legible
@@ -62,15 +62,16 @@ _MUTED = colors.HexColor("#6B6459")
 _BORDE = colors.HexColor("#DAD3C4")
 _FONDO_SUAVE = colors.HexColor("#F7F4EE")
 
-_ESTILO_TITULO = ParagraphStyle("titulo", fontName="Helvetica-Bold", fontSize=20, leading=23, textColor=_INK)
-_ESTILO_SUBTITULO = ParagraphStyle("subtitulo", fontName="Helvetica", fontSize=10, leading=12, textColor=_MUTED)
-_ESTILO_MENU_NOMBRE = ParagraphStyle("menu_nombre", fontName="Helvetica-Bold", fontSize=17, leading=20, textColor=_INK)
-_ESTILO_MENU_DIAS = ParagraphStyle("menu_dias", fontName="Helvetica-Oblique", fontSize=11, leading=13, textColor=_MUTED)
-_ESTILO_TIEMPO = ParagraphStyle("tiempo", fontName="Helvetica-Bold", fontSize=13, leading=15, textColor=colors.HexColor("#3C6E68"))
-_ESTILO_RECETA = ParagraphStyle("receta", fontName="Helvetica-BoldOblique", fontSize=11.5, leading=14, textColor=_INK, spaceBefore=4)
-_ESTILO_INGREDIENTE = ParagraphStyle("ingrediente", fontName="Helvetica", fontSize=10, leading=13, textColor=_INK)
-_ESTILO_VACIO = ParagraphStyle("vacio", fontName="Helvetica-Oblique", fontSize=9.5, leading=12, textColor=_MUTED)
-_ESTILO_NOTA = ParagraphStyle("nota", fontName="Helvetica", fontSize=10, leading=13, textColor=_MUTED)
+_ESTILO_TITULO = ParagraphStyle("titulo", fontName="Helvetica-Bold", fontSize=15, leading=17, textColor=_INK)
+_ESTILO_SUBTITULO = ParagraphStyle("subtitulo", fontName="Helvetica", fontSize=7.5, leading=9, textColor=_MUTED)
+_ESTILO_MENU_NOMBRE = ParagraphStyle("menu_nombre", fontName="Helvetica-Bold", fontSize=12.5, leading=15, textColor=_INK)
+_ESTILO_MENU_DIAS = ParagraphStyle("menu_dias", fontName="Helvetica-Oblique", fontSize=8.5, leading=10, textColor=_MUTED)
+_ESTILO_TIEMPO = ParagraphStyle("tiempo", fontName="Helvetica-Bold", fontSize=10, leading=12, textColor=colors.HexColor("#3C6E68"))
+_ESTILO_RECETA = ParagraphStyle("receta", fontName="Helvetica-BoldOblique", fontSize=9, leading=11, textColor=_INK, spaceBefore=3)
+_ESTILO_INGREDIENTE = ParagraphStyle("ingrediente", fontName="Helvetica", fontSize=8, leading=10, textColor=_INK)
+_ESTILO_CANTIDAD = ParagraphStyle("cantidad", fontName="Helvetica", fontSize=8, leading=10, textColor=_INK)
+_ESTILO_VACIO = ParagraphStyle("vacio", fontName="Helvetica-Oblique", fontSize=8, leading=10, textColor=_MUTED)
+_ESTILO_NOTA = ParagraphStyle("nota", fontName="Helvetica", fontSize=8, leading=10, textColor=_MUTED)
 
 
 def _chip_grupo_texto(grupo: str | None, eq: int) -> tuple[str, colors.Color, colors.Color]:
@@ -94,9 +95,9 @@ def _chips_horizontales(vector: dict[str, int], ancho_total: float):
     fila = [[f"{ETIQUETA_CORTA.get(g, g)} {c}" for g, c in grupos]]
     estilo = [
         ("FONTNAME", (0, 0), (-1, -1), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, -1), 9),
-        ("TOPPADDING", (0, 0), (-1, -1), 3),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+        ("FONTSIZE", (0, 0), (-1, -1), 7.5),
+        ("TOPPADDING", (0, 0), (-1, -1), 2.5),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 2.5),
         ("ALIGN", (0, 0), (-1, -1), "CENTER"),
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
         ("INNERGRID", (0, 0), (-1, -1), 0.75, colors.white),
@@ -135,47 +136,55 @@ def _agrupar_por_grupo(ingredientes: list[dict]) -> list[tuple[str, int, list[di
 
 
 def _tabla_receta(receta: dict, catalogo: dict, ancho_total: float) -> Table:
-    """Una fila por grupo SMAE que toca esta receta: chip de color con el EQ a la izquierda,
-    cantidad real + nombre de cada ingrediente de ese grupo a la derecha (uno por línea) -- así se
-    ve de un vistazo qué ingrediente(s) forman cada equivalente, igual que en `menu-Sep.xlsx`."""
-    ancho_grupo = 34 * mm
-    ancho_ing = ancho_total - ancho_grupo
+    """Una fila por INGREDIENTE (a pedido del usuario, 2026-08-30 -- antes venían apilados varios
+    por fila): Grupo | Cantidad | Alimento en columnas separadas, letra más chica para que quepan
+    más filas por hoja. La celda de Grupo (chip de color con el EQ del grupo en esta receta) se
+    fusiona verticalmente sobre todas las filas de ese grupo -- así se ve de un vistazo qué
+    ingrediente(s) forman cada equivalente, igual que en `menu-Sep.xlsx`, sin repetir el chip."""
+    ancho_grupo = 20 * mm
+    ancho_cantidad = 24 * mm
+    ancho_alimento = ancho_total - ancho_grupo - ancho_cantidad
     grupos = _agrupar_por_grupo(receta["ingredientes"])
-    filas = []
+    filas: list[list] = []
     estilo = [
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
         ("GRID", (0, 0), (-1, -1), 0.5, _BORDE),
-        ("LEFTPADDING", (0, 0), (-1, -1), 6),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 6),
-        ("TOPPADDING", (0, 0), (-1, -1), 4),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 4),
+        ("LEFTPADDING", (0, 0), (-1, -1), 4),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 4),
+        ("TOPPADDING", (0, 0), (-1, -1), 2),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+        ("FONTNAME", (1, 0), (-1, -1), "Helvetica"),
+        ("FONTSIZE", (1, 0), (-1, -1), 8),
     ]
     if not grupos:
-        filas.append(["", Paragraph("Sin ingredientes incluidos.", _ESTILO_VACIO)])
-    for i, (grupo, eq, ings) in enumerate(grupos):
+        return Table(
+            [["", Paragraph("Sin ingredientes incluidos.", _ESTILO_VACIO)]],
+            colWidths=[ancho_grupo, ancho_cantidad + ancho_alimento],
+            style=TableStyle(estilo),
+        )
+    for grupo, eq, ings in grupos:
         texto_chip, color_fondo, color_texto = _chip_grupo_texto(grupo, eq)
-        celda_grupo = Table([[texto_chip]], colWidths=[ancho_grupo])
-        celda_grupo.setStyle(
-            TableStyle(
-                [
-                    ("BACKGROUND", (0, 0), (-1, -1), color_fondo),
-                    ("TEXTCOLOR", (0, 0), (-1, -1), color_texto),
-                    ("FONTNAME", (0, 0), (-1, -1), "Helvetica-Bold"),
-                    ("FONTSIZE", (0, 0), (-1, -1), 9.5),
-                    ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-                    ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-                    ("TOPPADDING", (0, 0), (-1, -1), 3),
-                    ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
-                ]
-            )
-        )
-        texto_ings = "<br/>".join(
-            f"{_cantidad_real(ing['alimento'], ing['equivalentes'], catalogo)} — {ing['alimento']}"
-            + (" <i>(opcional)</i>" if ing.get("opcional") else "")
-            for ing in ings
-        )
-        filas.append([celda_grupo, Paragraph(texto_ings, _ESTILO_INGREDIENTE)])
-    tabla = Table(filas, colWidths=[ancho_grupo, ancho_ing])
+        fila_inicio = len(filas)
+        for ing in ings:
+            cantidad = _cantidad_real(ing["alimento"], ing["equivalentes"], catalogo)
+            nombre = ing["alimento"] + (" <i>(opcional)</i>" if ing.get("opcional") else "")
+            filas.append([
+                texto_chip if ing is ings[0] else "",
+                Paragraph(cantidad, _ESTILO_CANTIDAD),
+                Paragraph(nombre, _ESTILO_INGREDIENTE),
+            ])
+        fila_fin = len(filas) - 1
+        if fila_fin > fila_inicio:
+            estilo.append(("SPAN", (0, fila_inicio), (0, fila_fin)))
+        estilo += [
+            ("BACKGROUND", (0, fila_inicio), (0, fila_fin), color_fondo),
+            ("TEXTCOLOR", (0, fila_inicio), (0, fila_fin), color_texto),
+            ("FONTNAME", (0, fila_inicio), (0, fila_fin), "Helvetica-Bold"),
+            ("FONTSIZE", (0, fila_inicio), (0, fila_fin), 7.5),
+            ("ALIGN", (0, fila_inicio), (0, fila_fin), "CENTER"),
+            ("VALIGN", (0, fila_inicio), (0, fila_fin), "MIDDLE"),
+        ]
+    tabla = Table(filas, colWidths=[ancho_grupo, ancho_cantidad, ancho_alimento])
     tabla.setStyle(TableStyle(estilo))
     return tabla
 
@@ -195,7 +204,7 @@ def generar_pdf_semanal(
     referencia completa del banco de menús con nombre de esta persona), en orden alfabético."""
     buffer = io.BytesIO()
     ancho_pagina, alto_pagina = letter
-    margen = 16 * mm
+    margen = 10 * mm
     doc = SimpleDocTemplate(
         buffer,
         pagesize=letter,
@@ -218,21 +227,26 @@ def generar_pdf_semanal(
     story: list = [
         Paragraph(f"Menú semanal — {persona}", _ESTILO_TITULO),
         Paragraph(f"Generado el {date.today().isoformat()} con EquiVale", _ESTILO_SUBTITULO),
-        Spacer(1, 3 * mm),
+        Spacer(1, 2 * mm),
     ]
     if objetivo_diario:
         story.append(Paragraph("Objetivo diario", _ESTILO_TIEMPO))
-        story.append(Spacer(1, 1.5 * mm))
+        story.append(Spacer(1, 1 * mm))
         story.append(_chips_horizontales(objetivo_diario, ancho_util))
-        story.append(Spacer(1, 5 * mm))
+        story.append(Spacer(1, 3 * mm))
 
     nombres_ordenados = sorted(menus_por_nombre.keys())
     if not nombres_ordenados:
         story.append(Paragraph(f"{persona} todavía no tiene ningún día guardado con nombre.", _ESTILO_NOTA))
 
+    # Sin PageBreak entre menús (a pedido del usuario, 2026-08-30, para no desperdiciar papel
+    # cuando un menú es corto) -- fluyen uno tras otro y Reportlab solo salta de página cuando de
+    # verdad no cabe más contenido. Cada receta (nombre + tabla) va en un KeepTogether para que no
+    # se corte a la mitad justo en un salto de página.
     for idx, nombre in enumerate(nombres_ordenados):
         if idx > 0:
-            story.append(PageBreak())
+            story.append(Spacer(1, 3 * mm))
+            story.append(HRFlowable(width="100%", thickness=0.75, color=_BORDE, spaceAfter=3 * mm))
         menu = menus_por_nombre[nombre]
         dias_aplica = dias_por_nombre.get(nombre)
         etiqueta_dias = (
@@ -242,7 +256,7 @@ def generar_pdf_semanal(
         )
         story.append(Paragraph(nombre, _ESTILO_MENU_NOMBRE))
         story.append(Paragraph(etiqueta_dias, _ESTILO_MENU_DIAS))
-        story.append(Spacer(1, 3 * mm))
+        story.append(Spacer(1, 2 * mm))
 
         for tiempo in TIEMPOS:
             recetas = menu.get("tiempos", {}).get(tiempo, {}).get("seleccion", [])
@@ -250,15 +264,19 @@ def generar_pdf_semanal(
                 continue
             story.append(Paragraph(TIEMPO_LABEL[tiempo], _ESTILO_TIEMPO))
             for receta in recetas:
-                story.append(Paragraph(receta["nombre"], _ESTILO_RECETA))
-                story.append(_tabla_receta(receta, catalogo, ancho_util))
-                story.append(Spacer(1, 2.5 * mm))
-            story.append(Spacer(1, 2 * mm))
+                story.append(
+                    KeepTogether([
+                        Paragraph(receta["nombre"], _ESTILO_RECETA),
+                        _tabla_receta(receta, catalogo, ancho_util),
+                    ])
+                )
+                story.append(Spacer(1, 1.5 * mm))
+            story.append(Spacer(1, 1 * mm))
 
         actual_diario = menu.get("actual_diario", {})
         if actual_diario:
             story.append(Paragraph("Total real de este menú", _ESTILO_TIEMPO))
-            story.append(Spacer(1, 1.5 * mm))
+            story.append(Spacer(1, 1 * mm))
             story.append(_chips_horizontales(actual_diario, ancho_util))
 
     notas = []

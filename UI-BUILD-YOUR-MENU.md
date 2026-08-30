@@ -182,19 +182,21 @@ pasó a ser puramente una herramienta de **asignación y consulta**, no de const
     verdad `menu-Sep.xlsx`, que lo que necesitaba era poder identificar rápido la relación entre
     el EQUIVALENTE y el INGREDIENTE real (cantidad + alimento), organizado **por menú** (no por
     día), con una nota de a qué días de la semana aplica cada uno -- el patrón exacto de ese
-    Excel. Ahora, un bloque por cada menú con nombre de la persona (orden alfabético, salto de
-    página entre uno y otro):
+    Excel. Ahora, un bloque por cada menú con nombre de la persona (orden alfabético), fluyendo
+    uno tras otro **sin salto de página forzado** (afinado el mismo día -- ver más abajo):
     - Encabezado del bloque: nombre del menú + "Aplica: {días}" (o "Sin día asignado en Menú
       semanal todavía" si ese menú aún no se asignó a ningún día -- así el PDF también sirve como
       referencia completa del banco de menús con nombre, no solo de la semana ya armada).
-    - Por cada tiempo con recetas, por cada receta: su nombre, y una tabla con una fila por grupo
-      SMAE que toca esa receta -- chip de color a la izquierda con el grupo y el EQ total de ese
-      grupo en esa receta, cantidad real + nombre de cada ingrediente a la derecha (uno por línea
-      si el grupo tiene más de un ingrediente). Ingredientes `opcional` no incluidos
-      (`incluido: false`) no aparecen, igual que en el resto de la app. La cantidad real se
-      calcula con `paso_equivalente()` + `escalar_cantidad()` (mismas funciones que "Menú del
-      día") -- si el alimento ya no está en el catálogo, cae a un fallback "`N` equiv." en vez de
-      tronar.
+    - Por cada tiempo con recetas, por cada receta: su nombre, y una tabla con **Grupo | Cantidad
+      | Alimento en columnas separadas** (afinado el mismo día a pedido del usuario -- antes
+      "cantidad — alimento" iba junto en una sola celda de texto), **una fila por ingrediente**
+      (antes varios ingredientes del mismo grupo se apilaban con `<br/>` dentro de una sola fila).
+      La celda de Grupo (chip de color con el EQ total de ese grupo en esa receta) se fusiona
+      verticalmente (`SPAN`) sobre todas las filas de ingredientes de ese grupo, sin repetir el
+      chip. Ingredientes `opcional` no incluidos (`incluido: false`) no aparecen, igual que en el
+      resto de la app. La cantidad real se calcula con `paso_equivalente()` + `escalar_cantidad()`
+      (mismas funciones que "Menú del día") -- si el alimento ya no está en el catálogo, cae a un
+      fallback "`N` equiv." en vez de tronar.
     - Chips de "Objetivo diario" (una sola vez, arriba de todo) y "Total real de este menú" (al
       final de cada bloque, con `actual_diario` de ese `menus_construidos`) -- **colores
       estandarizados de EquiVale, no una paleta nueva para el PDF**: mismos `GRUPO_COLOR` que se
@@ -207,6 +209,12 @@ pasó a ser puramente una herramienta de **asignación y consulta**, no de const
       arreglar solo" que Configuración.
     - Página vertical (carta), no horizontal como la v1 -- ya no hace falta el ancho de 7 columnas
       de día, y el contenido (nombre + tabla de ingredientes por receta) es naturalmente vertical.
+    - **Afinado el mismo 2026-08-30, a pedido del usuario, para usar menos papel al imprimir**:
+      letra más chica en todo el documento, márgenes reducidos (16mm -> 10mm), y sin `PageBreak`
+      forzado entre menús -- fluyen uno tras otro (separados por una línea delgada) y ReportLab
+      solo pasa de página cuando de verdad no cabe más contenido, en vez de gastar una hoja
+      completa por cada menú corto. Cada receta (nombre + tabla) va en un `KeepTogether` para que
+      no se corte a la mitad justo en un salto de página.
   - **`nutriguia/pdf_semanal.py` no toca Mongo** -- recibe `asignacion`/`menus_por_nombre`/
     `catalogo` ya resueltos desde `views/menu_semanal.py` (mismo patrón que
     `nutriguia/validation.py`), para poder probarlo con datos sintéticos
