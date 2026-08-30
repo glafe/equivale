@@ -15,7 +15,7 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
   [BUG-009](#bug-009--status-rv), [BUG-010](#bug-010--status-rv), [BUG-011](#bug-011--status-rv)
 
 ### Known Caveats
-- Abiertos: [KC-001](#kc-001), [KC-002](#kc-002), [KC-003](#kc-003)
+- Abiertos: [KC-001](#kc-001), [KC-002](#kc-002), [KC-003](#kc-003), [KC-004](#kc-004)
 
 ### Feature Requests
 - Propuestos: [FR-001](#fr-001), [FR-005](#fr-005), [FR-006](#fr-006)
@@ -330,6 +330,37 @@ logs del servidor.
 ## Known Caveats
 
 ### Detailed Entries
+
+#### KC-004
+**Title:** Elegir "Dark" a mano en el menú de Streamlit no oscurece el HTML propio de la app si el
+sistema operativo sigue en modo claro
+**Date Identified:** 2026-08-30
+**Status:** Active
+
+##### Exec Description
+La vista oscura de EquiVale sigue la preferencia del sistema operativo/navegador (`prefers-color-
+scheme`), no el selector System/Light/Dark que Streamlit agrega en su menú ⋮. Si alguien fuerza
+"Dark" ahí mientras su sistema operativo sigue en claro, Streamlit sí oscurece sus componentes
+nativos (fondo, tarjetas, inputs), pero el diagrama de "Guía" y los acentos de borde/sombra de
+las tarjetas de "Menú del día" (HTML/CSS propio de la app, no de Streamlit) se quedan en su
+versión clara hasta que el sistema operativo también cambie -- un desajuste visual, no un bug que
+rompa nada funcionalmente.
+
+##### Eng Description
+Streamlit no expone su tema activo (el que resulta de System/Light/Dark) como una variable CSS
+reutilizable en ningún elemento del DOM -- confirmado inspeccionando la app en vivo con
+DevTools/Playwright: ni `:root` ni `.stApp` traen `--primary-color`/`--background-color`/etc.,
+cada componente nativo recibe su color por JS/emotion de forma interna, sin dejar rastro
+reutilizable. El HTML/CSS propio (`nutriguia/estilo.py`, `views/guia.py`) no puede correr
+JavaScript para leer el tema real por la misma razón que el diagrama de Guía usa `:has()` en vez
+de JS (ver `BUG-005`) -- así que la única señal disponible para ese CSS es `prefers-color-scheme`,
+que refleja el sistema operativo, no la elección manual dentro de Streamlit. No hay arreglo limpio
+mientras Streamlit no exponga su tema activo a CSS/JS de alguna forma.
+
+##### Workaround
+Dejar el selector de Streamlit en "System" (el default) -- así el sistema operativo controla todo
+consistentemente. Si de verdad hace falta forzar "Dark" con el sistema en claro, el diagrama de
+Guía y los acentos de tarjeta se ven un poco menos integrados, pero siguen siendo legibles.
 
 #### KC-003
 **Title:** "Lista del súper" muestra cantidad 0 (o "al gusto × 0") para algunos alimentos libres

@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.21.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.22.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -126,6 +126,21 @@ vuelves a hacer esto: `full_page=True` de Playwright NO captura toda la página 
 (`document.body.scrollHeight` da 0, el scroll real es de un contenedor interno) — hay que hacer
 `scroll_into_view_if_needed()` al elemento que te interesa antes de la captura, o vas a
 "encontrar" bugs que en realidad solo están fuera del viewport.
+
+**Vista oscura (2026-08-30, v0.22.0, a pedido del usuario, para leer de noche)**: resultó más
+simple de lo que un comentario anterior en `UI-BUILD-YOUR-MENU.md` sugería ("no se intentó un
+tema oscuro nativo, Streamlit permite un solo tema custom a la vez") — Streamlit 1.62 sí soporta
+`[theme.light]`/`[theme.dark]` en `.streamlit/config.toml` (no obvio en la documentación, se
+confirmó leyendo el código fuente instalado), y con eso agrega solo un selector System/Light/Dark
+en su menú ⋮ sin código nuevo, reteñendo todos sus componentes nativos automáticamente. Paleta
+oscura con el mismo espíritu "Barro" invertido (no el gris genérico de Streamlit). Lo único que
+Streamlit no reteñe solo es el HTML/CSS propio de la app — el diagrama de "Guía" ya traía
+variables `var(--surface, ...)` sin definir desde que se creó (2026-08-29), por eso se veía como
+un rectángulo claro fijo en modo oscuro; corregido definiéndolas en `nutriguia/estilo.py` bajo
+`@media (prefers-color-scheme: dark)` (sigue la preferencia del sistema operativo, no hay otra
+señal disponible ya que Streamlit no expone su tema activo a CSS/JS — ver `KC-004` en `BUGS.md`
+para la limitación de cuando alguien fuerza "Dark" a mano con el sistema en claro). Verificado en
+vivo con Playwright emulando `color_scheme="dark"` y también forzando "Dark" a mano desde el menú.
 
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,

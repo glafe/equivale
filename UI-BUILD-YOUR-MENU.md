@@ -529,9 +529,41 @@ de grupo SMAE como fichas de conteo — y el usuario la aprobó. Resumen de lo i
   escritorio se ve igual que antes (columnas en línea); en móvil, cada fila corta se apila en
   pocos bloques en vez de muchos, y los botones +/- (estilizados como cuadrados táctiles vía
   `st-key-menos_`/`st-key-mas_`) se ven intencionales apilados a ancho completo.
-- **No se intentó**: un tema oscuro nativo (Streamlit permite un solo tema "custom" a la vez vía
-  `config.toml`; el usuario puede seguir alternando Light/Dark/Custom desde el menú de Streamlit,
-  pero Dark no tiene la paleta Barro aplicada) — retomar solo si hace falta.
+- **Vista oscura (2026-08-30, a pedido del usuario, para leer de noche)**: lo de arriba ("no se
+  intentó un tema oscuro nativo") quedó obsoleto -- resultó ser más simple de lo que parecía.
+  Streamlit 1.62 SÍ soporta un tema claro y uno oscuro a la vez (confirmado leyendo el código
+  fuente instalado en el servidor, `streamlit/config.py` -> `CustomThemeCategories.LIGHT`/`DARK`,
+  no documentado de forma obvia): `.streamlit/config.toml` ahora tiene `[theme.light]` y
+  `[theme.dark]` (además de `[theme]`, que sigue trayendo solo lo compartido -- `primaryColor`
+  claro y `base`). Con eso, Streamlit agrega solo un selector **System / Light / Dark** en el menú
+  ⋮ (sin código nuevo) que reteñe TODOS sus componentes nativos (fondo, tarjetas, inputs,
+  sidebar) -- "System" sigue la preferencia del sistema operativo/navegador automáticamente.
+  - Paleta oscura: mismo espíritu "Barro" (tierra/tinta) invertido, no el gris azulado genérico de
+    Streamlit -- `backgroundColor="#1E1A16"`, `secondaryBackgroundColor="#2A2420"`,
+    `textColor="#F1ECE3"`, `primaryColor="#6FB0A5"` (el acento `#3C6E68` aclarado para seguir
+    siendo legible sobre fondo oscuro).
+  - **Lo que Streamlit NO reteñe solo**: el HTML/CSS propio de la app inyectado con
+    `unsafe_allow_html` -- el diagrama de "Guía" (`views/guia.py`) ya escribía
+    `var(--surface, #F7F4EE)` etc. desde que se creó (2026-08-29), anticipando esto, pero esas
+    variables nunca se definían -- siempre caían al valor de respaldo claro, así que el diagrama
+    se veía como un rectángulo claro fijo encima del fondo oscuro. Corregido definiendo esas
+    variables (`--surface`, `--surface-2`, `--border`, `--ink`, `--ink-faint`, `--accent`) en
+    `nutriguia/estilo.py` bajo `@media (prefers-color-scheme: dark)`, con el mismo mecanismo
+    cubriendo también los acentos de borde/sombra (`--barro-border`/`--barro-shadow`) que ya
+    usaban las tarjetas de "Menú del día".
+  - **Por qué `@media (prefers-color-scheme: dark)` y no algo ligado al selector de Streamlit
+    directamente**: Streamlit no expone su tema activo como variable CSS reutilizable en ningún
+    lado (confirmado inspeccionando la app en vivo -- ni `:root` ni `.stApp` traen
+    `--primary-color`/`--background-color`/etc., cada componente nativo recibe su color por JS/
+    emotion de forma interna) y las páginas de esta app no corren JavaScript propio (ver nota de
+    `BUG-005` sobre por qué el diagrama de Guía usa solo CSS) -- así que la preferencia del
+    sistema operativo es la única señal a la que este CSS propio puede reaccionar.
+  - **Limitación conocida (`KC-004`, ver `BUGS.md`)**: si alguien elige "Dark" a mano en el menú
+    de Streamlit mientras su sistema operativo sigue en modo claro, `prefers-color-scheme` no se
+    entera (es una preferencia del SO, no de la página) -- Streamlit sí se pone oscuro, pero el
+    diagrama de Guía y los acentos de borde/sombra se quedan en su versión clara hasta que el
+    sistema operativo también cambie. Caso raro en la práctica (la mayoría deja "System" y su SO
+    cambia solo de noche); no tiene arreglo limpio mientras Streamlit no exponga su tema activo.
 
 ## Editor de recetas ("EquiVale Chef") — promovido desde "Ideas para más adelante"
 

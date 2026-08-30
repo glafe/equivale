@@ -22,6 +22,15 @@ Convención de `key=` para que este CSS los alcance (ver views/menu_del_dia.py):
   en reruns donde su key ya existía (a diferencia de widgets "de valor" como `st.checkbox`), así
   que forzar el colapso de una receta ya agregada requiere una key nueva, no solo cambiar
   `session_state` (ver `_renderizar_tiempo()` en `views/menu_del_dia.py`).
+
+**Vista oscura (2026-08-30, a pedido del usuario, para leer de noche)**: `.streamlit/config.toml`
+ahora define `[theme.light]`/`[theme.dark]` -- Streamlit 1.62 los soporta de forma nativa
+(confirmado en el código fuente instalado, `CustomThemeCategories.LIGHT`/`DARK`) y agrega solo un
+selector System/Light/Dark en el menú ⋮ que reteñe TODOS sus componentes nativos sin código
+adicional. Este módulo solo cubre lo que Streamlit no puede reteñir por sí solo -- el HTML/CSS
+propio (el diagrama de "Guía") y los acentos de borde/sombra de más abajo -- con variables CSS
+(`--surface`, `--ink`, `--accent`, etc.) que cambian bajo `@media (prefers-color-scheme: dark)`.
+Ver el bloque `:root`/`@media` de abajo para el detalle y la limitación conocida (KC-004).
 """
 
 import streamlit as st
@@ -44,6 +53,47 @@ CSS = """
   --barro-radius-pill: 999px;
   --barro-border: rgba(43,38,33,.14);
   --barro-shadow: 0 1px 1px rgba(43,38,33,.05), 0 6px 16px -8px rgba(43,38,33,.22);
+
+  /* Tokens "Barro" para HTML propio inyectado con unsafe_allow_html (ej. el diagrama de "Guía",
+     views/guia.py) -- Streamlit NO expone los colores del tema activo como variables CSS
+     reutilizables (los aplica por componente vía JS/emotion, confirmado inspeccionando la app en
+     vivo), así que cualquier HTML/CSS propio necesita su propia fuente de verdad de color en vez
+     de adivinar. views/guia.py ya escribía `var(--surface, #F7F4EE)` etc. con esa intención desde
+     que se creó, pero estas variables nunca se definían -- siempre caían al valor de respaldo
+     (claro), por eso el diagrama se veía como un rectángulo claro fijo sobre fondo oscuro en modo
+     oscuro (2026-08-30, ver BUGS.md). */
+  --surface: #F7F4EE;
+  --surface-2: #FBF9F5;
+  --border: #DAD3C4;
+  --ink: #2B2621;
+  --ink-faint: #97897A;
+  --accent: #3C6E68;
+}
+
+/* Vista oscura (2026-08-30, a pedido del usuario, para leer de noche) -- sigue la preferencia del
+   SISTEMA/navegador (`prefers-color-scheme`), lo mismo que activa "System" en el selector nativo
+   de Streamlit (menú ⋮ -> System/Light/Dark, ver .streamlit/config.toml [theme.light]/[theme.
+   dark]). Streamlit mismo ya reteñe sus propios componentes nativos sin necesitar nada de esto --
+   estas variables solo cubren el HTML/CSS propio de la app (el diagrama de "Guía" y los acentos
+   de borde/sombra de abajo), que de otro modo se quedarían con la paleta clara fija.
+   Limitación conocida (KC-004, BUGS.md): si alguien elige "Dark" a mano en ese menú mientras su
+   sistema operativo sigue en claro, `prefers-color-scheme` no se entera (es una preferencia del
+   SO, no de la app) -- Streamlit sí se pone oscuro pero el diagrama de Guía y estos acentos se
+   quedan en su versión clara hasta que el sistema operativo también cambie. Caso raro en la
+   práctica (la mayoría deja "System" y su SO cambia solo de noche), documentado en vez de resuelto
+   porque Streamlit no expone su tema activo real a CSS/JS de ninguna otra forma. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --barro-border: rgba(241,236,227,.16);
+    --barro-shadow: 0 1px 1px rgba(0,0,0,.3), 0 6px 16px -8px rgba(0,0,0,.6);
+
+    --surface: #2E2822;
+    --surface-2: #221D19;
+    --border: #4A4136;
+    --ink: #F1ECE3;
+    --ink-faint: #B7A999;
+    --accent: #6FB0A5;
+  }
 }
 
 /* --- Tipografía --- */

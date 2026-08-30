@@ -2,9 +2,26 @@
 # radios, sombras). Solo las claves de tema estables/clásicas de Streamlit van aquí; todo lo
 # que necesita más control fino (radios, sombras, tipografía) se inyecta como CSS en
 # nutriguia/estilo.py, importado una sola vez desde app.py.
+#
+# Vista oscura (2026-08-30, a pedido del usuario, para leer de noche): [theme.light]/[theme.dark]
+# extienden [theme] -- Streamlit aplica una u otra según la preferencia del sistema o lo que el
+# usuario elija en el menú ⋮ -> Settings -> "Choose app theme". Sin estas dos secciones solo
+# existía [theme] (un tema fijo, sin variante oscura) -- confirmado en el código fuente instalado
+# (streamlit/config.py, CustomThemeCategories.LIGHT/DARK) que 1.62 sí soporta esto de forma nativa.
 [theme]
 base = "light"
 primaryColor = "#3C6E68"
+
+[theme.light]
 backgroundColor = "#EAE6DB"
 secondaryBackgroundColor = "#F7F4EE"
 textColor = "#2B2621"
+borderColor = "#DAD3C4"
+
+[theme.dark]
+# Mismo espíritu "Barro" (tierra/tinta), invertido -- no el gris azulado genérico de Streamlit.
+backgroundColor = "#1E1A16"
+secondaryBackgroundColor = "#2A2420"
+textColor = "#F1ECE3"
+borderColor = "#453D34"
+primaryColor = "#6FB0A5"

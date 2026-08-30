@@ -20,6 +20,27 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.22.0] - 2026-08-30
+
+### Added
+- **Vista oscura**, a pedido del usuario, para leer de noche. `.streamlit/config.toml` ahora
+  define `[theme.light]`/`[theme.dark]` (Streamlit 1.62 los soporta de forma nativa, no
+  documentado de forma obvia) -- Streamlit agrega solo un selector System/Light/Dark en su menú ⋮
+  sin código nuevo, reteñendo todos sus componentes nativos. Paleta oscura con el mismo espíritu
+  "Barro" invertido (`backgroundColor="#1E1A16"`, `secondaryBackgroundColor="#2A2420"`,
+  `textColor="#F1ECE3"`, `primaryColor="#6FB0A5"`).
+  - `nutriguia/estilo.py`: variables CSS (`--surface`, `--surface-2`, `--border`, `--ink`,
+    `--ink-faint`, `--accent`) bajo `@media (prefers-color-scheme: dark)`, para el HTML propio que
+    Streamlit no reteñe solo -- el diagrama de "Guía" (`views/guia.py`) ya las referenciaba desde
+    que se creó pero nunca estaban definidas, así que siempre caían al valor de respaldo claro
+    (se veía como un rectángulo claro fijo en modo oscuro). También cubre los acentos de
+    borde/sombra (`--barro-border`/`--barro-shadow`) de las tarjetas de "Menú del día".
+  - Nuevo caveat conocido `KC-004`: el CSS propio sigue `prefers-color-scheme` (preferencia del
+    sistema operativo) porque Streamlit no expone su tema activo a CSS/JS de ninguna forma -- si
+    alguien fuerza "Dark" a mano en el menú de Streamlit con el sistema operativo en claro, el
+    diagrama de Guía y esos acentos se quedan en su versión clara hasta que el sistema también
+    cambie.
+
 ## [0.21.0] - 2026-08-30
 
 Revisión de código a pedido del usuario ("revisa y valida antes de liberar") sobre todo lo shipeado
