@@ -2,7 +2,12 @@
 -- ver .gitignore), así que estas pruebas corren en cualquier clon del repo, no solo con los
 datos reales de nutriguia/import_data.py."""
 
-from nutriguia.smae_csv import NO_SOPORTADO, _grupo_desde_tipo_equivalente, cargar_filas_smae
+from nutriguia.smae_csv import (
+    NO_SOPORTADO,
+    UMBRAL_PROTEINA_LECHE_AOA,
+    _grupo_desde_tipo_equivalente,
+    cargar_filas_smae,
+)
 
 
 def test_cargar_filas_smae_no_esta_vacio():
@@ -38,4 +43,23 @@ def test_clasificacion_por_categoria():
     assert _grupo_desde_tipo_equivalente("Leguminosas") == "Leguminosa"
     assert _grupo_desde_tipo_equivalente("Aceites y grasas") == "Aceite s/p"
     assert _grupo_desde_tipo_equivalente("Bebidas alcoholicas") == NO_SOPORTADO
-    assert _grupo_desde_tipo_equivalente("Leche entera") == NO_SOPORTADO
+    # "Leche con azúcar" nunca se soporta, sin importar la proteína.
+    assert _grupo_desde_tipo_equivalente("Leche con azúcar", 9.0) == NO_SOPORTADO
+
+
+def test_leche_se_cataloga_como_aoa_solo_con_proteina_suficiente():
+    for tipo in ("Leche descremada", "Leche semidescremada", "Leche entera"):
+        assert _grupo_desde_tipo_equivalente(tipo, UMBRAL_PROTEINA_LECHE_AOA) == "AOA"
+        assert _grupo_desde_tipo_equivalente(tipo, UMBRAL_PROTEINA_LECHE_AOA - 0.1) == NO_SOPORTADO
+        assert _grupo_desde_tipo_equivalente(tipo, None) == NO_SOPORTADO
+
+
+def test_filas_de_leche_con_proteina_suficiente_llegan_como_aoa():
+    filas = cargar_filas_smae()
+    # "Leche descremada" (1 taza) aporta 8.4 g de proteína -- por arriba del umbral.
+    leche = next(f for f in filas if f["alimento"] == "Leche descremada")
+    assert leche["grupo_smae"] == "AOA"
+    alimentos = {f["alimento"] for f in filas}
+    # "Yoghur bajo en grasa" (0.33 taza, categoría "Leche descremada") aporta solo 2.7 g -- no
+    # alcanza el umbral, no debe aparecer.
+    assert "Yoghur bajo en grasa" not in alimentos

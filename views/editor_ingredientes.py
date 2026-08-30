@@ -278,9 +278,11 @@ def render() -> None:
                     st.session_state["_flash_ingredientes"] = f"'{fila['alimento']}' agregado desde SMAE."
                     st.rerun()
         st.caption(
-            "Azúcares, leche y bebidas alcohólicas de la tabla SMAE no aparecen aquí -- esos "
-            "grupos no tienen equivalente entre los 7 canónicos de este proyecto (ver CLAUDE.md)."
+            "Azúcares, bebidas alcohólicas y leche saborizada/con azúcar de la tabla SMAE no "
+            "aparecen aquí. La leche simple (descremada, semidescremada, entera) sí, catalogada "
+            "como AOA solo cuando la porción trae suficiente proteína."
         )
+        st.page_link("views/guia.py", label="Ver cómo se clasifica cada grupo", icon="📖")
 
 
 render()

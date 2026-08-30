@@ -188,5 +188,25 @@ def render() -> None:
         "ajustar porciones) se sigue armando ahí."
     )
 
+    with st.expander("¿Qué grupos cubre \"Agregar de SMAE\"?"):
+        st.markdown(
+            """
+"Agregar de SMAE" (en **Ingredientes**) busca sobre la tabla oficial completa del sistema SMAE,
+que trae más categorías que los 7 grupos que usa EquiVale — no todas tienen a dónde ir:
+
+- **Sí aparecen**: Cereal, Verdura, Fruta, AOA, Aceite s/proteína, Aceite c/proteína, Leguminosa
+  (los 7 de siempre), más los alimentos libres (sin grupo, cantidad a discreción).
+- **Leche simple (descremada, semidescremada, entera) sí aparece, catalogada como AOA** — pero
+  solo cuando esa porción en particular aporta al menos 7 g de proteína. Una porción con menos
+  (ej. un yogur bajo en grasa en porción chica) no cuenta como equivalente de AOA, así que
+  simplemente no sale en el buscador.
+- **No aparecen**: azúcares, bebidas alcohólicas, ni leche con azúcar/saborizada (helados,
+  malteadas, leches con chocolate) — esos no tienen un grupo canónico donde clasificarlos bien.
+
+Si buscas algo y no sale, puede ser justo uno de estos casos — agrégalo a mano en vez de forzarlo
+a un grupo que no le corresponde.
+            """
+        )
+
 
 render()

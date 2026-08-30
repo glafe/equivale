@@ -20,6 +20,23 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.11.0] - 2026-08-29
+
+### Added
+- **"Agregar de SMAE" ahora soporta leche simple**, a pedido del usuario: las categorías "Leche
+  descremada", "Leche semidescremada" y "Leche entera" de `SMAE_CONSULTA.csv` se catalogan como
+  AOA cuando la porción sugerida de esa fila aporta al menos 7 g de proteína
+  (`UMBRAL_PROTEINA_LECHE_AOA` en `nutriguia/smae_csv.py`) — por debajo de eso la fila se excluye,
+  igual que una categoría no soportada. "Leche con azúcar" (helados, malteadas, leches
+  saborizadas) se queda fuera a propósito, es una decisión distinta.
+- Nuevo expander "¿Qué grupos cubre 'Agregar de SMAE'?" en la página "Guía" (`views/guia.py`)
+  explicando qué categorías SMAE sí/no aparecen en ese buscador, incluida la regla de leche→AOA.
+
+### Changed
+- El caption al final de "Agregar de SMAE" (`views/editor_ingredientes.py`) ya no cita
+  `CLAUDE.md` -- ahora enlaza con `st.page_link` a la página "Guía" (sección de arriba), para que
+  la explicación quede donde el usuario final puede leerla sin salir de la app.
+
 ## [0.10.0] - 2026-08-29
 
 ### Changed

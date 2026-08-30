@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.10.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.11.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -54,8 +54,12 @@ CSS puro con `:has()`, sin JavaScript (ver nota de `BUG-005` sobre por qué no u
 banco, primero las recetas típicas de ese tiempo (alfabético) y luego el resto (alfabético, con su
 primer tiempo típico como referencia) — y de paso se sincronizaron los tags `al_despertar`/
 `desayuno` en `recetas.tiempo_tipico` (31 recetas — no todas las personas distinguen esos dos
-tiempos, ver `schema.md`). Falta Fase 5 (pulido) — no empezarla sin haber usado la Fase 4 unos
-días en la vida real.
+tiempos, ver `schema.md`). "Agregar de SMAE" (en "Ingredientes") ahora también soporta leche
+simple (descremada/semidescremada/entera), catalogada como AOA solo cuando la porción sugerida
+aporta al menos 7 g de proteína (`UMBRAL_PROTEINA_LECHE_AOA` en `nutriguia/smae_csv.py`) —
+"Leche con azúcar" sigue sin soportarse a propósito; el caption de esa sección ya no cita
+`CLAUDE.md`, enlaza a "Guía" (expander "¿Qué grupos cubre 'Agregar de SMAE'?"). Falta Fase 5
+(pulido) — no empezarla sin haber usado la Fase 4 unos días en la vida real.
 
 **Identidad visual "Barro" (2026-08-27)**: paleta/tipografía/radios propios sobre los 7 colores
 de grupo SMAE (que NO cambiaron — son funcionales). Aprobada primero como maqueta interactiva

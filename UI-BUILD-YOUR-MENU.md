@@ -234,6 +234,11 @@ entender cómo se construye un Menú semanal, con enlaces y resaltado.
   fecha).
 - **No es la página de entrada** — `default=True` sigue en "Menú del día" (ver sección
   "Navegación" arriba); la Guía está para consultarse, no para interponerse en el uso diario.
+- **Expander "¿Qué grupos cubre 'Agregar de SMAE'?"** (2026-08-29, a pedido del usuario): explica
+  qué categorías de la tabla SMAE sí/no aparecen en el buscador de "Ingredientes" → "Agregar de
+  SMAE" (ver sección de esa página más arriba), incluida la regla de leche→AOA por proteína.
+  Vive aquí (no en un `.md` del repo) porque el caption de esa página enlaza directo a esta
+  sección con `st.page_link` en vez de citar un archivo que el usuario final no puede abrir.
 
 ## Qué NO hacer
 
@@ -421,10 +426,18 @@ alimentos nuevos sin escribirlos a mano. Esto es la parte de "EquiVale Chef" que
   que mostrar cada fila como una opción del buscador resuelve directamente "elegir una unidad de
   medición" sin necesitar un segundo paso. Alimentos ya existentes en el catálogo se bloquean con
   un aviso ("edítalo arriba") en vez de crear un duplicado.
-  - **Categorías SMAE sin equivalente entre los 7 grupos canónicos** (Azúcares, Leche, Bebidas
-    alcohólicas) **no aparecen** en el buscador — no hay dónde clasificarlas sin antes decidir si
-    se extienden los 7 grupos, y esa es una decisión aparte, no algo para improvisar en este
-    editor. Ver `nutriguia/smae_csv.py` para la clasificación exacta.
+  - **Categorías SMAE sin equivalente entre los 7 grupos canónicos** (Azúcares, "Leche con
+    azúcar" -- helados/malteadas/leches saborizadas --, Bebidas alcohólicas) **no aparecen** en
+    el buscador — no hay dónde clasificarlas sin antes decidir si se extienden los 7 grupos, y esa
+    es una decisión aparte, no algo para improvisar en este editor.
+  - **Leche simple (descremada/semidescremada/entera) sí se soporta, catalogada como AOA**
+    (2026-08-29, a pedido del usuario) — pero solo la fila cuya porción sugerida aporta al menos
+    `UMBRAL_PROTEINA_LECHE_AOA` (7 g) de proteína; por debajo de eso la fila se excluye igual que
+    una categoría no soportada (ej. un yogur bajo en grasa en porción chica no cuenta como
+    equivalente de AOA). El caption de este expander enlaza a "Cómo funciona" (`views/guia.py`,
+    sección "¿Qué grupos cubre 'Agregar de SMAE'?") en vez de citar este archivo — así el usuario
+    ve la explicación sin salir de la app. Ver `nutriguia/smae_csv.py` para la clasificación
+    exacta.
   - El CSV mezcla más de una codificación de caracteres entre secciones (parte viene en Latin-1,
     el resto no) — se decodifica como Latin-1 (correcto para la gran mayoría de los ~2000 nombres
     soportados) y un puñado puede salir con acentos mal formados; no se persiguió exhaustivamente,
