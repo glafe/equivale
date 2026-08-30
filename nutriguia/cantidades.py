@@ -6,6 +6,8 @@ validation.py. Compartido entre views/menu_del_dia.py y views/editor_recetas.py.
 import re
 from fractions import Fraction
 
+from nutriguia.validation import paso_equivalente
+
 RE_FRACCION = re.compile(r"^(\d+)/(\d+)\s*(.*)$")
 RE_NUMERO = re.compile(r"^(\d+(?:\.\d+)?)\s*(.*)$")
 
@@ -33,6 +35,18 @@ def escalar_cantidad(paso: str, n: int) -> str:
         texto = str(int(valor)) if valor == int(valor) else str(valor)
         return f"{texto} {resto}".strip()
     return f"{paso} × {n}"
+
+
+def cantidad_real(alimento: str, equivalentes: int, catalogo: dict) -> str:
+    """Cantidad real de `equivalentes` equivalentes de `alimento`, resuelta contra el catálogo
+    (`paso_equivalente()` + `escalar_cantidad()`) -- fallback "N equiv." si el alimento no está en
+    el catálogo (ej. una referencia huérfana), en vez de tronar. Factorizado 2026-08-30 (antes
+    vivía duplicado como `_cantidad_real()` en `nutriguia/html_semanal.py`) para compartirlo con
+    `nutriguia/html_lista_super.py`."""
+    paso = paso_equivalente(alimento, catalogo)
+    if paso is None:
+        return f"{equivalentes} equiv."
+    return escalar_cantidad(paso, equivalentes)
 
 
 def formatear_decimal_como_fraccion(valor: float) -> str:

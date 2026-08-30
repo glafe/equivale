@@ -1,6 +1,6 @@
 # EquiVale
 
-**Versión actual: `0.19.0`** (ver [`CHANGELOG.md`](CHANGELOG.md) — [Versionado Semántico](https://semver.org/lang/es/))
+**Versión actual: `0.20.0`** (ver [`CHANGELOG.md`](CHANGELOG.md) — [Versionado Semántico](https://semver.org/lang/es/))
 
 Sistema personal de planeación de menús basado en **Equivalentes SMAE** (Sistema Mexicano de
 Alimentos Equivalentes), para dos personas. La app ("Menú del día") arma el día eligiendo
@@ -17,14 +17,15 @@ la nota de privacidad en `CLAUDE.md`.
 **Fases 0 a 4 completas** — Mongo corriendo, datos importados, `nutriguia/validation.py` con
 35/35 tests en verde (más suites adicionales sobre datos sintéticos/públicos que corren en
 cualquier clon del repo, ver `tests/`), app Streamlit multipágina ("Guía", "Menú del día", "Menú
-semanal", "Recetas", "Ingredientes", "Personas", "Configuración", agrupada en secciones en la
-barra lateral) desplegada y corriendo en producción como servicio systemd. "Menú del día" arma y
-guarda un día por fecha con historial, y admite ponerle un nombre opcional para reutilizarlo,
-clonarlo a otra persona, o agregar un ingrediente suelto sin crear una receta;
+semanal", "Lista del súper", "Recetas", "Ingredientes", "Personas", "Configuración", agrupada en
+secciones en la barra lateral) desplegada y corriendo en producción como servicio systemd. "Menú
+del día" arma y guarda un día por fecha con historial, y admite ponerle un nombre opcional para
+reutilizarlo, clonarlo a otra persona, o agregar un ingrediente suelto sin crear una receta;
 "Menú semanal" asigna esos días nombrados a los días de la semana (de solo lectura — armar/editar
 recetas sigue siendo trabajo de "Menú del día") y puede exportar la semana a un HTML grande para
-imprimir (o guardar como PDF desde el propio navegador); "Configuración" junta herramientas de
-limpieza/integridad de datos;
+imprimir (o guardar como PDF desde el propio navegador); "Lista del súper" consolida los
+ingredientes reales de esa semana (una o varias personas a la vez) en una lista de compras, con el
+mismo exportable a HTML; "Configuración" junta herramientas de limpieza/integridad de datos;
 "Guía" trae un diagrama interactivo de cómo se relaciona todo. Sigue el resto de la Fase 5
 (pulido, solo tras uso real). Ver el checklist completo en `BUILD-PLAN.md`.
 

@@ -20,6 +20,30 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.20.0] - 2026-08-30
+
+### Added
+- **FR-004**: página nueva "Lista del súper" (`views/lista_super.py`, en "Tu día a día" después de
+  "Menú semanal") -- suma los ingredientes reales de la semana ya asignada en "Menú semanal" en
+  una lista consolidada de compras, agrupada por grupo SMAE.
+  - `st.multiselect` de persona(s) en vez de un solo selector -- a pedido del usuario, para el
+    caso de dos personas que viven juntas y hacen un solo súper (el mismo alimento de ambas se
+    consolida en una sola línea, no dos separadas).
+  - Una ocurrencia de cada ingrediente incluido por cada DÍA de la semana que use ese menú, no por
+    nombre de menú único -- si un menú aplica a 3 días, sus ingredientes cuentan 3 veces (la
+    cantidad real que hay que comprar, no una porción).
+  - Consolidación con `sumar_por_grupo(ingredientes, "alimento", "equivalentes")` -- resultó no
+    hacer falta una función `sumar_por_alimento()` nueva, esa función ya era lo bastante genérica.
+  - "🖨️ Descargar HTML para imprimir" (`nutriguia/html_lista_super.py`, mismo patrón que
+    `nutriguia/html_semanal.py`) con un checkbox `☐` por alimento para tachar en el súper.
+  - Vista previa en pantalla (chips + lista) antes de descargar.
+  - Referencias rotas en `asignacion_semanal` se avisan con `st.warning()`, mismo criterio que
+    Configuración/"Menú semanal".
+
+### Changed
+- `cantidad_real()` (antes `_cantidad_real()` privado y duplicado en `nutriguia/html_semanal.py`)
+  se factorizó a `nutriguia/cantidades.py` para compartirlo con `nutriguia/html_lista_super.py`.
+
 ## [0.19.0] - 2026-08-30
 
 ### Added

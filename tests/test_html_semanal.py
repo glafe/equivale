@@ -118,10 +118,10 @@ def test_menu_sin_dia_asignado_no_truena():
 def test_ingrediente_sin_catalogo_usa_fallback_de_equivalentes():
     """"Fruta libre" no está en CATALOGO_EJEMPLO -- no debe tronar, debe caer al fallback
     "N equiv." (ver _cantidad_real())."""
-    from nutriguia.html_semanal import _cantidad_real
+    from nutriguia.cantidades import cantidad_real
 
-    assert _cantidad_real("Fruta libre", 1, CATALOGO_EJEMPLO) == "1 equiv."
-    assert _cantidad_real("Avena en hojuelas", 2, CATALOGO_EJEMPLO) == "1/2 taza"
+    assert cantidad_real("Fruta libre", 1, CATALOGO_EJEMPLO) == "1 equiv."
+    assert cantidad_real("Avena en hojuelas", 2, CATALOGO_EJEMPLO) == "1/2 taza"
 
 
 def test_ingrediente_libre_no_imprime_none():

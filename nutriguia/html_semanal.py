@@ -15,9 +15,8 @@ Sigue sin tocar Mongo -- recibe los datos ya resueltos (`asignacion`, `menus_por
 import html
 from datetime import date
 
-from nutriguia.cantidades import escalar_cantidad
+from nutriguia.cantidades import cantidad_real
 from nutriguia.colores import GRUPO_COLOR, color_texto_legible
-from nutriguia.validation import paso_equivalente
 
 DIAS = ["lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"]
 DIA_LABEL = {
@@ -77,13 +76,6 @@ def _chips_fila_html(vector: dict[str, int]) -> str:
     return f'<div class="chips-fila">{chips}</div>'
 
 
-def _cantidad_real(alimento: str, equivalentes: int, catalogo: dict) -> str:
-    paso = paso_equivalente(alimento, catalogo)
-    if paso is None:
-        return f"{equivalentes} equiv."
-    return escalar_cantidad(paso, equivalentes)
-
-
 def _agrupar_por_grupo(ingredientes: list[dict]) -> list[tuple[str, int, list[dict]]]:
     """[(grupo, eq_total_del_grupo_en_esta_receta, [ingredientes]), ...] -- en el orden en que
     cada grupo aparece por primera vez en la receta, no alfabético."""
@@ -116,7 +108,7 @@ def _tabla_receta_html(receta: dict, catalogo: dict) -> str:
         texto_chip = ETIQUETA_CORTA[None] if grupo is None else f"{ETIQUETA_CORTA.get(grupo, grupo)} {eq}"
         n = len(ings)
         for i, ing in enumerate(ings):
-            cantidad = _cantidad_real(ing["alimento"], ing["equivalentes"], catalogo)
+            cantidad = cantidad_real(ing["alimento"], ing["equivalentes"], catalogo)
             nombre = _esc(ing["alimento"]) + (" <i>(opcional)</i>" if ing.get("opcional") else "")
             celda_grupo = (
                 f'<td class="celda-grupo" rowspan="{n}" style="background:{color};color:{color_texto};">'

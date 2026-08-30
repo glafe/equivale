@@ -22,6 +22,7 @@ pagina = st.navigation(
         "Tu día a día": [
             st.Page("views/menu_del_dia.py", title="Menú del día", icon="🥗", default=True),
             st.Page("views/menu_semanal.py", title="Menú semanal", icon="🗓️"),
+            st.Page("views/lista_super.py", title="Lista del súper", icon="🛒"),
         ],
         "Tus recetas": [
             st.Page("views/editor_recetas.py", title="Recetas", icon="🧑‍🍳"),

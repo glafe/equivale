@@ -18,9 +18,9 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002)
 
 ### Feature Requests
-- Propuestos: [FR-001](#fr-001), [FR-004](#fr-004), [FR-005](#fr-005), [FR-006](#fr-006)
+- Propuestos: [FR-001](#fr-001), [FR-005](#fr-005), [FR-006](#fr-006)
 - Parcialmente Shipped: [FR-003](#fr-003)
-- Shipped: [FR-002](#fr-002), [FR-007](#fr-007), [FR-008](#fr-008)
+- Shipped: [FR-002](#fr-002), [FR-004](#fr-004), [FR-007](#fr-007), [FR-008](#fr-008)
 
 ## Severity guide
 
@@ -417,7 +417,20 @@ hay un documento aparte, este es el registro canónico).
 ##### Dependencies
 Ninguna.
 
-#### FR-004
+#### FR-004 · [STATUS: Shipped 0.20.0]
+> **Shipped en 0.20.0 (2026-08-30)** — página nueva "Lista del súper" (`views/lista_super.py`, en
+> "Tu día a día"). `st.multiselect` de personas (no un solo selectbox) para el caso de dos
+> personas que hacen un solo súper. Suma una ocurrencia de cada ingrediente incluido por cada DÍA
+> de la semana que use ese menú (`_ingredientes_de_la_semana()`, sobre `asignacion_semanal` +
+> `menus_construidos`), consolidada por alimento con `sumar_por_grupo(ingredientes, "alimento",
+> "equivalentes")` -- resultó no hacer falta una función `sumar_por_alimento()` nueva, esa función
+> ya era lo bastante genérica. Agrupada por grupo SMAE (resuelto contra `catalogo_alimentos`, no
+> contra `grupo_smae` de un ingrediente en particular) para mostrarse. "🖨️ Descargar HTML para
+> imprimir" con `nutriguia/html_lista_super.py` (mismo patrón que `nutriguia/html_semanal.py`,
+> con checkbox `☐` por alimento para tachar en el súper). No cubre todavía generar la lista sobre
+> un solo día suelto sin depender de `asignacion_semanal` -- ver `UI-BUILD-YOUR-MENU.md` → "Lista
+> del súper" para el detalle completo.
+
 **Title:** Lista de súper generada
 **Date Requested:** 2026-08-29
 **Status:** Proposed

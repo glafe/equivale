@@ -16,15 +16,15 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.19.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.20.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
 datos importados, `nutriguia/validation.py` con 35/35 tests en verde (más suites adicionales
 sobre datos sintéticos/públicos que corren en cualquier clon del repo — `tests/
 test_validation_samples.py`, `test_cantidades.py`, `test_smae_csv.py`, `test_texto.py`, ver más
-abajo), app Streamlit multipágina ("Guía", "Menú del día", "Menú semanal", "Recetas",
-"Ingredientes", "Personas", "Configuración") corriendo en producción, con la barra lateral
+abajo), app Streamlit multipágina ("Guía", "Menú del día", "Menú semanal", "Lista del súper",
+"Recetas", "Ingredientes", "Personas", "Configuración") corriendo en producción, con la barra lateral
 reorganizada en secciones desde 2026-08-29 (ver "Navegación" en `UI-BUILD-YOUR-MENU.md`) — sin
 menciones a "Mongo" en texto que ve el usuario. "Menú del día" (renombrado
 desde "Build your menu" el 2026-08-29 para homologar el idioma de toda la app) ya cubre el día
@@ -93,8 +93,17 @@ con `receta_id: None` (ver `schema.md`), que Configuración ya sabe distinguir d
 rota de verdad; y un botón "🧬 Clonar" junto a "Abrir" en el historial copia un día ya guardado
 hacia OTRA persona (recalculando objetivo/actual/delta contra el objetivo de destino, sin cargarlo
 en el editor actual) para usarlo como punto de partida y ajustar cantidades después con los
-steppers de siempre. Falta el resto de Fase 5 (pulido) — no empezarla sin haber usado la Fase 4
-unos días en la vida real.
+steppers de siempre. **`FR-004` shipped en 0.20.0 (2026-08-30)**: página nueva "Lista del súper"
+(`views/lista_super.py`, en "Tu día a día" después de "Menú semanal") suma los ingredientes reales
+de la semana ya asignada en "Menú semanal" en una lista consolidada de compras, agrupada por grupo
+SMAE — con `st.multiselect` de persona(s) en vez de un solo selector (a pedido del usuario, para
+el caso de dos personas que hacen un solo súper: el mismo alimento de ambas se consolida en una
+sola línea). Una ocurrencia de cada ingrediente por cada DÍA que use ese menú, no por menú único
+(si un menú aplica a 3 días, sus ingredientes cuentan 3 veces). "🖨️ Descargar HTML para imprimir"
+con `nutriguia/html_lista_super.py` (mismo patrón que `nutriguia/html_semanal.py`, con un
+checkbox `☐` por alimento para tachar en el súper); `cantidad_real()` se factorizó ese mismo día a
+`nutriguia/cantidades.py` para compartirse entre ambos módulos HTML. Falta el resto de Fase 5
+(pulido) — no empezarla sin haber usado la Fase 4 unos días en la vida real.
 
 **Identidad visual "Barro" (2026-08-27)**: paleta/tipografía/radios propios sobre los 7 colores
 de grupo SMAE (que NO cambiaron — son funcionales). Aprobada primero como maqueta interactiva

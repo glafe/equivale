@@ -274,6 +274,51 @@ pasó a ser puramente una herramienta de **asignación y consulta**, no de const
   - Sigue siendo una primera versión de FR-003/Fase 5, no la definitiva -- ajustar según feedback
     de uso real antes de darla por terminada.
 
+## Página "Lista del súper" (2026-08-30, a pedido del usuario -- cierra `FR-004`)
+
+Página nueva (`views/lista_super.py`, en "Tu día a día" después de "Menú semanal" -- depende de
+ella) que suma los ingredientes reales de la semana ya asignada en "Menú semanal" en una lista
+consolidada de compras. **Solo lectura**: no arma ni edita nada, igual que "Menú semanal" -- si
+falta un día por asignar, se arregla ahí, no aquí.
+
+- **Selector de persona(s)**: `st.multiselect`, no un solo `st.selectbox` como el resto de la app
+  -- a pedido explícito del usuario (actualización del mismo 2026-08-30 sobre el `FR-004`
+  original) para el caso de dos personas que viven juntas y hacen un solo súper. El mismo alimento
+  de ambas se consolida en una sola línea de la lista, no dos separadas.
+- **Una ocurrencia por DÍA, no por menú**: si "Menú 1" aplica a lunes/miércoles/viernes en
+  `asignacion_semanal`, sus ingredientes se suman 3 veces (`_ingredientes_de_la_semana()`,
+  itera los 7 días, no los nombres de menú únicos) -- es la cantidad real que hay que comprar para
+  toda la semana, no una porción del menú. Ingredientes `opcional` con `incluido: false` no
+  cuentan, igual que en el resto de la app.
+- **Consolidación por alimento**: `sumar_por_grupo(ingredientes, "alimento", "equivalentes")` --
+  resulta que esa función (pensada originalmente para sumar por `grupo_smae`) ya es lo bastante
+  genérica para agrupar por cualquier campo, así que no hizo falta una función nueva
+  `sumar_por_alimento()` como sugería el `Eng Description` original del `FR-004` en `BUGS.md`.
+- **Agrupado por grupo SMAE para mostrarse** (no una lista plana): el grupo de cada alimento se
+  resuelve contra `catalogo_alimentos.grupo` (no contra el `grupo_smae` de ningún ingrediente en
+  particular, que ya no se conserva tras sumar por alimento) -- mismo `GRUPO_COLOR`/`GRUPO_ETIQUETA`
+  de siempre, orden fijo de grupos (no alfabético), alfabético dentro de cada grupo. Un alimento
+  libre (`grupo: null`, ej. una especia) o que ya no está en el catálogo (referencia huérfana) cae
+  en una sección final "Sin grupo / libre" -- no se pierde de la lista, solo no tiene un grupo con
+  el que colorear su encabezado.
+- **Cantidad real**, no solo el conteo de equivalentes: `cantidad_real()` (factorizado 2026-08-30 a
+  `nutriguia/cantidades.py` desde el antiguo `_cantidad_real()` privado de `html_semanal.py`, para
+  compartirlo entre ambos) -- mismo fallback "`N` equiv." si el alimento no está en el catálogo.
+- **"🖨️ Descargar HTML para imprimir"**: mismo patrón que "Menú semanal" -- `nutriguia/
+  html_lista_super.py` genera un documento HTML autocontenido (CSS embebido, misma identidad
+  visual "Barro") con un cuadrito `☐` antes de cada alimento para poder tacharlo a mano en el
+  súper; el usuario lo abre en su navegador y usa Ctrl/Cmd+P. No toca Mongo -- recibe los datos ya
+  resueltos desde la vista, con `tests/test_html_lista_super.py` sobre datos sintéticos.
+- **Vista previa en pantalla** (antes del botón de descarga): la misma agrupación por grupo SMAE,
+  como chips + lista markdown -- para revisar rápido sin tener que descargar el HTML primero.
+- **Referencias rotas**: si un día de `asignacion_semanal` apunta a un nombre que ya no existe en
+  `menus_construidos`, se avisa con `st.warning()` (mismo criterio de "detectar, no arreglar solo"
+  que Configuración/"Menú semanal") y también se lista en una nota al final del HTML descargado.
+- **Fuera de alcance de esta primera versión** (ver `Eng Description` de `FR-004` en `BUGS.md`):
+  generar la lista sobre un solo día suelto de `menus_construidos` sin depender de
+  `asignacion_semanal` -- el caso de uso principal pedido fue la semana completa; se agrega si
+  hace falta tras usarla.
+
 ## Página "Configuración" (2026-08-29, a pedido del usuario)
 
 El usuario sigue encontrando datos inconsistentes/repetidos a nivel práctico mientras usa la app
