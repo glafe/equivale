@@ -256,12 +256,23 @@ de administración a futuro, no solo limpieza de datos.
     mecanismo que la fusión del Editor de ingredientes) — para cuando el ingrediente huérfano es
     solo una variante de escritura de algo que ya tienes catalogado, en vez de crear un
     duplicado.
-  - **Referencias a recetas eliminadas**: un `receta_id` en `plantillas_semana` o
-    `menus_construidos` que ya no existe en `recetas`. Los menús semanales se pueden limpiar
-    directo (botón "Quitar"); los días guardados de "Menú del día" son bitácora histórica y solo
-    se listan, no se editan (mismo criterio que `menus` — ver `ARCHITECTURE.md` decisión #2).
+  - **Referencias a recetas eliminadas**: un `receta_id` en `menus_construidos` (corregido
+    2026-08-30 -- este chequeo nunca miró `plantillas_semana`, esa colección ya no existe desde
+    0.9.0) que ya no existe en `recetas`. Los días guardados de "Menú del día" son bitácora
+    histórica y solo se listan, no se editan desde aquí (mismo criterio que `menus` — ver
+    `ARCHITECTURE.md` decisión #2); se corrige abriendo ese día desde "Menú del día".
   - **Vector de equivalentes desincronizado**: el `vector_equivalentes` guardado de una receta no
     coincide con la suma real de sus ingredientes — botón "Recalcular y guardar".
+  - **Ingredientes duplicados dentro de una misma receta** (2026-08-30, ver BUG-009 en `BUGS.md`):
+    el mismo `alimento` listado 2+ veces en una receta -- a diferencia de "posibles duplicados en
+    el catálogo" (abajo), aquí SÍ se fusiona con un clic sin pedir confirmación, porque no hay
+    ambigüedad (es el mismo nombre exacto dentro de la misma receta, no dos nombres parecidos que
+    podrían ser alimentos distintos). Usa `fusionar_ingredientes_duplicados()` de
+    `nutriguia/validation.py` -- suma los `equivalentes` de las filas repetidas en una sola, sin
+    cambiar el total por grupo. Este era el bug real detrás de "recetas con el mismo ingrediente
+    dos veces" que el usuario encontró limpiando el catálogo a mano: "🔗 Usar este" (arriba) podía
+    dejar un duplicado si la receta ya tenía un ingrediente con el nombre destino -- ya corregido
+    en `_renombrar_en_recetas()` para que no vuelva a pasar.
   - **Posibles duplicados en el catálogo**: pares de nombres con similitud alta (`difflib`,
     umbral 0.82 sobre el nombre normalizado — sin regex ni IA) — no fusiona automático, un botón
     "Fusionar" hace `st.switch_page()` al Editor de ingredientes con ese alimento pre-seleccionado

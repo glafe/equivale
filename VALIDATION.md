@@ -65,6 +65,18 @@ def paso_equivalente(alimento: str, catalogo_por_nombre: dict) -> str:
     ingrediente compuesto como "Nopal y Pimiento"), regresar None — esos ingredientes no son
     ajustables por stepper en la UI, se agregan/quitan completos.
     """
+
+def fusionar_ingredientes_duplicados(ingredientes: list[dict]) -> list[dict]:
+    """
+    Colapsa ingredientes con el mismo 'alimento' (2+ ocurrencias) en uno solo, sumando sus
+    'equivalentes' -- no cambia el total por grupo (misma suma repartida en 1 fila en vez de N),
+    así que es seguro aplicarla sin revisar caso por caso. 'opcional'/'bloqueado'/'asuncion' quedan
+    en True si CUALQUIER ocurrencia los tenía en True; 'cantidad'/'grupo_smae' se toman de la
+    primera ocurrencia. Preserva el orden de primera aparición. Usada en `views/configuracion.py`
+    y `views/editor_ingredientes.py` -- reemplazar el nombre de un ingrediente huérfano por uno
+    que la receta YA tenía dejaba dos filas con el mismo 'alimento' en vez de fusionarlas
+    (detectado 2026-08-30).
+    """
 ```
 
 ## Regla de prueba de regresión (obligatoria antes de tocar la UI)

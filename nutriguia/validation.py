@@ -71,3 +71,36 @@ def paso_equivalente(alimento: str, catalogo_por_nombre: dict) -> str | None:
     if entrada is None:
         return None
     return entrada["cantidad_por_equivalente"]
+
+
+def fusionar_ingredientes_duplicados(ingredientes: list[dict]) -> list[dict]:
+    """Colapsa ingredientes con el mismo `alimento` (2+ ocurrencias) en uno solo, sumando sus
+    `equivalentes` -- no cambia el total por grupo (la suma es la misma repartida en 1 fila en vez
+    de N), así que es seguro aplicarla sin revisar caso por caso. `opcional`/`bloqueado`/`asuncion`
+    quedan en True si CUALQUIER ocurrencia los tenía en True; `cantidad`/`grupo_smae` se toman de
+    la primera ocurrencia (deberían coincidir entre duplicados del mismo alimento). Preserva el
+    orden de primera aparición. Detectado 2026-08-30: "🔗 Usar este" en Configuración/Editor de
+    ingredientes renombraba un huérfano al nombre de un alimento que la receta YA tenía, dejando
+    dos filas con el mismo `alimento` en vez de fusionarlas."""
+    orden: list[str] = []
+    por_alimento: dict[str, list[dict]] = {}
+    for ing in ingredientes:
+        nombre = ing["alimento"]
+        if nombre not in por_alimento:
+            por_alimento[nombre] = []
+            orden.append(nombre)
+        por_alimento[nombre].append(ing)
+
+    resultado = []
+    for nombre in orden:
+        ocurrencias = por_alimento[nombre]
+        if len(ocurrencias) == 1:
+            resultado.append(ocurrencias[0])
+            continue
+        fusionado = dict(ocurrencias[0])
+        fusionado["equivalentes"] = sum(o["equivalentes"] for o in ocurrencias)
+        for bandera in ("opcional", "bloqueado", "asuncion"):
+            if any(o.get(bandera) for o in ocurrencias):
+                fusionado[bandera] = True
+        resultado.append(fusionado)
+    return resultado

@@ -20,6 +20,27 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.17.0] - 2026-08-30
+
+### Fixed
+- **BUG-009**: "🔗 Usar este" (reemplazar un ingrediente huérfano por uno existente, en
+  Configuración/Editor de ingredientes) podía dejar dos filas con el mismo `alimento` en una
+  receta en vez de fusionarlas, si la receta ya tenía un ingrediente con ese nombre. Encontrado
+  por el usuario limpiando el catálogo a mano (4 recetas afectadas en producción). Nueva función
+  pura `fusionar_ingredientes_duplicados()` en `nutriguia/validation.py` (ver `VALIDATION.md`):
+  suma los `equivalentes` de las filas repetidas en una sola -- no cambia el total por grupo, así
+  que es seguro sin revisar caso por caso. `_renombrar_en_recetas()` (en ambos archivos) ahora la
+  llama después de renombrar y recalcula `vector_equivalentes`.
+
+### Added
+- Nuevo chequeo en Configuración, "🔁 Ingredientes duplicados dentro de una misma receta", con un
+  botón "Fusionar" por receta afectada -- se usó para limpiar las 4 recetas que quedaban en
+  producción.
+- Roadmap (`BUGS.md`): `FR-007` (agregar ingredientes sueltos directo a "Menú del día", sin pasar
+  por una receta) y `FR-008` (clonar un menú de una persona a otra, para ajustar después) nuevos;
+  `FR-004` (lista de súper) actualizado para permitir elegir más de una persona a la vez (dos
+  personas que viven juntas y hacen un solo súper).
+
 ## [0.16.0] - 2026-08-30
 
 ### Changed

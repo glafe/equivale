@@ -24,7 +24,7 @@ from nutriguia.streamlit_data import (
     invalidar_cache_recetas,
 )
 from nutriguia.texto import normalizar_busqueda
-from nutriguia.validation import sumar_por_grupo
+from nutriguia.validation import fusionar_ingredientes_duplicados, sumar_por_grupo
 
 TIEMPO_LABEL = {
     "al_despertar": "Al despertar", "desayuno": "Desayuno", "colacion": "Colación",
@@ -51,7 +51,10 @@ def _chips(vector: dict) -> str:
 def _renombrar_en_recetas(nombre_viejo: str, nombre_nuevo: str) -> int:
     """Mismo mecanismo que en editor_ingredientes.py: las recetas referencian un alimento por
     nombre, no por id -- reemplazar acá evita dejar una receta apuntando a un nombre que ya no
-    existe en ningún lado (ni el orfanado ni uno nuevo)."""
+    existe en ningún lado (ni el orfanado ni uno nuevo). Fusiona con `fusionar_ingredientes_
+    duplicados()` por si la receta YA tenía un ingrediente con el nombre nuevo -- si no, quedaban
+    dos filas con el mismo `alimento` en vez de una sola (BUG-009 en BUGS.md, detectado
+    2026-08-30)."""
     tocadas = 0
     for receta in db().recetas.find({"ingredientes.alimento": nombre_viejo}):
         ingredientes = receta["ingredientes"]
@@ -61,8 +64,11 @@ def _renombrar_en_recetas(nombre_viejo: str, nombre_nuevo: str) -> int:
                 ing["alimento"] = nombre_nuevo
                 cambio = True
         if cambio:
+            ingredientes = fusionar_ingredientes_duplicados(ingredientes)
+            vector = sumar_por_grupo(ingredientes, "grupo_smae", "equivalentes")
             db().recetas.update_one(
-                {"receta_id": receta["receta_id"]}, {"$set": {"ingredientes": ingredientes}}
+                {"receta_id": receta["receta_id"]},
+                {"$set": {"ingredientes": ingredientes, "vector_equivalentes": vector}},
             )
             tocadas += 1
     if tocadas:
@@ -259,6 +265,45 @@ def _check_vector_desincronizado():
                     st.rerun()
 
 
+def _check_ingredientes_duplicados_en_receta():
+    with st.expander("🔁 Ingredientes duplicados dentro de una misma receta"):
+        st.caption(
+            "El mismo alimento listado dos o más veces en una receta -- suele pasar al usar "
+            "\"🔗 Usar este\" (arriba) cuando la receta YA tenía un ingrediente con ese nombre "
+            "(BUG-009, corregido para que ya no vuelva a pasar). A diferencia del chequeo de "
+            "duplicados del catálogo, aquí no hay ambigüedad -- son el mismo nombre exacto dentro "
+            "de la misma receta, así que fusionar (sumar sus equivalentes en una sola fila) es "
+            "seguro con un clic."
+        )
+        problemas = []
+        for r in cargar_recetas():
+            vistos: dict[str, int] = {}
+            for ing in r["ingredientes"]:
+                vistos[ing["alimento"]] = vistos.get(ing["alimento"], 0) + 1
+            repetidos = sorted(n for n, veces in vistos.items() if veces > 1)
+            if repetidos:
+                problemas.append((r, repetidos))
+
+        if not problemas:
+            st.success("Sin ingredientes duplicados dentro de una receta.")
+            return
+
+        st.warning(f"{len(problemas)} receta(s) con algún ingrediente repetido.")
+        for r, repetidos in problemas:
+            with st.container(border=True):
+                st.markdown(f"**{r['nombre']}** — repetido: " + ", ".join(f"'{n}'" for n in repetidos))
+                if st.button("Fusionar", key=f"fusionar_dup_{r['receta_id']}"):
+                    ingredientes = fusionar_ingredientes_duplicados(r["ingredientes"])
+                    vector = sumar_por_grupo(ingredientes, "grupo_smae", "equivalentes")
+                    db().recetas.update_one(
+                        {"receta_id": r["receta_id"]},
+                        {"$set": {"ingredientes": ingredientes, "vector_equivalentes": vector}},
+                    )
+                    invalidar_cache_recetas()
+                    st.session_state["_flash_config"] = f"Ingredientes duplicados de '{r['nombre']}' fusionados."
+                    st.rerun()
+
+
 def _check_duplicados_catalogo():
     with st.expander("🔎 Posibles duplicados en el catálogo de ingredientes"):
         st.caption(
@@ -383,6 +428,7 @@ def render() -> None:
     _check_ingredientes_huerfanos()
     _check_recetas_huerfanas()
     _check_vector_desincronizado()
+    _check_ingredientes_duplicados_en_receta()
     _check_duplicados_catalogo()
     _check_personas_sin_objetivo()
     _check_asignacion_rota()

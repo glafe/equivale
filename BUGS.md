@@ -11,13 +11,15 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 ### Bugs
 - Resueltos: [BUG-001](#bug-001--status-rv), [BUG-002](#bug-002--status-rv),
   [BUG-003](#bug-003--status-rv), [BUG-004](#bug-004--status-rv), [BUG-005](#bug-005--status-rv),
-  [BUG-006](#bug-006--status-rv), [BUG-007](#bug-007--status-rv), [BUG-008](#bug-008--status-c)
+  [BUG-006](#bug-006--status-rv), [BUG-007](#bug-007--status-rv), [BUG-008](#bug-008--status-c),
+  [BUG-009](#bug-009--status-rv)
 
 ### Known Caveats
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002)
 
 ### Feature Requests
-- Propuestos: [FR-001](#fr-001), [FR-004](#fr-004), [FR-005](#fr-005), [FR-006](#fr-006)
+- Propuestos: [FR-001](#fr-001), [FR-004](#fr-004), [FR-005](#fr-005), [FR-006](#fr-006),
+  [FR-007](#fr-007), [FR-008](#fr-008)
 - Parcialmente Shipped: [FR-003](#fr-003)
 - Shipped: [FR-002](#fr-002)
 
@@ -37,6 +39,42 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 ## Bugs
 
 ### Detailed Entries
+
+#### BUG-009 · [STATUS: RV]
+**Title:** "🔗 Usar este" (reemplazar huérfano) dejaba ingredientes duplicados dentro de una receta
+**Severity:** Medium
+**Reported Date:** 2026-08-30
+**Release Fixed:** 0.17.0
+
+##### Observable Problem
+El usuario notó, limpiando el catálogo a mano, que varias recetas tenían el mismo ingrediente
+listado dos (o hasta tres) veces -- ej. "Crema de cacahuate" tres veces en "Pan tostado con
+plátano", o "Res molida" dos veces en "Espagueti Boloñesa". Corrigió algunas a mano y pidió
+revisar si quedaban más -- una consulta directa a Mongo encontró 4 recetas afectadas en total.
+
+##### Fix Explanation (Exec Level — No Code)
+"Editor de ingredientes" y "Configuración" tienen un botón "🔗 Usar este" para cuando un
+ingrediente huérfano (sin catalogar) en realidad es el mismo alimento que uno que ya existe --
+renombra el huérfano al nombre del existente en todas las recetas que lo usaban. El bug: si una
+receta YA tenía un ingrediente con ese nombre (ej. la receta ya usaba "Nopales" Y tenía un
+huérfano que también era, en el fondo, "Nopales" con otra ortografía), el renombrado dejaba DOS
+filas con el mismo nombre en vez de fusionarlas en una -- inflando el conteo de equivalentes de
+ese grupo sin que se notara a simple vista.
+
+##### Fix Details (Technical)
+Nueva función pura `fusionar_ingredientes_duplicados()` en `nutriguia/validation.py` (ver
+`VALIDATION.md`): colapsa ingredientes con el mismo `alimento` sumando sus `equivalentes` -- el
+total por grupo no cambia (es la misma suma repartida en una fila en vez de N), así que fusionar
+es seguro sin revisar caso por caso. `_renombrar_en_recetas()` (duplicada en
+`views/configuracion.py` y `views/editor_ingredientes.py`) ahora la llama después de renombrar, y
+recalcula `vector_equivalentes`. Nuevo chequeo en Configuración,
+"🔁 Ingredientes duplicados dentro de una misma receta" (`_check_ingredientes_duplicados_en_
+receta()`), con un botón "Fusionar" por receta afectada -- se usó ese mismo botón, ya desplegado,
+para limpiar las 4 recetas que quedaban en producción en vez de un script de migración aparte
+(no se persiguió con un script porque la herramienta en la app ya cubre el caso permanentemente).
+
+##### Workaround
+Ninguno necesario tras el fix -- antes, corregir a mano desde el Editor de recetas.
 
 #### BUG-008 · [STATUS: C]
 **Title:** Los enlaces `<a href>` del diagrama de "Guía" no navegaban al hacer clic
@@ -278,6 +316,57 @@ del banco (86 recetas).
 
 ### Detailed Entries
 
+#### FR-008
+**Title:** Clonar un menú de una persona a otra
+**Date Requested:** 2026-08-30
+**Status:** Proposed
+
+##### Exec Description
+Poder copiar un día ya armado y guardado con nombre (ej. "Menú 1" de Persona A) hacia otra
+persona, para usarlo como punto de partida en vez de armar todo desde cero -- y después poder
+ajustar cantidades/ingredientes ya del lado de la persona destino sin afectar el original.
+
+##### Eng Description
+Distinto de `FR-005` (duplicar un día para la MISMA persona): aquí el `persona` cambia. Reutiliza
+`_instancia_desde_guardado()` de `views/menu_del_dia.py` para clonar cada `RecetaInstancia` con
+`instancia_id` nuevo (ya lo hace hoy al "Abrir" un día del historial), pero el documento
+resultante debe guardarse con el `persona` destino y, probablemente, sin arrastrar el `nombre`
+tal cual (para no chocar con la regla de nombre único por persona -- aunque como es OTRA persona
+técnicamente no colisiona, puede ser confuso tener "Menú 1" en dos personas por separado sin
+dejarlo claro en la UI). El `objetivo_diario`/`estado`/`delta_diario` deben recalcularse contra el
+objetivo de la persona destino, no copiarse tal cual -- los equivalentes de las recetas clonadas
+casi seguro no van a cuadrar exacto con el objetivo de la nueva persona, y esa es justo la parte
+que el usuario espera "ajustar después" (steppers ya existentes en "Menú del día", ninguna
+herramienta nueva ahí). Probablemente vive como un botón "Clonar a otra persona" junto a "Abrir"
+en el historial de "Menú del día", con un selector de persona destino.
+
+##### Dependencies
+Ninguna -- reutiliza mecanismos ya existentes de "Menú del día".
+
+#### FR-007
+**Title:** Agregar ingredientes sueltos directo a "Menú del día" (sin pasar por una receta)
+**Date Requested:** 2026-08-30
+**Status:** Proposed
+
+##### Exec Description
+A veces conviene comer un alimento suelto (ej. una fruta) sin que forme parte de ninguna receta
+del banco -- poder agregarlo directo a un tiempo de "Menú del día", igual que se agrega una
+receta, en vez de tener que crear una "receta" de un solo ingrediente en el banco solo para eso.
+
+##### Eng Description
+`dia["tiempos"][tiempo]` es una lista de `RecetaInstancia` (`instancia_id`, `receta_id`, `nombre`,
+`ingredientes`) -- un ingrediente suelto encajaría como una `RecetaInstancia` sintética con un
+solo ingrediente y sin `receta_id` real (o un `receta_id` sentinela tipo `None`/`"__suelto__"`
+para no confundirse con una receta de verdad al buscar "dónde se usa"). Necesita un picker
+separado del de recetas (buscar directo en `cargar_nombres_alimentos()`/`catalogo_alimentos` en
+vez de en `cargar_recetas()`), con su propio stepper de equivalentes (reutiliza
+`paso_equivalente()`/`escalar_cantidad()` igual que cualquier ingrediente ajustable). Revisar que
+`_check_recetas_huerfanas()`/`_buscar_uso_de_receta()` en Configuración no truenen con instancias
+sin `receta_id` real.
+
+##### Dependencies
+Ninguna.
+
 #### FR-006
 **Title:** Detector de posibles duplicados en el catálogo de ingredientes
 **Date Requested:** 2026-08-29
@@ -331,6 +420,11 @@ ingredientes reales (no solo el vector por grupo — hace falta una función nue
 `sumar_por_alimento`, ver `nutriguia/validation.py` si se generaliza), y formatear la cantidad
 total con `escalar_cantidad()`. También podría operar solo sobre un día de `menus_construidos`
 sin esperar a tener una semana completa armada.
+
+**Actualizado 2026-08-30, a pedido del usuario**: la selección de persona debe poder ser
+**múltiple** (no una sola), para el caso de dos personas que viven juntas y hacen un solo súper —
+sumar los ingredientes de ambas asignaciones semanales en una sola lista consolidada (mismo
+alimento de Persona A y Persona B se suma en una sola línea, no dos separadas).
 
 ##### Dependencies
 `menus_construidos.nombre`/`asignacion_semanal` (Shipped 2026-08-29, corregido el mismo día — ver

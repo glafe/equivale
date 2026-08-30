@@ -17,7 +17,7 @@ from nutriguia.streamlit_data import (
     invalidar_cache_recetas,
 )
 from nutriguia.texto import normalizar_busqueda
-from nutriguia.validation import sumar_por_grupo
+from nutriguia.validation import fusionar_ingredientes_duplicados, sumar_por_grupo
 
 GRUPOS_CANONICOS = ["AOA", "Cereal", "Verdura", "Fruta", "Aceite s/p", "Aceite c/p", "Leguminosa"]
 LIBRE = "(libre, sin grupo)"
@@ -44,7 +44,10 @@ def _renombrar_en_recetas(nombre_viejo: str, nombre_nuevo: str) -> int:
     """Actualiza `ingredientes[].alimento` en todas las recetas que usaban `nombre_viejo`.
     Devuelve cuántas recetas se tocaron. Necesario porque las recetas referencian un alimento por
     nombre, no por id -- sin esto, renombrar en el catálogo dejaría esas recetas apuntando a un
-    nombre que ya no existe (el ingrediente se volvería "no ajustable" silenciosamente)."""
+    nombre que ya no existe (el ingrediente se volvería "no ajustable" silenciosamente). Fusiona
+    con `fusionar_ingredientes_duplicados()` por si la receta YA tenía un ingrediente con el
+    nombre nuevo -- si no, quedaban dos filas con el mismo `alimento` en vez de una sola (BUG-009
+    en BUGS.md, detectado 2026-08-30)."""
     tocadas = 0
     for receta in db().recetas.find({"ingredientes.alimento": nombre_viejo}):
         ingredientes = receta["ingredientes"]
@@ -54,8 +57,11 @@ def _renombrar_en_recetas(nombre_viejo: str, nombre_nuevo: str) -> int:
                 ing["alimento"] = nombre_nuevo
                 cambio = True
         if cambio:
+            ingredientes = fusionar_ingredientes_duplicados(ingredientes)
+            vector = sumar_por_grupo(ingredientes, "grupo_smae", "equivalentes")
             db().recetas.update_one(
-                {"receta_id": receta["receta_id"]}, {"$set": {"ingredientes": ingredientes}}
+                {"receta_id": receta["receta_id"]},
+                {"$set": {"ingredientes": ingredientes, "vector_equivalentes": vector}},
             )
             tocadas += 1
     if tocadas:
