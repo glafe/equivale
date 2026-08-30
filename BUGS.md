@@ -15,7 +15,7 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
   [BUG-009](#bug-009--status-rv)
 
 ### Known Caveats
-- Abiertos: [KC-001](#kc-001), [KC-002](#kc-002)
+- Abiertos: [KC-001](#kc-001), [KC-002](#kc-002), [KC-003](#kc-003)
 
 ### Feature Requests
 - Propuestos: [FR-001](#fr-001), [FR-005](#fr-005), [FR-006](#fr-006)
@@ -263,6 +263,32 @@ logs del servidor.
 ## Known Caveats
 
 ### Detailed Entries
+
+#### KC-003
+**Title:** "Lista del súper" muestra cantidad 0 (o "al gusto × 0") para algunos alimentos libres
+**Date Identified:** 2026-08-30
+**Status:** Active
+
+##### Exec Description
+Un alimento sin grupo SMAE (ej. una especia, "al gusto") en la sección "Sin grupo / libre" de
+"Lista del súper" a veces muestra una cantidad de "0" (ej. "0 cucharadita" de canela) en vez de
+una cantidad útil para comprar -- se ve raro en una lista de compras, aunque no es incorrecto
+dado cómo está modelado el dato.
+
+##### Eng Description
+`cantidad_real()` escala `cantidad_por_equivalente` por el total de `equivalentes` sumado de ese
+alimento en la semana. Para un ingrediente libre (`grupo_smae: null`), `equivalentes` no cuenta
+para ningún presupuesto -- algunas recetas del banco lo dejaron en `0` al capturarse (ej. "Canela
+en polvo", "Limón y tajín"), otras en un valor arbitrario distinto de cero (ej. "Mermelada sin
+azúcar" con `equivalentes: 3`) -- no hay un criterio consistente en los datos existentes porque
+nunca importó (`sumar_por_grupo()` los ignora en todos los demás usos). "Lista del súper" es el
+primer lugar donde ese número sí se usa para algo visible (escalar una cantidad real), y expone la
+inconsistencia. Workaround: revisar a ojo la sección "Sin grupo / libre" al hacer el súper --
+suelen ser alimentos de despensa que no se compran por cantidad exacta de todas formas (especias,
+"al gusto"). Arreglo de raíz pendiente: normalizar `equivalentes` de ingredientes libres a un
+valor consistente (ej. siempre 1 por aparición) en el banco de recetas, o mostrar la cantidad tal
+cual del catálogo sin escalar cuando `grupo_smae` es `null` -- no se hizo todavía por no tener
+claro cuál de las dos es la corrección correcta sin uso real de la lista.
 
 #### KC-002
 **Title:** Kernels Linux 6.19–7.0.13 crashean MongoDB 8.0.x (bug de TCMalloc/rseq)

@@ -318,6 +318,11 @@ falta un día por asignar, se arregla ahí, no aquí.
   generar la lista sobre un solo día suelto de `menus_construidos` sin depender de
   `asignacion_semanal` -- el caso de uso principal pedido fue la semana completa; se agrega si
   hace falta tras usarla.
+- **Caveat conocido** (`KC-003`): algunos alimentos libres (`grupo_smae: null`, ej. una especia)
+  muestran una cantidad de "0" en vez de algo útil para comprar -- viene de que `equivalentes` de
+  un ingrediente libre nunca importó antes de esta página (no cuenta para ningún presupuesto), así
+  que el banco de recetas no es consistente en qué valor le puso. Se revisa a ojo por ahora, ver
+  `BUGS.md` para el detalle y las opciones de arreglo de raíz pendientes de decidir.
 
 ## Página "Configuración" (2026-08-29, a pedido del usuario)
 
