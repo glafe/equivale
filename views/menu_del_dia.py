@@ -11,7 +11,14 @@ import streamlit as st
 
 from nutriguia.cantidades import escalar_cantidad
 from nutriguia.colores import GRUPO_ETIQUETA, chip_html, chip_muted_html
-from nutriguia.streamlit_data import cargar_catalogo, cargar_objetivo, cargar_personas, cargar_recetas, db
+from nutriguia.streamlit_data import (
+    cargar_catalogo,
+    cargar_nombres_alimentos,
+    cargar_objetivo,
+    cargar_personas,
+    cargar_recetas,
+    db,
+)
 from nutriguia.validation import delta_objetivo, estado_por_grupo, paso_equivalente, sumar_por_grupo
 
 TIEMPOS = ["al_despertar", "desayuno", "colacion", "comida", "cena"]
@@ -50,6 +57,29 @@ def _nueva_instancia(receta: dict) -> dict:
                 "incluido": True,
             }
             for ing in receta["ingredientes"]
+        ],
+    }
+
+
+def _nueva_instancia_suelta(alimento: str, grupo: str | None) -> dict:
+    """Un ingrediente suelto (ej. una fruta) agregado directo a un tiempo, sin pasar por una
+    receta del banco (FR-007) -- encaja como una `RecetaInstancia` sintética de un solo
+    ingrediente, con `receta_id: None` en vez de un id real (así se distingue de una receta de
+    verdad sin necesitar un campo nuevo; ver `_check_recetas_huerfanas()` en Configuración, que ya
+    ignora este caso)."""
+    return {
+        "instancia_id": str(uuid.uuid4()),
+        "receta_id": None,
+        "nombre": alimento,
+        "ingredientes": [
+            {
+                "alimento": alimento,
+                "grupo_smae": grupo,
+                "equivalentes": 1,
+                "bloqueado": False,
+                "opcional": False,
+                "incluido": True,
+            }
         ],
     }
 
@@ -106,6 +136,67 @@ def _nombre_en_uso_por_otra_fecha(persona: str, nombre: str, fecha_iso: str) -> 
 
 def _cargar_historial(persona: str) -> list[dict]:
     return list(db().menus_construidos.find({"persona": persona}, {"_id": 0}).sort("fecha", -1))
+
+
+def _clonar_a_persona(doc: dict, persona_destino: str, fecha_destino: date) -> str | None:
+    """Clona un día ya guardado (`doc`, de `_cargar_historial()`) hacia OTRA persona, para usarlo
+    como punto de partida y ajustar cantidades/ingredientes ya del lado de destino (FR-008) --
+    reutiliza los steppers que ya existen en "Menú del día", ninguna herramienta nueva aquí.
+    `objetivo_diario`/`actual_diario`/`delta_diario`/`estado` se recalculan contra el objetivo de
+    la persona DESTINO (snapshot al momento de clonar, igual que "Guardar") -- los equivalentes
+    clonados casi seguro no van a cuadrar exacto con su objetivo, y ajustar eso es justo lo que se
+    espera hacer después. Si el `nombre` original ya está en uso por otra fecha de la persona
+    destino, se guarda SIN nombre (para no violar "nombre único por persona") y se devuelve el
+    nombre en conflicto para poder avisar; si no hay conflicto, devuelve None."""
+    fecha_iso = fecha_destino.isoformat()
+    nombre_original = doc.get("nombre")
+    conflicto = None
+    nombre_final = nombre_original
+    if nombre_original and _nombre_en_uso_por_otra_fecha(persona_destino, nombre_original, fecha_iso):
+        conflicto = nombre_original
+        nombre_final = None
+
+    tiempos_clonados: dict[str, dict] = {}
+    for t, datos in doc.get("tiempos", {}).items():
+        seleccion_original = datos.get("seleccion", [])
+        if not seleccion_original:
+            continue
+        seleccion_clonada = [
+            {
+                "receta_id": inst["receta_id"],
+                "nombre": inst["nombre"],
+                "ingredientes": [dict(ing) for ing in inst["ingredientes"]],
+            }
+            for inst in seleccion_original
+        ]
+        incluidos = [
+            ing for inst in seleccion_clonada for ing in inst["ingredientes"] if ing.get("incluido", True)
+        ]
+        tiempos_clonados[t] = {
+            "seleccion": seleccion_clonada,
+            "actual": sumar_por_grupo(incluidos, "grupo_smae", "equivalentes"),
+        }
+
+    objetivo_destino = cargar_objetivo(persona_destino)
+    actual_diario = _sumar_dicts([datos["actual"] for datos in tiempos_clonados.values()])
+    delta_diario = delta_objetivo(objetivo_destino, actual_diario)
+    dia_completo = bool(delta_diario) and all(v == 0 for v in delta_diario.values())
+
+    documento = {
+        "persona": persona_destino,
+        "fecha": fecha_iso,
+        "nombre": nombre_final,
+        "estado": "completo" if dia_completo else "en_progreso",
+        "objetivo_diario": objetivo_destino,
+        "actual_diario": actual_diario,
+        "delta_diario": delta_diario,
+        "tiempos": tiempos_clonados,
+    }
+    db().menus_construidos.create_index([("persona", 1), ("fecha", 1)], unique=True)
+    db().menus_construidos.replace_one(
+        {"persona": persona_destino, "fecha": fecha_iso}, documento, upsert=True
+    )
+    return conflicto
 
 
 def _selectbox_seguro(label: str, opciones: list[str], key: str, **kwargs):
@@ -196,6 +287,27 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
             seleccion.append(_nueva_instancia(opciones[receta_id_elegida]))
             st.rerun()
 
+    # Ingrediente suelto (FR-007, 2026-08-30, a pedido del usuario) -- a veces conviene un
+    # alimento directo (ej. una fruta) sin que forme parte de ninguna receta del banco. Picker
+    # separado del de recetas (busca en el catálogo, no en `cargar_recetas()`), colapsado por
+    # defecto para no competir visualmente con el flujo principal de elegir una receta.
+    with st.expander("➕ Agregar un ingrediente suelto (sin receta)"):
+        c_alimento, c_agregar = st.columns([3, 1])
+        with c_alimento:
+            alimento_elegido = _selectbox_seguro(
+                "Alimento", cargar_nombres_alimentos(), key=f"suelto_sel_{tiempo}",
+            )
+        with c_agregar:
+            st.write("")
+            st.write("")
+            if st.button("+ Agregar", key=f"agregar_suelto_{tiempo}", disabled=not alimento_elegido):
+                for inst in seleccion:
+                    iid = inst["instancia_id"]
+                    epoch_por_instancia[iid] = epoch_por_instancia.get(iid, 0) + 1
+                grupo = catalogo.get(alimento_elegido, {}).get("grupo")
+                seleccion.append(_nueva_instancia_suelta(alimento_elegido, grupo))
+                st.rerun()
+
     seleccion_actual = list(seleccion)
     for idx, instancia in enumerate(seleccion_actual):
         with st.container(border=True, key=f"receta_card_{instancia['instancia_id']}"):
@@ -214,7 +326,10 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
             epoch = epoch_por_instancia.get(instancia["instancia_id"], 0)
             exp_key = f"exp_receta_{instancia['instancia_id']}_{epoch}"
             es_la_mas_reciente = idx == len(seleccion_actual) - 1
-            with col_exp, st.expander(instancia["nombre"], expanded=es_la_mas_reciente, key=exp_key):
+            # `receta_id: None` = ingrediente suelto (FR-007), no una receta del banco -- se marca
+            # en el título del expander para no confundirse con una receta de verdad.
+            titulo = instancia["nombre"] if instancia.get("receta_id") else f"🍏 {instancia['nombre']} (suelto)"
+            with col_exp, st.expander(titulo, expanded=es_la_mas_reciente, key=exp_key):
                 for i, ing in enumerate(instancia["ingredientes"]):
                     if i > 0:
                         st.markdown(
@@ -286,6 +401,9 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
 def render() -> None:
     st.title("🥗 EquiVale — Menú del día")
     st.caption("Arma tu día completo, guarda un plan por fecha, y revisa tu historial.")
+
+    if "_flash_dia" in st.session_state:
+        st.success(st.session_state.pop("_flash_dia"))
 
     # Un botón "Abrir" del historial (más abajo, en un render anterior) puede haber pedido
     # cambiar la fecha/nombre -- aplicarlo ANTES de instanciar esos widgets en este run (después
@@ -402,8 +520,9 @@ def render() -> None:
         historial = _cargar_historial(persona)
         if not historial:
             st.caption("Todavía no hay planes guardados para esta persona.")
+        otras_personas = [p for p in personas if p != persona]
         for doc in historial:
-            c1, c2, c3 = st.columns([2, 2, 1])
+            c1, c2, c3, c4 = st.columns([2, 2, 1, 1])
             etiqueta_fecha = doc["fecha"] + (f" · **{doc['nombre']}**" if doc.get("nombre") else "")
             c1.markdown(etiqueta_fecha)
             c2.write("✅ completo" if doc["estado"] == "completo" else "🔺 en progreso")
@@ -413,6 +532,35 @@ def render() -> None:
                 st.session_state["_fecha_pendiente"] = date.fromisoformat(doc["fecha"])
                 st.session_state["_nombre_pendiente"] = plan["nombre"]
                 st.rerun()
+            # Clonar a otra persona (FR-008, 2026-08-30, a pedido del usuario) -- punto de
+            # partida para la persona destino, que después ajusta cantidades/ingredientes con los
+            # steppers ya existentes (ninguna herramienta nueva aquí).
+            with c4.popover("🧬 Clonar"):
+                if not otras_personas:
+                    st.caption("No hay otra persona registrada.")
+                else:
+                    destino = st.selectbox(
+                        "Persona destino", otras_personas, key=f"clonar_destino_{doc['fecha']}",
+                    )
+                    fecha_destino = st.date_input(
+                        "Fecha para el plan clonado", value=date.today(),
+                        key=f"clonar_fecha_{doc['fecha']}",
+                    )
+                    if st.button("Clonar", key=f"clonar_btn_{doc['fecha']}", type="primary"):
+                        conflicto = _clonar_a_persona(doc, destino, fecha_destino)
+                        mensaje = (
+                            f"Clonado a {destino} para el {fecha_destino.isoformat()}. Ábrelo "
+                            f'desde "Menú del día" eligiendo a {destino} y ajusta cantidades '
+                            "desde ahí -- probablemente no cuadre exacto con su objetivo todavía."
+                        )
+                        if conflicto:
+                            mensaje += (
+                                f" '{conflicto}' ya era el nombre de otro día de {destino} -- se "
+                                "guardó sin nombre; ábrelo y ponle uno nuevo si quieres "
+                                'reutilizarlo en "Menú semanal".'
+                            )
+                        st.session_state["_flash_dia"] = mensaje
+                        st.rerun()
 
 
 render()

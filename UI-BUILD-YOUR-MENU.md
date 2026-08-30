@@ -119,6 +119,35 @@ Ajustes       -> Configuración
    `st.session_state` (mismo mecanismo de round-trip que abrir cualquier día ya guardado) — no
    hace falta un buscador elaborado, un `st.selectbox`/lista simple basta para el volumen esperado
    (uso personal, no cientos de planes).
+6.1. **"🧬 Clonar" a otra persona** (2026-08-30, a pedido del usuario -- cierra `FR-008`): junto a
+   "Abrir", en cada fila del historial, un `st.popover` con un selector de persona destino y una
+   fecha (default hoy). Al confirmar, `_clonar_a_persona()` copia ese día (recetas + ingredientes
+   + ajustes tal como quedaron) directo a Mongo para la persona destino, **sin** cargarlo en el
+   editor actual (la persona que se está editando no cambia) -- el flujo es clonar, luego cambiar
+   el selector de "Persona" arriba de todo a la destino y abrirlo desde su propio historial para
+   ajustar cantidades con los steppers de siempre. `objetivo_diario`/`actual_diario`/`delta_diario`/
+   `estado` se recalculan contra el objetivo de la persona destino (no se copian los de origen) --
+   los equivalentes clonados casi seguro no cuadran exacto con el nuevo objetivo, y ajustar eso es
+   justo la parte que se espera hacer después. Si el `nombre` original ya está en uso por otra
+   fecha de la persona destino, se guarda **sin nombre** (para no violar "nombre único por
+   persona") y el mensaje de éxito lo avisa explícitamente. Funciona sobre cualquier día del
+   historial, tenga nombre o no.
+6.2. **Ingrediente suelto sin receta** (2026-08-30, a pedido del usuario -- cierra `FR-007`): un
+   `st.expander("➕ Agregar un ingrediente suelto (sin receta)")` colapsado, debajo del picker de
+   recetas de cada tiempo -- para alimentos que conviene comer directo (ej. una fruta) sin crear
+   una "receta" de un solo ingrediente en el banco solo para eso. Busca en
+   `cargar_nombres_alimentos()` (el catálogo completo, no `cargar_recetas()`) y agrega una
+   `RecetaInstancia` sintética de un solo ingrediente con **`receta_id: None`** (ver `schema.md`)
+   en vez de un id real -- así se distingue de una receta de verdad sin campo nuevo. Reutiliza el
+   mismo stepper +/- y el mismo mecanismo de colapso/epoch que una receta agregada normal; el
+   título de su tarjeta se marca "🍏 {alimento} (suelto)" para no confundirse. `grupo_smae` se
+   auto-llena desde `catalogo_alimentos.grupo` (puede ser `null` si el alimento es libre, ej. una
+   especia -- mismo criterio que cualquier otro ingrediente libre). `_check_recetas_huerfanas()`
+   en Configuración ignora `receta_id: None` explícitamente -- no es una referencia rota.
+   **Limitación conocida**: como no vive en `recetas`, un ingrediente suelto no aparece en "¿Dónde
+   se usa un ingrediente?" de Configuración (esa búsqueda solo mira el banco de recetas) -- no se
+   persiguió por ahora, el caso de uso es puntual (un alimento en un día específico), no un patrón
+   que se repita entre recetas.
 
 ## Página "Personas" (2026-08-27, a pedido del usuario)
 

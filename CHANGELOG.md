@@ -20,6 +20,24 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.19.0] - 2026-08-30
+
+### Added
+- **FR-007**: "Menú del día" ahora permite agregar un ingrediente suelto (ej. una fruta) directo a
+  un tiempo, sin pasar por una receta del banco -- `st.expander("➕ Agregar un ingrediente suelto
+  (sin receta)")` colapsado debajo del picker de recetas, busca en `cargar_nombres_alimentos()`.
+  `_nueva_instancia_suelta()` crea una `RecetaInstancia` sintética de un solo ingrediente con
+  `receta_id: None` (ver `schema.md`), reutilizando el mismo stepper/colapso que una receta
+  normal. `_check_recetas_huerfanas()` en Configuración se ajustó para ignorar `receta_id: None`
+  explícitamente -- no es una referencia rota.
+- **FR-008**: botón "🧬 Clonar" (en un `st.popover`) junto a "Abrir" en el historial de "Menú del
+  día", con selector de persona destino y fecha -- copia ese día completo (recetas, ingredientes,
+  ajustes) directo a Mongo para la persona destino, sin cargarlo en el editor actual.
+  `_clonar_a_persona()` recalcula `objetivo_diario`/`actual_diario`/`delta_diario`/`estado` contra
+  el objetivo de la persona destino (no copia los del origen). Si el `nombre` original ya está en
+  uso por otra fecha de destino, se guarda sin nombre para no violar "nombre único por persona" y
+  se avisa en el mensaje de éxito.
+
 ## [0.18.0] - 2026-08-30
 
 ### Changed

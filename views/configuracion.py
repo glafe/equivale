@@ -220,7 +220,9 @@ def _check_recetas_huerfanas():
             for doc in db().menus_construidos.find({}, {"_id": 0})
             for tiempo, datos in doc.get("tiempos", {}).items()
             for inst in datos.get("seleccion", [])
-            if inst["receta_id"] not in recetas_ids
+            # `receta_id: None` = ingrediente suelto (FR-007), no una receta del banco -- no es
+            # una referencia rota, es la forma normal de un ingrediente sin receta.
+            if inst["receta_id"] is not None and inst["receta_id"] not in recetas_ids
         ]
 
         if not problemas_dias:

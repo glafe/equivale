@@ -1,6 +1,6 @@
 # EquiVale
 
-**Versión actual: `0.18.0`** (ver [`CHANGELOG.md`](CHANGELOG.md) — [Versionado Semántico](https://semver.org/lang/es/))
+**Versión actual: `0.19.0`** (ver [`CHANGELOG.md`](CHANGELOG.md) — [Versionado Semántico](https://semver.org/lang/es/))
 
 Sistema personal de planeación de menús basado en **Equivalentes SMAE** (Sistema Mexicano de
 Alimentos Equivalentes), para dos personas. La app ("Menú del día") arma el día eligiendo
@@ -19,7 +19,8 @@ la nota de privacidad en `CLAUDE.md`.
 cualquier clon del repo, ver `tests/`), app Streamlit multipágina ("Guía", "Menú del día", "Menú
 semanal", "Recetas", "Ingredientes", "Personas", "Configuración", agrupada en secciones en la
 barra lateral) desplegada y corriendo en producción como servicio systemd. "Menú del día" arma y
-guarda un día por fecha con historial, y admite ponerle un nombre opcional para reutilizarlo;
+guarda un día por fecha con historial, y admite ponerle un nombre opcional para reutilizarlo,
+clonarlo a otra persona, o agregar un ingrediente suelto sin crear una receta;
 "Menú semanal" asigna esos días nombrados a los días de la semana (de solo lectura — armar/editar
 recetas sigue siendo trabajo de "Menú del día") y puede exportar la semana a un HTML grande para
 imprimir (o guardar como PDF desde el propio navegador); "Configuración" junta herramientas de

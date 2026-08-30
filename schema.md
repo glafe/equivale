@@ -307,7 +307,13 @@ un round-trip exacto sin tener que re-resolver `receta_id` contra el banco al re
 haber cambiado desde entonces):
 ```
 {
-  "receta_id": string,               // referencia informativa a `recetas.receta_id`
+  "receta_id": string | null,        // referencia informativa a `recetas.receta_id` -- null =
+                                      // ingrediente suelto agregado directo al tiempo, sin pasar
+                                      // por una receta del banco (FR-007, 2026-08-30). En ese caso
+                                      // "ingredientes" trae un solo elemento y "nombre" es
+                                      // simplemente el alimento. `_check_recetas_huerfanas()` en
+                                      // Configuración ya ignora `receta_id: null` -- no es una
+                                      // referencia rota.
   "nombre": string,
   "ingredientes": [                  // mismo shape que Ingrediente (schema.md arriba), + estos dos:
     { "alimento": string, "grupo_smae": string | null, "equivalentes": int,

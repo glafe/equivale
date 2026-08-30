@@ -18,10 +18,9 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002)
 
 ### Feature Requests
-- Propuestos: [FR-001](#fr-001), [FR-004](#fr-004), [FR-005](#fr-005), [FR-006](#fr-006),
-  [FR-007](#fr-007), [FR-008](#fr-008)
+- Propuestos: [FR-001](#fr-001), [FR-004](#fr-004), [FR-005](#fr-005), [FR-006](#fr-006)
 - Parcialmente Shipped: [FR-003](#fr-003)
-- Shipped: [FR-002](#fr-002)
+- Shipped: [FR-002](#fr-002), [FR-007](#fr-007), [FR-008](#fr-008)
 
 ## Severity guide
 
@@ -316,7 +315,14 @@ del banco (86 recetas).
 
 ### Detailed Entries
 
-#### FR-008
+#### FR-008 · [STATUS: Shipped 0.19.0]
+> **Shipped en 0.19.0 (2026-08-30)** — botón "🧬 Clonar" (`st.popover`) junto a "Abrir" en el
+> historial de "Menú del día", con selector de persona destino y fecha. `_clonar_a_persona()`
+> guarda el clon directo en Mongo para la persona destino (sin cambiar la persona que se está
+> editando) y recalcula objetivo/actual/delta contra el objetivo de destino. Si el nombre original
+> ya está en uso por otra fecha de destino, se guarda sin nombre (evita violar "nombre único por
+> persona") y se avisa. Ver `UI-BUILD-YOUR-MENU.md` → "Menú del día" 6.1 y `CHANGELOG.md` 0.19.0.
+
 **Title:** Clonar un menú de una persona a otra
 **Date Requested:** 2026-08-30
 **Status:** Proposed
@@ -343,7 +349,15 @@ en el historial de "Menú del día", con un selector de persona destino.
 ##### Dependencies
 Ninguna -- reutiliza mecanismos ya existentes de "Menú del día".
 
-#### FR-007
+#### FR-007 · [STATUS: Shipped 0.19.0]
+> **Shipped en 0.19.0 (2026-08-30)** — `st.expander("➕ Agregar un ingrediente suelto (sin
+> receta)")` colapsado debajo del picker de recetas de cada tiempo, buscando en
+> `cargar_nombres_alimentos()`. `_nueva_instancia_suelta()` crea una `RecetaInstancia` sintética
+> de un solo ingrediente con `receta_id: None` (ver `schema.md`) -- reutiliza el mismo
+> stepper/colapso que una receta normal. `_check_recetas_huerfanas()` en Configuración se ajustó
+> para ignorar `receta_id: None` explícitamente. Ver `UI-BUILD-YOUR-MENU.md` → "Menú del día" 6.2
+> y `CHANGELOG.md` 0.19.0.
+
 **Title:** Agregar ingredientes sueltos directo a "Menú del día" (sin pasar por una receta)
 **Date Requested:** 2026-08-30
 **Status:** Proposed

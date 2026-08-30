@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.18.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.19.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -85,8 +85,16 @@ huérfano, en Configuración/Editor de ingredientes) podía dejar dos filas del 
 una receta en vez de fusionarlas — `fusionar_ingredientes_duplicados()` nueva en
 `nutriguia/validation.py`, más un chequeo nuevo en Configuración ("🔁 Ingredientes duplicados
 dentro de una misma receta") para las que ya habían quedado duplicadas (4 en producción, ya
-limpiadas con esa misma herramienta). Falta el resto de Fase 5 (pulido) — no empezarla sin haber
-usado la Fase 4 unos días en la vida real.
+limpiadas con esa misma herramienta). **`FR-007`/`FR-008` shipped en 0.19.0 (2026-08-30)**: en
+"Menú del día", un expander "➕ Agregar un ingrediente suelto (sin receta)" debajo del picker de
+recetas de cada tiempo permite agregar un alimento directo del catálogo (ej. una fruta) sin crear
+una receta de un solo ingrediente en el banco — internamente es una `RecetaInstancia` sintética
+con `receta_id: None` (ver `schema.md`), que Configuración ya sabe distinguir de una referencia
+rota de verdad; y un botón "🧬 Clonar" junto a "Abrir" en el historial copia un día ya guardado
+hacia OTRA persona (recalculando objetivo/actual/delta contra el objetivo de destino, sin cargarlo
+en el editor actual) para usarlo como punto de partida y ajustar cantidades después con los
+steppers de siempre. Falta el resto de Fase 5 (pulido) — no empezarla sin haber usado la Fase 4
+unos días en la vida real.
 
 **Identidad visual "Barro" (2026-08-27)**: paleta/tipografía/radios propios sobre los 7 colores
 de grupo SMAE (que NO cambiaron — son funcionales). Aprobada primero como maqueta interactiva
