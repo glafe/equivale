@@ -172,27 +172,60 @@ def renombrar_ingrediente_en_menu_guardado(documento: dict, nombre_viejo: str, n
                 inst["ingredientes"] = fusionar_ingredientes_duplicados(inst["ingredientes"])
                 tiempo_cambio = True
         if tiempo_cambio:
-            incluidos = [
-                ing
-                for inst in datos.get("seleccion", [])
-                for ing in inst["ingredientes"]
-                if ing.get("incluido", True)
-            ]
-            datos["actual"] = sumar_por_grupo(incluidos, "grupo_smae", "equivalentes")
+            datos["actual"] = _actual_incluidos(datos.get("seleccion", []))
             hubo_cambio = True
 
     if not hubo_cambio:
         return False
+    _recalcular_totales_diarios(documento)
+    return True
 
+
+def fusionar_duplicados_en_menu_guardado(documento: dict, tiempo: str, indice: int) -> bool:
+    """Fusiona ingredientes duplicados (mismo `alimento` 2+ veces) dentro de UNA instancia
+    específica -- `documento["tiempos"][tiempo]["seleccion"][indice]` -- de un `menus_construidos`
+    ya guardado (mutado in place). Puede pasar si el día se guardó ANTES de que la receta original
+    se corrigiera en el banco -- corregir el banco no toca los días ya guardados (mismo caso que
+    `renombrar_ingrediente_en_menu_guardado()`, ver `BUG-013`). Un día guardado no tiene
+    `instancia_id` (ver schema.md, solo vive en memoria mientras se arma en "Menú del día"), así
+    que la instancia se identifica por posición dentro de `seleccion`, no por id. Devuelve True si
+    de verdad había algo que fusionar (y ya mutó `documento`), False si no."""
+    datos = documento.get("tiempos", {}).get(tiempo)
+    if not datos or indice >= len(datos.get("seleccion", [])):
+        return False
+    inst = datos["seleccion"][indice]
+    fusionados = fusionar_ingredientes_duplicados(inst["ingredientes"])
+    if fusionados == inst["ingredientes"]:
+        return False
+    inst["ingredientes"] = fusionados
+    datos["actual"] = _actual_incluidos(datos["seleccion"])
+    _recalcular_totales_diarios(documento)
+    return True
+
+
+def _actual_incluidos(seleccion: list[dict]) -> dict[str, int]:
+    """`sumar_por_grupo()` de los ingredientes `incluido` de todas las instancias de un tiempo --
+    compartido entre `renombrar_ingrediente_en_menu_guardado()` y
+    `fusionar_duplicados_en_menu_guardado()`."""
+    incluidos = [
+        ing for inst in seleccion for ing in inst["ingredientes"] if ing.get("incluido", True)
+    ]
+    return sumar_por_grupo(incluidos, "grupo_smae", "equivalentes")
+
+
+def _recalcular_totales_diarios(documento: dict) -> None:
+    """Recalcula `actual_diario`/`delta_diario`/`estado` de un `menus_construidos` a partir de sus
+    `tiempos[*].actual` ya actualizados (mutado in place) -- `objetivo_diario` NO se toca, sigue
+    siendo el snapshot original de cuando se guardó ese día (ver schema.md). Compartido entre
+    `renombrar_ingrediente_en_menu_guardado()` y `fusionar_duplicados_en_menu_guardado()`.
+    Cereal/Leguminosa intercambiables (2026-08-30, a pedido del usuario) -- mismo criterio que
+    "Menú del día" en vivo (`views/menu_del_dia.py`), para que un día recalculado aquí no se vea
+    "sin cuadrar" por algo que ya no cuenta como problema."""
     actual_diario: dict[str, int] = {}
     for datos in documento.get("tiempos", {}).values():
         for grupo, cantidad in datos.get("actual", {}).items():
             actual_diario[grupo] = actual_diario.get(grupo, 0) + cantidad
     documento["actual_diario"] = actual_diario
-    # Cereal/Leguminosa intercambiables (2026-08-30, a pedido del usuario) -- mismo criterio que
-    # "Menú del día" en vivo (views/menu_del_dia.py), para que un día recalculado aquí (por un
-    # renombrado en el catálogo) no se vea "sin cuadrar" por algo que ya no cuenta como problema.
     delta_diario = ajustar_delta_por_intercambios(delta_objetivo(documento.get("objetivo_diario", {}), actual_diario))
     documento["delta_diario"] = delta_diario
     documento["estado"] = "completo" if delta_diario and all(v == 0 for v in delta_diario.values()) else "en_progreso"
-    return True

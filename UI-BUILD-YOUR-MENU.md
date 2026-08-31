@@ -382,6 +382,28 @@ nombre/id sueltas, no llaves foráneas (`recetas.ingredientes[].alimento` -> `ca
 final de la barra lateral (ícono de engrane), pensada como punto de entrada para más herramientas
 de administración a futuro, no solo limpieza de datos.
 
+**Factorizado a `nutriguia/chequeos.py` (2026-08-31, a pedido del usuario, misma sesión que agregó
+el badge de alertas de abajo)**: la lógica de detección de cada chequeo (antes mezclada con su
+renderizado, adentro de `views/configuracion.py`) ahora vive en funciones puras-ish (tocan Mongo,
+pero sin nada de Streamlit) en `nutriguia/chequeos.py` -- una función por chequeo, cada una
+regresando la lista/dict de "problemas" que antes se armaba inline. `views/configuracion.py` las
+llama para renderizar exactamente igual que antes; `app.py` las reutiliza (vía `total_alertas()`)
+para el badge, así que el criterio de "qué cuenta como problema" nunca puede desalinearse entre
+los dos lugares que lo usan.
+
+**Badge de alertas junto a "Configuración" en la barra lateral (2026-08-31, a pedido del
+usuario)**: esa página no se visita seguido, así que sus hallazgos pueden acumularse sin que nadie
+se entere a tiempo. `chequeos.total_alertas()` cuenta cuántos CHEQUEOS (no problemas individuales)
+tienen algo que revisar -- un número de 0 a 9, más legible en un badge que la suma de problemas
+sueltos -- y `app.py` lo agrega al `title` del `st.Page` de Configuración cuando es mayor a cero
+(ej. "Configuración 🔴 3"); el ícono ⚙️ se queda igual siempre, para no perder el reconocimiento
+visual del ítem de navegación. Cacheado 60s (`@st.cache_data`, invalidado por cada botón de
+arreglo con `chequeos.invalidar_cache_alertas()`) porque `app.py` se re-ejecuta completo en CADA
+interacción de CUALQUIER página de la app, no solo al navegar a Configuración -- sin cache este
+chequeo completo correría de más en cada clic en toda la app. Envuelto en `try/except` a
+propósito: un problema pasajero leyendo Mongo para el badge no debe tumbar la navegación de toda
+la app, en el peor caso el badge simplemente no aparece esa vez.
+
 - **Buscar relaciones** (lookup manual, dos columnas):
   - "¿En qué recetas se usa un ingrediente?" — selectbox de `catalogo_alimentos`, lista las
     recetas que lo referencian (con sus equivalentes y si está bloqueado/opcional en esa receta).
@@ -413,16 +435,20 @@ de administración a futuro, no solo limpieza de datos.
     `ARCHITECTURE.md` decisión #2); se corrige abriendo ese día desde "Menú del día".
   - **Vector de equivalentes desincronizado**: el `vector_equivalentes` guardado de una receta no
     coincide con la suma real de sus ingredientes — botón "Recalcular y guardar".
-  - **Ingredientes duplicados dentro de una misma receta** (2026-08-30, ver BUG-009 en `BUGS.md`):
-    el mismo `alimento` listado 2+ veces en una receta -- a diferencia de "posibles duplicados en
-    el catálogo" (abajo), aquí SÍ se fusiona con un clic sin pedir confirmación, porque no hay
-    ambigüedad (es el mismo nombre exacto dentro de la misma receta, no dos nombres parecidos que
-    podrían ser alimentos distintos). Usa `fusionar_ingredientes_duplicados()` de
+  - **Ingredientes duplicados dentro de una misma receta o día guardado** (2026-08-30, ver
+    BUG-009 en `BUGS.md`; extendido a días guardados el 2026-08-31): el mismo `alimento` listado
+    2+ veces dentro de una receta del banco O de una instancia de un día ya guardado -- a
+    diferencia de "posibles duplicados en el catálogo" (abajo), aquí SÍ se fusiona con un clic sin
+    pedir confirmación, porque no hay ambigüedad (es el mismo nombre exacto, no dos nombres
+    parecidos que podrían ser alimentos distintos). Usa `fusionar_ingredientes_duplicados()` de
     `nutriguia/validation.py` -- suma los `equivalentes` de las filas repetidas en una sola, sin
     cambiar el total por grupo. Este era el bug real detrás de "recetas con el mismo ingrediente
     dos veces" que el usuario encontró limpiando el catálogo a mano: "🔗 Usar este" (arriba) podía
     dejar un duplicado si la receta ya tenía un ingrediente con el nombre destino -- ya corregido
-    en `_renombrar_en_recetas()` para que no vuelva a pasar.
+    en `_renombrar_en_recetas()` para que no vuelva a pasar. La variante de días guardados
+    (`fusionar_duplicados_en_menu_guardado()`, identifica la instancia por posición dentro de
+    `seleccion` -- un día guardado no tiene `instancia_id`) cubre el mismo caso que `BUG-013`:
+    corregir la receta en el banco no toca los días que ya se guardaron con el duplicado.
   - **Posibles duplicados en el catálogo**: pares de nombres con similitud alta (`difflib`,
     umbral 0.82 sobre el nombre normalizado — sin regex ni IA) — no fusiona automático, un botón
     "Fusionar" hace `st.switch_page()` al Editor de ingredientes con ese alimento pre-seleccionado
@@ -436,6 +462,14 @@ de administración a futuro, no solo limpieza de datos.
     diferentes" en la misma sección.
   - **Personas sin objetivo diario** y **asignación semanal apuntando a un menú eliminado** —
     chequeos más chicos, mismo patrón de aviso + acción corta.
+  - **Días guardados con estado desactualizado** (nuevo 2026-08-31, a pedido del usuario -- red de
+    seguridad general, no ligado a un bug puntual): `estado`/`delta_diario` de un
+    `menus_construidos` se calculan UNA vez, al guardarlo -- si el criterio de qué cuenta como
+    "completo" cambia después (ej. Cereal/Leguminosa intercambiables, v0.26.0) y ese día no se
+    vuelve a abrir/guardar, se queda mostrando el criterio viejo en el historial de "Menú del
+    día". Recalcula `actual_diario`/`delta_diario`/`estado` con la lógica ACTUAL
+    (`delta_objetivo()` + `ajustar_delta_por_intercambios()`) y compara contra lo guardado --
+    "Recalcular y guardar" solo actualiza esos tres campos, ningún ingrediente.
 - **Por qué "detectar y enlazar a la corrección" en vez de arreglar todo automático**: varias de
   estas situaciones (duplicados, ingredientes huérfanos) requieren criterio humano para decidir
   si de verdad son el mismo dato o no — automatizar el diagnóstico ahorra tiempo, automatizar la

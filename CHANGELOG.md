@@ -20,6 +20,34 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.27.0] - 2026-08-31
+
+### Added
+- **Badge de alertas junto a "Configuración"** en la barra lateral (ej. "Configuración 🔴 3") --
+  esa página no se visita seguido, así que un hallazgo de "Chequeos automáticos" podía pasar
+  desapercibido mucho tiempo. `nutriguia.chequeos.total_alertas()` (cacheado 60s) cuenta cuántos
+  chequeos tienen al menos un hallazgo; `app.py` lo agrega al título del `st.Page` cuando es
+  mayor a 0, envuelto en `try/except` para que un problema pasajero de Mongo no tumbe la
+  navegación de toda la app.
+- Dos chequeos nuevos en "Configuración", tras revisar qué faltaba después de las limpiezas
+  recientes (`BUG-009` a `BUG-013`, Cereal/Leguminosa) -- mismo patrón que `BUG-013` (corregir el
+  banco de recetas no toca los días ya guardados), verificados contra producción antes de
+  construir (0 casos actuales, pero el hueco era real):
+  - **Ingredientes duplicados dentro de un día guardado** (extiende el chequeo existente, que
+    antes solo miraba `recetas`). Nueva `fusionar_duplicados_en_menu_guardado()` en
+    `nutriguia/validation.py` -- identifica la instancia por posición en `seleccion` (un día
+    guardado no tiene `instancia_id`).
+  - **Días guardados con `estado` desactualizado** -- su `estado`/`delta_diario` se calcula una
+    vez al guardar; si el criterio de qué cuenta como "completo" cambia después (ej. el
+    intercambio Cereal/Leguminosa de 0.26.0), un día viejo no se entera solo hasta que se
+    recalcula aquí.
+
+### Changed
+- La lógica de detección de los 9 chequeos de "Configuración" se factorizó de
+  `views/configuracion.py` a `nutriguia/chequeos.py` (funciones que tocan Mongo pero sin nada de
+  Streamlit) -- así el renderizado y el badge nuevo comparten el mismo criterio de "qué cuenta
+  como problema" sin poder desalinearse.
+
 ## [0.26.0] - 2026-08-30
 
 ### Added

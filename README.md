@@ -1,6 +1,6 @@
 # EquiVale
 
-**Versión actual: `0.26.0`** (ver [`CHANGELOG.md`](CHANGELOG.md) — [Versionado Semántico](https://semver.org/lang/es/))
+**Versión actual: `0.27.0`** (ver [`CHANGELOG.md`](CHANGELOG.md) — [Versionado Semántico](https://semver.org/lang/es/))
 
 Sistema personal de planeación de menús basado en **Equivalentes SMAE** (Sistema Mexicano de
 Alimentos Equivalentes), para dos personas. La app ("Menú del día") arma el día eligiendo
@@ -25,8 +25,9 @@ reutilizarlo, clonarlo a otra persona, o agregar un ingrediente suelto sin crear
 recetas sigue siendo trabajo de "Menú del día") y puede exportar la semana a un HTML grande para
 imprimir (o guardar como PDF desde el propio navegador); "Lista del súper" consolida los
 ingredientes reales de esa semana (una o varias personas a la vez) en una lista de compras, con el
-mismo exportable a HTML; "Configuración" junta herramientas de limpieza/integridad de datos;
-"Guía" trae un diagrama interactivo de cómo se relaciona todo. La app trae vista oscura (sigue la
+mismo exportable a HTML; "Configuración" junta herramientas de limpieza/integridad de datos, con
+un badge en la barra lateral que avisa cuántos chequeos tienen hallazgos sin tener que abrir esa
+página; "Guía" trae un diagrama interactivo de cómo se relaciona todo. La app trae vista oscura (sigue la
 preferencia del sistema, o se puede elegir a mano desde el menú ⋮ de Streamlit) para leer de
 noche. Sigue el resto de la Fase 5 (pulido, solo tras uso real). Ver el checklist completo en
 `BUILD-PLAN.md`.

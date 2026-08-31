@@ -9,22 +9,19 @@ chequeos automáticos ("¿qué referencias ya están rotas?"), cada uno independ
 Ver UI-BUILD-YOUR-MENU.md -> "Configuración" para la especificación completa.
 """
 
-import difflib
-
 import streamlit as st
 
+from nutriguia import chequeos
 from nutriguia.colores import GRUPO_ETIQUETA, chip_html
 from nutriguia.streamlit_data import (
     cargar_catalogo,
-    cargar_objetivo,
-    cargar_personas,
     cargar_recetas,
     db,
     invalidar_cache_catalogo,
     invalidar_cache_recetas,
 )
-from nutriguia.texto import normalizar_busqueda
 from nutriguia.validation import (
+    fusionar_duplicados_en_menu_guardado,
     fusionar_ingredientes_duplicados,
     renombrar_ingrediente_en_menu_guardado,
     sumar_por_grupo,
@@ -104,14 +101,6 @@ def _renombrar_en_menus_construidos(nombre_viejo: str, nombre_nuevo: str) -> int
     return tocados
 
 
-def _normalizar_par(a: str, b: str) -> tuple[str, str]:
-    return tuple(sorted((a, b)))
-
-
-def _pares_descartados() -> set[tuple[str, str]]:
-    return {_normalizar_par(d["a"], d["b"]) for d in db().duplicados_descartados.find({}, {"_id": 0})}
-
-
 # ---------------------------------------------------------------------------
 # Sección A: buscar relaciones (lookup manual)
 # ---------------------------------------------------------------------------
@@ -183,27 +172,7 @@ def _check_ingredientes_huerfanos():
             "Catalogarlo aquí lo arregla en todos lados a la vez."
         )
         catalogo = cargar_catalogo()
-        por_alimento: dict[str, dict] = {}
-        for r in cargar_recetas():
-            for ing in r["ingredientes"]:
-                if ing["alimento"] not in catalogo:
-                    entry = por_alimento.setdefault(
-                        ing["alimento"], {"grupo": ing.get("grupo_smae"), "recetas": set(), "dias": set()}
-                    )
-                    entry["recetas"].add(r["nombre"])
-        # BUG-013 (2026-08-30): un día ya guardado es un snapshot completo, no una referencia viva
-        # al banco de recetas -- limpiar/renombrar en `recetas` no lo alcanza, así que un alimento
-        # puede quedar huérfano SOLO en `menus_construidos` (el banco ya limpio no lo delata).
-        for doc in db().menus_construidos.find({}):
-            for tiempo, datos in doc.get("tiempos", {}).items():
-                for inst in datos.get("seleccion", []):
-                    for ing in inst["ingredientes"]:
-                        if ing["alimento"] not in catalogo:
-                            entry = por_alimento.setdefault(
-                                ing["alimento"], {"grupo": ing.get("grupo_smae"), "recetas": set(), "dias": set()}
-                            )
-                            etiqueta_dia = f"{doc['persona']} · {doc.get('nombre') or doc['fecha']}"
-                            entry["dias"].add(etiqueta_dia)
+        por_alimento = chequeos.ingredientes_huerfanos()
 
         if not por_alimento:
             st.success("Sin ingredientes huérfanos.")
@@ -233,6 +202,7 @@ def _check_ingredientes_huerfanos():
                         "cantidad_por_equivalente": cantidad.strip(),
                     })
                     invalidar_cache_catalogo()
+                    chequeos.invalidar_cache_alertas()
                     st.session_state["_flash_config"] = f"'{alimento}' agregado al catálogo."
                     st.rerun()
 
@@ -253,6 +223,7 @@ def _check_ingredientes_huerfanos():
                         partes.append(f"{tocadas_recetas} receta(s)")
                     if tocados_dias:
                         partes.append(f"{tocados_dias} día(s) ya guardado(s)")
+                    chequeos.invalidar_cache_alertas()
                     detalle = " y ".join(partes) if partes else "0 lugares"
                     st.session_state["_flash_config"] = (
                         f"'{alimento}' reemplazado por '{elegido_existente}' en {detalle}."
@@ -268,16 +239,7 @@ def _check_recetas_huerfanas():
             "huérfana. Se corrige abriendo ese día desde \"Menú del día\" y quitando el "
             "ingrediente ahí, no desde aquí."
         )
-        recetas_ids = {r["receta_id"] for r in cargar_recetas()}
-        problemas_dias = [
-            (doc, tiempo, inst)
-            for doc in db().menus_construidos.find({}, {"_id": 0})
-            for tiempo, datos in doc.get("tiempos", {}).items()
-            for inst in datos.get("seleccion", [])
-            # `receta_id: None` = ingrediente suelto (FR-007), no una receta del banco -- no es
-            # una referencia rota, es la forma normal de un ingrediente sin receta.
-            if inst["receta_id"] is not None and inst["receta_id"] not in recetas_ids
-        ]
+        problemas_dias = chequeos.recetas_huerfanas()
 
         if not problemas_dias:
             st.success("Sin referencias huérfanas a recetas eliminadas.")
@@ -298,11 +260,7 @@ def _check_vector_desincronizado():
             "Los equivalentes guardados de una receta deberían ser siempre la suma de sus "
             "ingredientes -- si no coincide, quedó de una edición manual o un bug viejo."
         )
-        problemas = []
-        for r in cargar_recetas():
-            real = sumar_por_grupo(r["ingredientes"], "grupo_smae", "equivalentes")
-            if real != r.get("vector_equivalentes", {}):
-                problemas.append((r, real))
+        problemas = chequeos.vectores_desincronizados()
 
         if not problemas:
             st.success("Todos los vectores coinciden con sus ingredientes.")
@@ -317,37 +275,36 @@ def _check_vector_desincronizado():
                 if st.button("Recalcular y guardar", key=f"recalc_{r['receta_id']}"):
                     db().recetas.update_one({"receta_id": r["receta_id"]}, {"$set": {"vector_equivalentes": real}})
                     invalidar_cache_recetas()
+                    chequeos.invalidar_cache_alertas()
                     st.session_state["_flash_config"] = f"Vector de '{r['nombre']}' recalculado."
                     st.rerun()
 
 
 def _check_ingredientes_duplicados_en_receta():
-    with st.expander("🔁 Ingredientes duplicados dentro de una misma receta"):
+    with st.expander("🔁 Ingredientes duplicados dentro de una misma receta o día guardado"):
         st.caption(
-            "El mismo alimento listado dos o más veces en una receta -- suele pasar al usar "
-            "\"🔗 Usar este\" (arriba) cuando la receta YA tenía un ingrediente con ese nombre "
-            "(BUG-009, corregido para que ya no vuelva a pasar). A diferencia del chequeo de "
-            "duplicados del catálogo, aquí no hay ambigüedad -- son el mismo nombre exacto dentro "
-            "de la misma receta, así que fusionar (sumar sus equivalentes en una sola fila) es "
-            "seguro con un clic."
+            "El mismo alimento listado dos o más veces en una receta (o dentro de un día ya "
+            "guardado de \"Menú del día\") -- suele pasar al usar \"🔗 Usar este\" (arriba) cuando "
+            "ya había un ingrediente con ese nombre (BUG-009, corregido para que ya no vuelva a "
+            "pasar en el banco de recetas), o cuando el día se guardó ANTES de esa corrección y "
+            "nunca se volvió a abrir (2026-08-31, ver BUG-013). A diferencia del chequeo de "
+            "duplicados del catálogo, aquí no hay ambigüedad -- es el mismo nombre exacto, así que "
+            "fusionar (sumar sus equivalentes en una sola fila) es seguro con un clic."
         )
-        problemas = []
-        for r in cargar_recetas():
-            vistos: dict[str, int] = {}
-            for ing in r["ingredientes"]:
-                vistos[ing["alimento"]] = vistos.get(ing["alimento"], 0) + 1
-            repetidos = sorted(n for n, veces in vistos.items() if veces > 1)
-            if repetidos:
-                problemas.append((r, repetidos))
+        problemas_recetas = chequeos.ingredientes_duplicados_en_recetas()
+        problemas_dias = chequeos.ingredientes_duplicados_en_dias()
 
-        if not problemas:
-            st.success("Sin ingredientes duplicados dentro de una receta.")
+        if not problemas_recetas and not problemas_dias:
+            st.success("Sin ingredientes duplicados dentro de una receta o día guardado.")
             return
 
-        st.warning(f"{len(problemas)} receta(s) con algún ingrediente repetido.")
-        for r, repetidos in problemas:
+        st.warning(
+            f"{len(problemas_recetas)} receta(s) y {len(problemas_dias)} día(s) guardado(s) con "
+            "algún ingrediente repetido."
+        )
+        for r, repetidos in problemas_recetas:
             with st.container(border=True):
-                st.markdown(f"**{r['nombre']}** — repetido: " + ", ".join(f"'{n}'" for n in repetidos))
+                st.markdown(f"**{r['nombre']}** (receta del banco) — repetido: " + ", ".join(f"'{n}'" for n in repetidos))
                 if st.button("Fusionar", key=f"fusionar_dup_{r['receta_id']}"):
                     ingredientes = fusionar_ingredientes_duplicados(r["ingredientes"])
                     vector = sumar_por_grupo(ingredientes, "grupo_smae", "equivalentes")
@@ -356,7 +313,31 @@ def _check_ingredientes_duplicados_en_receta():
                         {"$set": {"ingredientes": ingredientes, "vector_equivalentes": vector}},
                     )
                     invalidar_cache_recetas()
+                    chequeos.invalidar_cache_alertas()
                     st.session_state["_flash_config"] = f"Ingredientes duplicados de '{r['nombre']}' fusionados."
+                    st.rerun()
+        for doc, tiempo, indice, inst, repetidos in problemas_dias:
+            with st.container(border=True):
+                etiqueta_dia = f"{doc['persona']} · {doc.get('nombre') or doc['fecha']}"
+                st.markdown(
+                    f"**{inst['nombre']}** (día guardado: {etiqueta_dia}, {TIEMPO_LABEL.get(tiempo, tiempo)}) "
+                    "— repetido: " + ", ".join(f"'{n}'" for n in repetidos)
+                )
+                if st.button("Fusionar", key=f"fusionar_dup_dia_{doc['persona']}_{doc['fecha']}_{tiempo}_{indice}"):
+                    fusionar_duplicados_en_menu_guardado(doc, tiempo, indice)
+                    db().menus_construidos.update_one(
+                        {"persona": doc["persona"], "fecha": doc["fecha"]},
+                        {
+                            "$set": {
+                                "tiempos": doc["tiempos"],
+                                "actual_diario": doc["actual_diario"],
+                                "delta_diario": doc["delta_diario"],
+                                "estado": doc["estado"],
+                            }
+                        },
+                    )
+                    chequeos.invalidar_cache_alertas()
+                    st.session_state["_flash_config"] = f"Ingredientes duplicados de '{inst['nombre']}' fusionados."
                     st.rerun()
 
 
@@ -371,18 +352,7 @@ def _check_duplicados_catalogo():
             "mismo alimento pero con medidas distintas, revisa esas recetas después de fusionar."
         )
         catalogo = cargar_catalogo()
-        nombres = sorted(catalogo.keys())
-        descartados = _pares_descartados()
-        pares = []
-        for i, a in enumerate(nombres):
-            norm_a = normalizar_busqueda(a)
-            for b in nombres[i + 1:]:
-                if _normalizar_par(a, b) in descartados:
-                    continue
-                ratio = difflib.SequenceMatcher(None, norm_a, normalizar_busqueda(b)).ratio()
-                if ratio >= 0.82:
-                    pares.append((a, b, ratio))
-        pares.sort(key=lambda x: -x[2])
+        pares = chequeos.pares_similares_en_catalogo()
 
         if not pares:
             st.success("Sin pares sospechosos.")
@@ -399,11 +369,12 @@ def _check_duplicados_catalogo():
                     st.session_state["_pendiente_ing_editar_selector"] = a
                     st.switch_page("views/editor_ingredientes.py")
                 if c3.button("Son diferentes", key=f"descartar_{a}_{b}"):
-                    x, y = _normalizar_par(a, b)
+                    x, y = chequeos.normalizar_par(a, b)
                     db().duplicados_descartados.create_index([("a", 1), ("b", 1)], unique=True)
                     db().duplicados_descartados.update_one(
                         {"a": x, "b": y}, {"$setOnInsert": {"a": x, "b": y}}, upsert=True
                     )
+                    chequeos.invalidar_cache_alertas()
                     st.session_state["_flash_config"] = f"'{a}' y '{b}' marcados como diferentes -- no se vuelven a sugerir."
                     st.rerun()
 
@@ -415,13 +386,14 @@ def _check_duplicados_catalogo():
                     c1.markdown(f"{d['a']} ↔ {d['b']}")
                     if c2.button("Deshacer", key=f"deshacer_desc_{d['a']}_{d['b']}"):
                         db().duplicados_descartados.delete_one({"a": d["a"], "b": d["b"]})
+                        chequeos.invalidar_cache_alertas()
                         st.session_state["_flash_config"] = f"Se vuelve a sugerir: {d['a']} ↔ {d['b']}."
                         st.rerun()
 
 
 def _check_personas_sin_objetivo():
     with st.expander("🧑‍🤝‍🧑 Personas sin objetivo diario"):
-        sin_objetivo = [p for p in cargar_personas() if not cargar_objetivo(p)]
+        sin_objetivo = chequeos.personas_sin_objetivo()
         if not sin_objetivo:
             st.success("Todas las personas tienen un objetivo configurado.")
             return
@@ -433,17 +405,7 @@ def _check_personas_sin_objetivo():
 def _check_asignacion_rota():
     with st.expander("🗓️ Asignación semanal apuntando a menús eliminados"):
         st.caption("Un día de la semana puede quedar apuntando a un menú que ya se eliminó.")
-        problemas = []
-        for doc in db().asignacion_semanal.find({}, {"_id": 0}):
-            nombres_persona = {
-                m["nombre"]
-                for m in db().menus_construidos.find(
-                    {"persona": doc["persona"], "nombre": {"$ne": None}}, {"nombre": 1}
-                )
-            }
-            for dia, nombre in doc.get("dias", {}).items():
-                if nombre and nombre not in nombres_persona:
-                    problemas.append((doc["persona"], dia, nombre))
+        problemas = chequeos.asignacion_rota()
 
         if not problemas:
             st.success("Sin referencias rotas en la asignación semanal.")
@@ -455,8 +417,43 @@ def _check_asignacion_rota():
             c1.markdown(f"**{persona}** — {dia.capitalize()}: '{nombre}' _(eliminado)_")
             if c2.button("Marcar como libre", key=f"limpiar_asig_{persona}_{dia}"):
                 db().asignacion_semanal.update_one({"persona": persona}, {"$set": {f"dias.{dia}": None}})
+                chequeos.invalidar_cache_alertas()
                 st.session_state["_flash_config"] = f"{dia.capitalize()} de {persona} marcado como libre."
                 st.rerun()
+
+
+def _check_dias_con_estado_desactualizado():
+    with st.expander("🔄 Días guardados con estado desactualizado"):
+        st.caption(
+            "El `estado`/delta de un día ya guardado se calcula UNA vez, al guardarlo -- si el "
+            "criterio para decidir qué cuenta como \"completo\" cambia después (2026-08-31, ver "
+            "CLAUDE.md: Cereal/Leguminosa intercambiables desde la v0.26.0) y ese día no se vuelve "
+            "a abrir/guardar, se queda mostrando lo viejo en el historial. Recalcular aquí no "
+            "cambia ningún ingrediente, solo pone al día `actual_diario`/`delta_diario`/`estado`."
+        )
+        problemas = chequeos.dias_con_estado_desactualizado()
+
+        if not problemas:
+            st.success("El estado de todos los días guardados coincide con lo que se recalcula hoy.")
+            return
+
+        st.warning(f"{len(problemas)} día(s) guardado(s) con estado desactualizado.")
+        for doc, delta_nuevo, estado_nuevo in problemas:
+            with st.container(border=True):
+                etiqueta = f"{doc['persona']} · {doc.get('nombre') or doc['fecha']}"
+                st.markdown(
+                    f"**{etiqueta}** — guardado: `{doc.get('estado')}` -> recalculado: `{estado_nuevo}`"
+                )
+                st.markdown("Delta guardado: " + _chips(doc.get("delta_diario", {})), unsafe_allow_html=True)
+                st.markdown("Delta recalculado: " + _chips(delta_nuevo), unsafe_allow_html=True)
+                if st.button("Recalcular y guardar", key=f"recalc_estado_{doc['persona']}_{doc['fecha']}"):
+                    db().menus_construidos.update_one(
+                        {"persona": doc["persona"], "fecha": doc["fecha"]},
+                        {"$set": {"delta_diario": delta_nuevo, "estado": estado_nuevo}},
+                    )
+                    chequeos.invalidar_cache_alertas()
+                    st.session_state["_flash_config"] = f"Estado de '{etiqueta}' recalculado a '{estado_nuevo}'."
+                    st.rerun()
 
 
 def render() -> None:
@@ -477,9 +474,9 @@ def render() -> None:
     st.divider()
     st.header("Chequeos automáticos")
     st.caption(
-        "Cada uno revisa una sola cosa, de forma independiente. Nada los corre automáticamente "
-        "por su cuenta, así que si algo se desordena en otra parte de la app puede no notarse "
-        "hasta que se abre esta página."
+        "Cada uno revisa una sola cosa, de forma independiente. El badge junto a \"Configuración\" "
+        "en la barra lateral avisa cuántos tienen algo que revisar, para no tener que abrir esta "
+        "página solo para chequear."
     )
     _check_ingredientes_huerfanos()
     _check_recetas_huerfanas()
@@ -488,6 +485,7 @@ def render() -> None:
     _check_duplicados_catalogo()
     _check_personas_sin_objetivo()
     _check_asignacion_rota()
+    _check_dias_con_estado_desactualizado()
 
 
 render()

@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.26.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.27.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -190,6 +190,25 @@ de más ahora ve ambos grupos en verde ("exacto"), no "sin cuadrar". No toca `va
 `validar_tiempo()` (validación de los `menus` históricos importados, que siguen comparando contra
 lo declarado tal cual). Fijo por ahora, no configurable por persona/periodo -- nadie lo pidió así
 todavía.
+
+**Revisión de "Chequeos automáticos" + badge de alertas (0.27.0, 2026-08-31, a pedido del
+usuario)**: tras las limpiezas recientes (BUG-009 a BUG-013, Cereal/Leguminosa), se revisó si
+faltaba algo por chequear -- dos huecos encontrados por el mismo patrón de `BUG-013` (corregir el
+banco de recetas no toca los días ya guardados): (1) **ingredientes duplicados dentro de un día
+guardado** (el chequeo de duplicados solo miraba `recetas`, igual que huérfanos antes de
+`BUG-013`) y (2) **días guardados con `estado` desactualizado** (su `estado`/`delta_diario` se
+calculó una vez al guardar, con el criterio de ESE momento -- si el criterio cambia después, ej.
+el intercambio Cereal/Leguminosa de arriba, un día viejo no se entera solo). Ambos verificados
+contra producción antes de construir (0 casos actuales, pero el hueco era real). Nueva
+`fusionar_duplicados_en_menu_guardado()` en `nutriguia/validation.py` para (1) -- identifica la
+instancia por posición en `seleccion` (un día guardado no tiene `instancia_id`).
+De paso, toda la lógica de detección de los 9 chequeos se factorizó de `views/configuracion.py` a
+`nutriguia/chequeos.py` (funciones que tocan Mongo pero sin nada de Streamlit) -- así
+`views/configuracion.py` (renderiza) y el badge nuevo de `app.py` (`chequeos.total_alertas()`,
+cacheado 60s) comparten el mismo criterio de "qué cuenta como problema" sin poder desalinearse.
+El badge aparece junto a "Configuración" en la barra lateral ("Configuración 🔴 N") cuando hay N
+chequeos con hallazgos -- esa página no se visita seguido, así que antes un hallazgo podía pasar
+desapercibido mucho tiempo.
 
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,

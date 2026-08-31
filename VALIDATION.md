@@ -109,6 +109,20 @@ def renombrar_ingrediente_en_menu_guardado(documento: dict, nombre_viejo: str, n
     el catálogo y en `recetas`, pero "Lista del súper" las seguía mostrando como "Sin grupo /
     libre" en vez de AOA porque los días ya guardados nunca se tocaron).
     """
+
+def fusionar_duplicados_en_menu_guardado(documento: dict, tiempo: str, indice: int) -> bool:
+    """
+    Fusiona ingredientes duplicados (mismo 'alimento' 2+ veces) dentro de UNA instancia específica
+    -- documento["tiempos"][tiempo]["seleccion"][indice] -- de un 'menus_construidos' YA GUARDADO
+    (mutado in place). Puede pasar si el día se guardó ANTES de que la receta original se
+    corrigiera en el banco (mismo caso que 'renombrar_ingrediente_en_menu_guardado()', ver
+    BUG-013). Un día guardado no tiene 'instancia_id' (solo vive en memoria en "Menú del día"), así
+    que la instancia se identifica por posición dentro de 'seleccion', no por id. Devuelve True si
+    de verdad había algo que fusionar (y ya mutó 'documento'), False si no (incluye índice/tiempo
+    inválido). Recalcula 'actual'/'actual_diario'/'delta_diario'/'estado' igual que la función de
+    arriba. Usada en `views/configuracion.py` (2026-08-31, revisión de "Chequeos automáticos"
+    tras las limpiezas de datos recientes).
+    """
 ```
 
 ## Regla de prueba de regresión (obligatoria antes de tocar la UI)
