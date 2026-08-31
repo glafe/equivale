@@ -20,6 +20,18 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.27.1] - 2026-08-31
+
+### Changed
+- "¿Dónde se usa un ingrediente?" (Configuración → Buscar relaciones, antes "¿En qué recetas..."),
+  a pedido del usuario tras corregir la `cantidad_por_equivalente` de "Pasta cocida" en el
+  catálogo (60 g -> 50 g): ahora también busca en los días ya guardados de "Menú del día", no solo
+  en `recetas` -- mismo criterio que `BUG-013` (corregir una receta en el banco no toca los días
+  que ya se guardaron con su versión anterior) y necesario para encontrar ingredientes sueltos
+  (FR-007), que nunca viven en `recetas`. Aclarado en la UI que cambiar `cantidad_por_equivalente`
+  no desincroniza nada por sí solo -- `equivalentes` es un conteo entero independiente del valor
+  en gramos/taza, la cantidad real se recalcula sola en toda la app.
+
 ## [0.27.0] - 2026-08-31
 
 ### Added

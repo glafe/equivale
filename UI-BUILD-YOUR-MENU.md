@@ -405,8 +405,20 @@ propósito: un problema pasajero leyendo Mongo para el badge no debe tumbar la n
 la app, en el peor caso el badge simplemente no aparece esa vez.
 
 - **Buscar relaciones** (lookup manual, dos columnas):
-  - "¿En qué recetas se usa un ingrediente?" — selectbox de `catalogo_alimentos`, lista las
-    recetas que lo referencian (con sus equivalentes y si está bloqueado/opcional en esa receta).
+  - "¿Dónde se usa un ingrediente?" (renombrado 2026-08-31, antes "¿En qué recetas...", a pedido
+    del usuario tras corregir la cantidad de "Pasta cocida" en el catálogo y querer revisar dónde
+    aplicaba) — selectbox de `catalogo_alimentos`, lista **tanto** las recetas del banco que lo
+    referencian (con sus equivalentes y si está bloqueado/opcional) **como** los días ya guardados
+    de "Menú del día" que lo usan (persona, día, tiempo, y si vino de una receta o como
+    ingrediente suelto -- FR-007). Necesita mirar ambas colecciones por la misma razón que
+    `BUG-013`: una receta corregida en el banco no actualiza los días que ya se guardaron con su
+    versión anterior, y un ingrediente suelto nunca vive en `recetas` para empezar. Sirve para
+    confirmar que un ajuste al catálogo (ej. una `cantidad_por_equivalente` corregida) se ve bien
+    en todos los lugares donde ese alimento aparece -- aunque, importante: cambiar
+    `cantidad_por_equivalente` **no** desincroniza nada por sí solo (`equivalentes` en cada receta/
+    día es un conteo entero, independiente del valor en gramos/taza/etc.), así que ningún chequeo
+    automático se dispara por esto -- la cantidad real mostrada en toda la app se recalcula sola
+    con el valor corregido, sin tocar ningún documento.
   - "¿Dónde se usa una receta?" — selectbox de `recetas`, lista los días guardados de "Menú del
     día" y los menús de "Menú semanal" que la incluyen.
 - **Chequeos automáticos** (cada uno independiente, con éxito en verde si no hay problemas):

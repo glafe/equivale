@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.27.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.27.1` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -209,6 +209,17 @@ cacheado 60s) comparten el mismo criterio de "qué cuenta como problema" sin pod
 El badge aparece junto a "Configuración" en la barra lateral ("Configuración 🔴 N") cuando hay N
 chequeos con hallazgos -- esa página no se visita seguido, así que antes un hallazgo podía pasar
 desapercibido mucho tiempo.
+
+**"¿Dónde se usa un ingrediente?" ahora también busca en días guardados (0.27.1, 2026-08-31, a
+pedido del usuario)**: tras corregir la `cantidad_por_equivalente` de "Pasta cocida" en el
+catálogo (60 g -> 50 g), quería poder revisar dónde se usaba ese alimento -- la búsqueda (sección
+"Buscar relaciones" de Configuración) solo miraba `recetas`. Ahora también lista los días ya
+guardados de "Menú del día" (mismo criterio que `BUG-013`: una receta corregida en el banco no
+toca los días ya guardados con su versión anterior; un ingrediente suelto de FR-007 tampoco vive
+en `recetas`). Aclarado en la UI: cambiar `cantidad_por_equivalente` NO desincroniza nada por sí
+solo -- `equivalentes` en cada receta/día es un conteo entero independiente del valor en
+gramos/taza, así que la cantidad real se recalcula sola en toda la app sin tocar ningún
+documento ni disparar ningún chequeo.
 
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,

@@ -106,27 +106,54 @@ def _renombrar_en_menus_construidos(nombre_viejo: str, nombre_nuevo: str) -> int
 # ---------------------------------------------------------------------------
 
 def _buscar_recetas_de_ingrediente():
-    st.subheader("¿En qué recetas se usa un ingrediente?")
+    st.subheader("¿Dónde se usa un ingrediente?")
     catalogo = cargar_catalogo()
     recetas = cargar_recetas()
     nombres = [SIN_SELECCION] + sorted(catalogo.keys())
     elegido = _selectbox_seguro("Ingrediente", nombres, key="config_buscar_ingrediente")
     if elegido == SIN_SELECCION:
         return
+
     usos = [r for r in recetas if any(ing["alimento"] == elegido for ing in r["ingredientes"])]
-    if not usos:
-        st.caption(f"'{elegido}' no se usa en ninguna receta todavía.")
+    # También en días ya guardados (2026-08-31, a pedido del usuario: tras corregir "Pasta
+    # cocida" en el catálogo, quería poder revisar dónde se usa para confirmar que el valor nuevo
+    # aplica bien) -- una receta se puede corregir en el banco sin que eso toque los días que ya
+    # se guardaron con su versión anterior (ver BUG-013), y un ingrediente suelto (FR-007) nunca
+    # vive en `recetas`, solo aquí -- la búsqueda de recetas sola no lo encontraría.
+    en_dias = [
+        (doc, tiempo, inst, ing)
+        for doc in db().menus_construidos.find({})
+        for tiempo, datos in doc.get("tiempos", {}).items()
+        for inst in datos.get("seleccion", [])
+        for ing in inst["ingredientes"]
+        if ing["alimento"] == elegido
+    ]
+
+    if not usos and not en_dias:
+        st.caption(f"'{elegido}' no se usa en ninguna receta ni día guardado todavía.")
         return
-    st.caption(f"Usado en {len(usos)} receta(s):")
-    for r in usos:
-        ing = next(i for i in r["ingredientes"] if i["alimento"] == elegido)
-        etiquetas = []
-        if ing.get("bloqueado"):
-            etiquetas.append("bloqueado")
-        if ing.get("opcional"):
-            etiquetas.append("opcional")
-        sufijo = f" _({', '.join(etiquetas)})_" if etiquetas else ""
-        st.markdown(f"- **{r['nombre']}** — {ing['equivalentes']} equivalente(s){sufijo}")
+
+    if usos:
+        st.caption(f"En {len(usos)} receta(s) del banco:")
+        for r in usos:
+            ing = next(i for i in r["ingredientes"] if i["alimento"] == elegido)
+            etiquetas = []
+            if ing.get("bloqueado"):
+                etiquetas.append("bloqueado")
+            if ing.get("opcional"):
+                etiquetas.append("opcional")
+            sufijo = f" _({', '.join(etiquetas)})_" if etiquetas else ""
+            st.markdown(f"- **{r['nombre']}** — {ing['equivalentes']} equivalente(s){sufijo}")
+
+    if en_dias:
+        st.caption(f"En {len(en_dias)} día(s) ya guardado(s):")
+        for doc, tiempo, inst, ing in en_dias:
+            etiqueta_dia = f"{doc['persona']} · {doc.get('nombre') or doc['fecha']}"
+            origen = inst["nombre"] if inst.get("receta_id") else f"{inst['nombre']} (suelto)"
+            st.markdown(
+                f"- {etiqueta_dia} — {TIEMPO_LABEL.get(tiempo, tiempo)} — **{origen}** — "
+                f"{ing['equivalentes']} equivalente(s)"
+            )
 
 
 def _buscar_uso_de_receta():
