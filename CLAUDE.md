@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.25.1` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.26.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -178,6 +178,18 @@ colapso de cada tarjeta (el `instancia_id` no cambia al reordenar).
 planes guardados" vive ahora justo debajo del selector de "Persona", no al final de la página --
 abrir/editar un día ya guardado es de lo que más se usa, así que no debería requerir bajar toda la
 página cada vez.
+
+**Cereal/Leguminosa intercambiables (0.26.0, 2026-08-30, a pedido del usuario)**: "un cereal puede
+ser intercambiable por 1 leguminosa" -- nueva `ajustar_delta_por_intercambios()` en
+`nutriguia/validation.py` (par fijo `[("Cereal", "Leguminosa")]`, ver comentario en el código)
+redistribuye el delta de un grupo al otro cuando uno falta y el otro sobra, antes de calcular
+`estado_por_grupo()`. Aplicado en "Menú del día" (panel por tiempo, resumen del día, `estado`/
+`dia_completo` al guardar), al clonar a otra persona, y al recalcular un día ya guardado tras un
+renombrado en el catálogo (`BUG-013`) -- alguien con, por ejemplo, 1 Cereal de menos y 1 Leguminosa
+de más ahora ve ambos grupos en verde ("exacto"), no "sin cuadrar". No toca `validar_menu()`/
+`validar_tiempo()` (validación de los `menus` históricos importados, que siguen comparando contra
+lo declarado tal cual). Fijo por ahora, no configurable por persona/periodo -- nadie lo pidió así
+todavía.
 
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,

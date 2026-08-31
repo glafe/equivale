@@ -20,6 +20,18 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.26.0] - 2026-08-30
+
+### Added
+- **Cereal/Leguminosa intercambiables**, a pedido del usuario ("un cereal puede ser intercambiable
+  por 1 leguminosa"). Nueva `ajustar_delta_por_intercambios()` en `nutriguia/validation.py` (par
+  fijo `[("Cereal", "Leguminosa")]`) redistribuye el delta de un grupo al otro cuando uno falta y
+  el otro sobra, antes de calcular el estado (✅/🔺/🔻) -- alguien con 1 Cereal de menos y 1
+  Leguminosa de más ahora ve ambos grupos en verde, no "sin cuadrar" en los dos. Aplicado en "Menú
+  del día" (panel por tiempo, resumen del día, `estado`/`dia_completo` al guardar), al clonar a
+  otra persona, y al recalcular un día ya guardado tras un renombrado en el catálogo (`BUG-013`).
+  No afecta `validar_menu()`/`validar_tiempo()` (validación de los `menus` históricos importados).
+
 ## [0.25.1] - 2026-08-30
 
 ### Changed

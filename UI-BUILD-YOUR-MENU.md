@@ -112,6 +112,16 @@ Ajustes       -> Configuración
       - rojo = "excedido" (delta < 0)
       Recalcular en cada interacción (Streamlit lo hace solo al re-ejecutar el script — no
       necesita JS ni websockets).
+      - **Cereal/Leguminosa intercambiables** (2026-08-30, a pedido del usuario: "un cereal puede
+        ser intercambiable por 1 leguminosa"): antes de calcular el color/ícono, el delta pasa por
+        `ajustar_delta_por_intercambios()` (`nutriguia/validation.py`) -- si falta Cereal y sobra
+        Leguminosa (o viceversa), el excedente de uno cubre el faltante del otro hasta agotar el
+        menor de los dos, así que alguien que comió, por ejemplo, 1 Cereal de menos pero 1
+        Leguminosa de más ve ambos grupos en verde ("exacto"), no ambos en amarillo/rojo. Mismo
+        criterio aplicado en el resumen del día, al guardar (`estado`/`dia_completo`), al clonar a
+        otra persona, y al recalcular un día ya guardado tras un renombrado en el catálogo
+        (`BUG-013`). Fijo por ahora (no varía por persona/periodo, a diferencia del campo histórico
+        `grupos_intercambiables` de `menus` en `schema.md`) -- nadie lo pidió configurable todavía.
    f. Botón "Guardar tiempo" — SIEMPRE habilitado (el usuario puede querer guardar en progreso),
       pero si no todo está en verde mostrar una advertencia inline ("2 equivalentes de Cereal sin
       cubrir") antes de confirmar, no bloquear silenciosamente.

@@ -19,7 +19,13 @@ from nutriguia.streamlit_data import (
     cargar_recetas,
     db,
 )
-from nutriguia.validation import delta_objetivo, estado_por_grupo, paso_equivalente, sumar_por_grupo
+from nutriguia.validation import (
+    ajustar_delta_por_intercambios,
+    delta_objetivo,
+    estado_por_grupo,
+    paso_equivalente,
+    sumar_por_grupo,
+)
 
 TIEMPOS = ["al_despertar", "desayuno", "colacion", "comida", "cena"]
 TIEMPO_LABEL = {
@@ -179,7 +185,9 @@ def _clonar_a_persona(doc: dict, persona_destino: str, fecha_destino: date) -> s
 
     objetivo_destino = cargar_objetivo(persona_destino)
     actual_diario = _sumar_dicts([datos["actual"] for datos in tiempos_clonados.values()])
-    delta_diario = delta_objetivo(objetivo_destino, actual_diario)
+    # Cereal/Leguminosa intercambiables (2026-08-30, a pedido del usuario) -- ver
+    # ajustar_delta_por_intercambios() en nutriguia/validation.py.
+    delta_diario = ajustar_delta_por_intercambios(delta_objetivo(objetivo_destino, actual_diario))
     dia_completo = bool(delta_diario) and all(v == 0 for v in delta_diario.values())
 
     documento = {
@@ -409,7 +417,12 @@ def _renderizar_tiempo(tiempo: str, dia: dict, objetivo_diario: dict, catalogo: 
     with st.container(border=True, key=f"status_{tiempo}"):
         st.markdown("**Estado de este tiempo** (contra lo que queda del presupuesto diario)")
         actual_tiempo = _actual_de(seleccion)
-        delta_tiempo = delta_objetivo(restante, actual_tiempo)
+        # Cereal/Leguminosa intercambiables (2026-08-30, a pedido del usuario) -- ver
+        # ajustar_delta_por_intercambios() en nutriguia/validation.py. `delta_tiempo`, calculado
+        # así (restante = objetivo_diario - actual_otros_tiempos), ya es en realidad el delta del
+        # DÍA completo hasta este punto (el objetivo es diario, no por tiempo -- ver schema.md), así
+        # que aplica el mismo ajuste que el resumen del día.
+        delta_tiempo = ajustar_delta_por_intercambios(delta_objetivo(restante, actual_tiempo))
         estado = estado_por_grupo(delta_tiempo)
         grupos = sorted(set(restante) | set(actual_tiempo))
         if not grupos:
@@ -542,7 +555,9 @@ def render() -> None:
     st.divider()
     st.subheader("Resumen del día")
     actual_diario = _sumar_dicts([_actual_de(instancias) for instancias in dia["tiempos"].values()])
-    delta_diario = delta_objetivo(objetivo_diario, actual_diario)
+    # Cereal/Leguminosa intercambiables (2026-08-30, a pedido del usuario) -- ver
+    # ajustar_delta_por_intercambios() en nutriguia/validation.py.
+    delta_diario = ajustar_delta_por_intercambios(delta_objetivo(objetivo_diario, actual_diario))
     estado_diario = estado_por_grupo(delta_diario)
     with st.container(border=True, key="status_dia"):
         for grupo in sorted(set(objetivo_diario) | set(actual_diario)):

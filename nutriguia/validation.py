@@ -20,6 +20,43 @@ def delta_objetivo(objetivo: dict[str, int], actual: dict[str, int]) -> dict[str
     return {grupo: objetivo.get(grupo, 0) - actual.get(grupo, 0) for grupo in grupos}
 
 
+# Grupos que se pueden cubrir uno al otro (a pedido del usuario, 2026-08-30 -- "un cereal puede
+# ser intercambiable por 1 leguminosa"). Ver CLAUDE.md: el campo histórico `grupos_intercambiables`
+# de `menus` (schema.md) declaraba esto por periodo para los menús YA importados -- acá es un
+# equivalente para "Menú del día" en vivo, pero fijo (no varía por persona/periodo) porque nadie
+# lo pidió configurable todavía; si algún día hace falta que varíe, este constante ya no alcanza y
+# habría que moverlo a `objetivos`/`personas`.
+GRUPOS_INTERCAMBIABLES: list[tuple[str, str]] = [("Cereal", "Leguminosa")]
+
+
+def ajustar_delta_por_intercambios(
+    delta: dict[str, int], pares: list[tuple[str, str]] = GRUPOS_INTERCAMBIABLES
+) -> dict[str, int]:
+    """Redistribuye un `delta` (salida de `delta_objetivo()`) entre pares de grupos intercambiables
+    -- si uno tiene delta positivo (falta) y el otro negativo (excedido), usa el excedente del
+    segundo para cubrir parte (o todo) del faltante del primero, hasta agotar el menor de los dos
+    en valor absoluto. No hace nada si los dos tienen el mismo signo (ambos "falta" o ambos
+    "excedido" -- ahí no hay excedente que redirigir) o si alguno de los dos grupos no aparece en
+    `delta`. Devuelve un delta NUEVO (no muta el original) -- ej. `{"Cereal": 2, "Leguminosa": -1}`
+    -> `{"Cereal": 1, "Leguminosa": 0}` (la Leguminosa de más cubrió 1 de los 2 Cereal faltantes;
+    sigue faltando 1 Cereal, ya no hay Leguminosa de sobra que lo compense). El orden del par no
+    importa -- funciona igual si el que sobra es el primero o el segundo del par."""
+    ajustado = dict(delta)
+    for g1, g2 in pares:
+        if g1 not in ajustado or g2 not in ajustado:
+            continue
+        d1, d2 = ajustado[g1], ajustado[g2]
+        if d1 > 0 and d2 < 0:
+            transferencia = min(d1, -d2)
+            ajustado[g1] = d1 - transferencia
+            ajustado[g2] = d2 + transferencia
+        elif d2 > 0 and d1 < 0:
+            transferencia = min(d2, -d1)
+            ajustado[g2] = d2 - transferencia
+            ajustado[g1] = d1 + transferencia
+    return ajustado
+
+
 def es_exacto(delta: dict[str, int]) -> bool:
     return all(valor == 0 for valor in delta.values())
 
@@ -152,7 +189,10 @@ def renombrar_ingrediente_en_menu_guardado(documento: dict, nombre_viejo: str, n
         for grupo, cantidad in datos.get("actual", {}).items():
             actual_diario[grupo] = actual_diario.get(grupo, 0) + cantidad
     documento["actual_diario"] = actual_diario
-    delta_diario = delta_objetivo(documento.get("objetivo_diario", {}), actual_diario)
+    # Cereal/Leguminosa intercambiables (2026-08-30, a pedido del usuario) -- mismo criterio que
+    # "Menú del día" en vivo (views/menu_del_dia.py), para que un día recalculado aquí (por un
+    # renombrado en el catálogo) no se vea "sin cuadrar" por algo que ya no cuenta como problema.
+    delta_diario = ajustar_delta_por_intercambios(delta_objetivo(documento.get("objetivo_diario", {}), actual_diario))
     documento["delta_diario"] = delta_diario
     documento["estado"] = "completo" if delta_diario and all(v == 0 for v in delta_diario.values()) else "en_progreso"
     return True

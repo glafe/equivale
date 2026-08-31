@@ -33,6 +33,21 @@ def delta_objetivo(objetivo: dict[str, int], actual: dict[str, int]) -> dict[str
           -> {"AOA":0, "Verdura":2, "Cereal":-1}
     """
 
+GRUPOS_INTERCAMBIABLES: list[tuple[str, str]] = [("Cereal", "Leguminosa")]
+    # Fijo (no varía por persona/periodo) -- ver comentario junto a la constante en el código.
+
+def ajustar_delta_por_intercambios(delta: dict[str, int], pares: list[tuple[str, str]] = GRUPOS_INTERCAMBIABLES) -> dict[str, int]:
+    """
+    Redistribuye `delta` (salida de `delta_objetivo()`) entre pares de grupos intercambiables --
+    "un cereal puede ser intercambiable por 1 leguminosa" (2026-08-30, a pedido del usuario). Si un
+    grupo del par tiene delta positivo (falta) y el otro negativo (excedido), usa el excedente del
+    segundo para cubrir parte o todo el faltante del primero, hasta agotar el menor de los dos en
+    valor absoluto. No hace nada si ambos tienen el mismo signo (no hay excedente que redirigir) o
+    si algún grupo del par no aparece en `delta`. Devuelve un delta NUEVO, no muta el original.
+    Ejemplo: delta={"Cereal":2,"Leguminosa":-1} -> {"Cereal":1,"Leguminosa":0}
+    El orden del par no importa -- el excedente puede estar en cualquiera de los dos.
+    """
+
 def es_exacto(delta: dict[str, int]) -> bool:
     """True si todos los valores de delta son 0."""
 
