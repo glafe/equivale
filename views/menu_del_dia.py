@@ -431,9 +431,9 @@ def render() -> None:
     if "_flash_dia" in st.session_state:
         st.success(st.session_state.pop("_flash_dia"))
 
-    # Un botón "Abrir" del historial (más abajo, en un render anterior) puede haber pedido
-    # cambiar la fecha/nombre -- aplicarlo ANTES de instanciar esos widgets en este run (después
-    # ya no se puede tocar su session_state).
+    # Un botón "Abrir" del historial (debajo del selector de persona, en un render anterior)
+    # puede haber pedido cambiar la fecha/nombre -- aplicarlo ANTES de instanciar esos widgets en
+    # este run (después ya no se puede tocar su session_state).
     if "_fecha_pendiente" in st.session_state:
         st.session_state["fecha_input"] = st.session_state.pop("_fecha_pendiente")
     if "_nombre_pendiente" in st.session_state:
@@ -447,6 +447,70 @@ def render() -> None:
         st.session_state["dia"] = _dia_vacio(persona)
         st.session_state["fecha_input"] = date.today()
         st.session_state["nombre_input"] = ""
+
+    # Historial justo debajo del selector de persona (2026-08-30, a pedido del usuario -- antes
+    # vivía hasta el final de la página; abrir/editar un día ya guardado es de lo que más se usa,
+    # así que no debería requerir bajar toda la página cada vez).
+    with st.expander("📜 Historial de planes guardados"):
+        historial = _cargar_historial(persona)
+        if not historial:
+            st.caption("Todavía no hay planes guardados para esta persona.")
+        otras_personas = [p for p in personas if p != persona]
+        for doc in historial:
+            c1, c2, c3, c4 = st.columns([2, 2, 1, 1])
+            etiqueta_fecha = doc["fecha"] + (f" · **{doc['nombre']}**" if doc.get("nombre") else "")
+            c1.markdown(etiqueta_fecha)
+            c2.write("✅ completo" if doc["estado"] == "completo" else "🔺 en progreso")
+            if c3.button("Abrir", key=f"abrir_{doc['fecha']}"):
+                plan = _cargar_plan_guardado(doc)
+                st.session_state["dia"] = plan
+                st.session_state["_fecha_pendiente"] = date.fromisoformat(doc["fecha"])
+                st.session_state["_nombre_pendiente"] = plan["nombre"]
+                st.rerun()
+            # Clonar a otra persona (FR-008, 2026-08-30, a pedido del usuario) -- punto de
+            # partida para la persona destino, que después ajusta cantidades/ingredientes con los
+            # steppers ya existentes (ninguna herramienta nueva aquí).
+            with c4.popover("🧬 Clonar"):
+                if not otras_personas:
+                    st.caption("No hay otra persona registrada.")
+                else:
+                    destino = st.selectbox(
+                        "Persona destino", otras_personas, key=f"clonar_destino_{doc['fecha']}",
+                    )
+                    fecha_destino = st.date_input(
+                        "Fecha para el plan clonado", value=date.today(),
+                        key=f"clonar_fecha_{doc['fecha']}",
+                    )
+                    # Aviso si ya existe un plan de destino para esa fecha -- clonar lo
+                    # sobreescribe (mismo upsert por (persona, fecha) que "Guardar"), pero a
+                    # diferencia de "Guardar" (donde el usuario ve en pantalla lo que va a
+                    # reemplazar) aquí el plan de destino no es visible antes de confirmar, así
+                    # que sí vale la pena avisar explícitamente.
+                    existente = db().menus_construidos.find_one(
+                        {"persona": destino, "fecha": fecha_destino.isoformat()},
+                        {"nombre": 1},
+                    )
+                    if existente:
+                        etiqueta_existente = f" ('{existente['nombre']}')" if existente.get("nombre") else ""
+                        st.warning(
+                            f"⚠️ {destino} ya tiene un plan guardado para el "
+                            f"{fecha_destino.isoformat()}{etiqueta_existente} -- clonar lo sobreescribe."
+                        )
+                    if st.button("Clonar", key=f"clonar_btn_{doc['fecha']}", type="primary"):
+                        conflicto = _clonar_a_persona(doc, destino, fecha_destino)
+                        mensaje = (
+                            f"Clonado a {destino} para el {fecha_destino.isoformat()}. Ábrelo "
+                            f'desde "Menú del día" eligiendo a {destino} y ajusta cantidades '
+                            "desde ahí -- probablemente no cuadre exacto con su objetivo todavía."
+                        )
+                        if conflicto:
+                            mensaje += (
+                                f" '{conflicto}' ya era el nombre de otro día de {destino} -- se "
+                                "guardó sin nombre; ábrelo y ponle uno nuevo si quieres "
+                                'reutilizarlo en "Menú semanal".'
+                            )
+                        st.session_state["_flash_dia"] = mensaje
+                        st.rerun()
 
     dia = st.session_state["dia"]
     objetivo_diario = cargar_objetivo(persona)
@@ -540,68 +604,6 @@ def render() -> None:
         if nombre_final:
             mensaje += f" Guardado también como '{nombre_final}' -- ya se puede asignar en \"Menú semanal\"."
         st.success(mensaje)
-
-    st.divider()
-    with st.expander("📜 Historial de planes guardados"):
-        historial = _cargar_historial(persona)
-        if not historial:
-            st.caption("Todavía no hay planes guardados para esta persona.")
-        otras_personas = [p for p in personas if p != persona]
-        for doc in historial:
-            c1, c2, c3, c4 = st.columns([2, 2, 1, 1])
-            etiqueta_fecha = doc["fecha"] + (f" · **{doc['nombre']}**" if doc.get("nombre") else "")
-            c1.markdown(etiqueta_fecha)
-            c2.write("✅ completo" if doc["estado"] == "completo" else "🔺 en progreso")
-            if c3.button("Abrir", key=f"abrir_{doc['fecha']}"):
-                plan = _cargar_plan_guardado(doc)
-                st.session_state["dia"] = plan
-                st.session_state["_fecha_pendiente"] = date.fromisoformat(doc["fecha"])
-                st.session_state["_nombre_pendiente"] = plan["nombre"]
-                st.rerun()
-            # Clonar a otra persona (FR-008, 2026-08-30, a pedido del usuario) -- punto de
-            # partida para la persona destino, que después ajusta cantidades/ingredientes con los
-            # steppers ya existentes (ninguna herramienta nueva aquí).
-            with c4.popover("🧬 Clonar"):
-                if not otras_personas:
-                    st.caption("No hay otra persona registrada.")
-                else:
-                    destino = st.selectbox(
-                        "Persona destino", otras_personas, key=f"clonar_destino_{doc['fecha']}",
-                    )
-                    fecha_destino = st.date_input(
-                        "Fecha para el plan clonado", value=date.today(),
-                        key=f"clonar_fecha_{doc['fecha']}",
-                    )
-                    # Aviso si ya existe un plan de destino para esa fecha -- clonar lo
-                    # sobreescribe (mismo upsert por (persona, fecha) que "Guardar"), pero a
-                    # diferencia de "Guardar" (donde el usuario ve en pantalla lo que va a
-                    # reemplazar) aquí el plan de destino no es visible antes de confirmar, así
-                    # que sí vale la pena avisar explícitamente.
-                    existente = db().menus_construidos.find_one(
-                        {"persona": destino, "fecha": fecha_destino.isoformat()},
-                        {"nombre": 1},
-                    )
-                    if existente:
-                        etiqueta_existente = f" ('{existente['nombre']}')" if existente.get("nombre") else ""
-                        st.warning(
-                            f"⚠️ {destino} ya tiene un plan guardado para el "
-                            f"{fecha_destino.isoformat()}{etiqueta_existente} -- clonar lo sobreescribe."
-                        )
-                    if st.button("Clonar", key=f"clonar_btn_{doc['fecha']}", type="primary"):
-                        conflicto = _clonar_a_persona(doc, destino, fecha_destino)
-                        mensaje = (
-                            f"Clonado a {destino} para el {fecha_destino.isoformat()}. Ábrelo "
-                            f'desde "Menú del día" eligiendo a {destino} y ajusta cantidades '
-                            "desde ahí -- probablemente no cuadre exacto con su objetivo todavía."
-                        )
-                        if conflicto:
-                            mensaje += (
-                                f" '{conflicto}' ya era el nombre de otro día de {destino} -- se "
-                                "guardó sin nombre; ábrelo y ponle uno nuevo si quieres "
-                                'reutilizarlo en "Menú semanal".'
-                            )
-                        st.session_state["_flash_dia"] = mensaje
-                        st.rerun()
 
 
 render()

@@ -20,6 +20,13 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.25.1] - 2026-08-30
+
+### Changed
+- "📜 Historial de planes guardados" (Menú del día) reubicado justo debajo del selector de
+  "Persona", en vez de al final de la página -- a pedido del usuario, abrir/editar un día ya
+  guardado es de lo que más se usa.
+
 ## [0.25.0] - 2026-08-30
 
 ### Changed

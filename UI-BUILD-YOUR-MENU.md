@@ -134,7 +134,12 @@ Ajustes       -> Configuración
    (mostrar fecha + `estado`). Elegir uno de la lista carga ese plan completo de vuelta a
    `st.session_state` (mismo mecanismo de round-trip que abrir cualquier día ya guardado) — no
    hace falta un buscador elaborado, un `st.selectbox`/lista simple basta para el volumen esperado
-   (uso personal, no cientos de planes).
+   (uso personal, no cientos de planes). **Reubicado (2026-08-30, a pedido del usuario)**: vive
+   justo debajo del selector de "Persona", no al final de la página -- abrir/editar un día ya
+   guardado es de lo que más se usa, así que no debería requerir bajar toda la página cada vez. El
+   orden de renderizado no le importa a la lógica de `_fecha_pendiente`/`_nombre_pendiente` (ver
+   comentario en `render()`): esos se aplican a `session_state` antes de instanciar los widgets de
+   fecha/nombre sin importar dónde en la página viva el botón "Abrir" que los dispara.
 6.1. **"🧬 Clonar" a otra persona** (2026-08-30, a pedido del usuario -- cierra `FR-008`): junto a
    "Abrir", en cada fila del historial, un `st.popover` con un selector de persona destino y una
    fecha (default hoy). Al confirmar, `_clonar_a_persona()` copia ese día (recetas + ingredientes

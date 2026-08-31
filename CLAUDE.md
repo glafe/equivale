@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.25.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.25.1` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -173,6 +173,11 @@ ese ingrediente (`chip_html()`, igual que el resto de la app) en vez de texto pl
 "🔼"/"🔽" junto al de quitar, para reordenar las recetas de un mismo tiempo sin tener que
 quitarlas y volver a agregarlas -- deshabilitados en los extremos, no afectan el "epoch" de
 colapso de cada tarjeta (el `instancia_id` no cambia al reordenar).
+
+**Historial reubicado (0.25.1, 2026-08-30, a pedido del usuario)**: el expander "📜 Historial de
+planes guardados" vive ahora justo debajo del selector de "Persona", no al final de la página --
+abrir/editar un día ya guardado es de lo que más se usa, así que no debería requerir bajar toda la
+página cada vez.
 
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,
