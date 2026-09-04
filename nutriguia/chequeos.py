@@ -1,4 +1,4 @@
-"""Detección de problemas de integridad entre colecciones de Mongo -- sin UI. Factorizado
+"""Detección de problemas de integridad entre tablas de la base de datos -- sin UI. Factorizado
 2026-08-31 (a pedido del usuario, revisión de "Chequeos automáticos" tras las limpiezas de datos
 recientes) desde `views/configuracion.py`, que antes tenía esta lógica mezclada con el renderizado
 de cada chequeo. Separarla permite que `app.py` la reutilice para el badge de alertas junto a
@@ -19,7 +19,12 @@ import streamlit as st
 from nutriguia import db as bd
 from nutriguia.streamlit_data import cargar_catalogo, cargar_objetivo, cargar_personas, cargar_recetas, db
 from nutriguia.texto import normalizar_busqueda
-from nutriguia.validation import ajustar_delta_por_intercambios, delta_objetivo, sumar_por_grupo
+from nutriguia.validation import (
+    ajustar_delta_por_intercambios,
+    alimentos_libres_en_cero,
+    delta_objetivo,
+    sumar_por_grupo,
+)
 
 UMBRAL_SIMILITUD_CATALOGO = 0.82
 
@@ -109,6 +114,34 @@ def ingredientes_duplicados_en_dias() -> list[tuple[dict, str, int, dict, list[s
     return problemas
 
 
+def ingredientes_libres_en_cero_en_recetas() -> list[tuple[dict, list[str]]]:
+    """[(receta, [alimentos_libres_en_cero]), ...] -- ingrediente sin grupo SMAE con
+    `equivalentes: 0` en una receta del banco (KC-003 en BUGS.md, detectado 2026-09-04 tras una
+    semana de uso: "Lista del súper" escala la cantidad a comprar con `equivalentes`, así que un
+    0 ahí se ve como "0 cucharadita" en una lista de compras real, aunque no afecte la aritmética
+    de equivalentes por grupo)."""
+    problemas = []
+    for r in cargar_recetas():
+        afectados = alimentos_libres_en_cero(r["ingredientes"])
+        if afectados:
+            problemas.append((r, afectados))
+    return problemas
+
+
+def ingredientes_libres_en_cero_en_dias() -> list[tuple[dict, str, int, dict, list[str]]]:
+    """Mismo caso que `ingredientes_libres_en_cero_en_recetas()`, pero dentro de un día ya
+    guardado -- mismo patrón que `ingredientes_duplicados_en_dias()` (limpiar el banco no toca
+    los días que ya se guardaron con la receta en su versión anterior)."""
+    problemas = []
+    for doc in bd.listar_todos_los_dias(db()):
+        for tiempo, datos in doc.get("tiempos", {}).items():
+            for indice, inst in enumerate(datos.get("seleccion", [])):
+                afectados = alimentos_libres_en_cero(inst["ingredientes"])
+                if afectados:
+                    problemas.append((doc, tiempo, indice, inst, afectados))
+    return problemas
+
+
 def normalizar_par(a: str, b: str) -> tuple[str, str]:
     return tuple(sorted((a, b)))
 
@@ -194,6 +227,8 @@ def total_alertas() -> int:
         personas_sin_objetivo(),
         asignacion_rota(),
         dias_con_estado_desactualizado(),
+        ingredientes_libres_en_cero_en_recetas(),
+        ingredientes_libres_en_cero_en_dias(),
     ]
     return sum(1 for problema in chequeos if problema)
 

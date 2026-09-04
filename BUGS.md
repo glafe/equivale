@@ -16,9 +16,9 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
   [BUG-012](#bug-012--status-rv), [BUG-013](#bug-013--status-rv), [BUG-014](#bug-014--status-rv)
 
 ### Known Caveats
-- Activos: [KC-003](#kc-003), [KC-004](#kc-004)
+- Activos: [KC-004](#kc-004)
 - Históricos: [KC-001](#kc-001)
-- Resueltos: [KC-002](#kc-002)
+- Resueltos: [KC-002](#kc-002), [KC-003](#kc-003)
 
 ### Feature Requests
 - Propuestos: [FR-001](#fr-001), [FR-005](#fr-005), [FR-006](#fr-006), [FR-009](#fr-009)
@@ -496,28 +496,44 @@ Guía y los acentos de tarjeta se ven un poco menos integrados, pero siguen sien
 #### KC-003
 **Title:** "Lista del súper" muestra cantidad 0 (o "al gusto × 0") para algunos alimentos libres
 **Date Identified:** 2026-08-30
-**Status:** Active
+**Status:** Resolved 2026-09-04
 
 ##### Exec Description
 Un alimento sin grupo SMAE (ej. una especia, "al gusto") en la sección "Sin grupo / libre" de
-"Lista del súper" a veces muestra una cantidad de "0" (ej. "0 cucharadita" de canela) en vez de
-una cantidad útil para comprar -- se ve raro en una lista de compras, aunque no es incorrecto
-dado cómo está modelado el dato.
+"Lista del súper" a veces mostraba una cantidad de "0" (ej. "0 cucharadita" de canela) en vez de
+una cantidad útil para comprar. Revisado de nuevo el 2026-09-04 (revisión de Known Caveats a
+pedido del usuario, tras una semana de uso real) para decidir entre las dos correcciones posibles
+que este caveat dejaba pendientes.
 
-##### Eng Description
-`cantidad_real()` escala `cantidad_por_equivalente` por el total de `equivalentes` sumado de ese
-alimento en la semana. Para un ingrediente libre (`grupo_smae: null`), `equivalentes` no cuenta
-para ningún presupuesto -- algunas recetas del banco lo dejaron en `0` al capturarse (ej. "Canela
-en polvo", "Limón y tajín"), otras en un valor arbitrario distinto de cero (ej. "Mermelada sin
-azúcar" con `equivalentes: 3`) -- no hay un criterio consistente en los datos existentes porque
-nunca importó (`sumar_por_grupo()` los ignora en todos los demás usos). "Lista del súper" es el
-primer lugar donde ese número sí se usa para algo visible (escalar una cantidad real), y expone la
-inconsistencia. Workaround: revisar a ojo la sección "Sin grupo / libre" al hacer el súper --
-suelen ser alimentos de despensa que no se compran por cantidad exacta de todas formas (especias,
-"al gusto"). Arreglo de raíz pendiente: normalizar `equivalentes` de ingredientes libres a un
-valor consistente (ej. siempre 1 por aparición) en el banco de recetas, o mostrar la cantidad tal
-cual del catálogo sin escalar cuando `grupo_smae` es `null` -- no se hizo todavía por no tener
-claro cuál de las dos es la corrección correcta sin uso real de la lista.
+##### Investigación (2026-09-04)
+La causa no era solo dato sucio -- había una contradicción de diseño real entre dos partes de la
+app: el Editor de recetas (`views/editor_recetas.py`) trataba `equivalentes: 0` en un ingrediente
+libre como **legítimo** (comentario explícito en el código: "no cuenta ningún equivalente -> 0",
+ya que `sumar_por_grupo()` lo ignora de todas formas), mientras que "Lista del súper"/"Menú
+semanal" SÍ usan ese mismo número para escalar cuánto mostrar de ese alimento en la lista de
+compras. Se le preguntó al usuario qué esperaba ver ahí (¿cantidad fija del catálogo sin importar
+cuántas veces se usa en la semana, o sumada según `equivalentes` de cada receta?) -- confirmó que
+quiere que siga sumando por `equivalentes` (ej. "Mermelada sin azúcar" con `equivalentes: 3` en
+una receta debe seguir contando triple). Eso descarta la opción "no escalar" y confirma que el
+problema real son las recetas con `equivalentes: 0` puestas ahí por descuido, no una limitación
+del diseño de "sumar por equivalentes".
+
+##### Fix Details (Technical)
+Dos funciones puras nuevas en `nutriguia/validation.py`: `alimentos_libres_en_cero(ingredientes)`
+(detecta) y `corregir_alimentos_libres_en_cero(ingredientes)` (pone `equivalentes: 1` -- mínimo
+sensible, "aparece una vez" -- solo en los ingredientes libres que estaban en 0, sin tocar nada
+más). `views/editor_recetas.py` ya no permite `equivalentes: 0` para NINGÚN ingrediente (antes
+`min_value=0` para libres, ahora siempre `1`) -- el análisis de arriba confirmó que el número sí
+importa para "Lista del súper", así que ya no tiene sentido permitir 0 desde el editor. Dos
+chequeos nuevos en `nutriguia/chequeos.py` (`ingredientes_libres_en_cero_en_recetas()` /
+`..._en_dias()`, mismo patrón "banco + días guardados" que el resto desde `BUG-013`) con botón
+"Corregir a 1" en Configuración -- 12 ocurrencias en el banco (`Canela en polvo`, `Limón y
+tajín`, `Salsa de Jitomate Casera`, `Gelatina de dieta`) y 6 en días ya guardados, corregidas con
+la misma herramienta ya desplegada.
+
+##### Workaround
+Ninguno necesario tras el fix -- antes, revisar a ojo la sección "Sin grupo / libre" al hacer el
+súper.
 
 #### KC-002
 **Title:** Kernels Linux ≥6.19 crashean MongoDB 8.0.x (bug de TCMalloc/rseq) -- ya no aplica, se

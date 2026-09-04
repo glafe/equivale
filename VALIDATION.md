@@ -123,6 +123,27 @@ def fusionar_duplicados_en_menu_guardado(documento: dict, tiempo: str, indice: i
     arriba. Usada en `views/configuracion.py` (2026-08-31, revisión de "Chequeos automáticos"
     tras las limpiezas de datos recientes).
     """
+
+def alimentos_libres_en_cero(ingredientes: list[dict]) -> list[str]:
+    """
+    Nombres (sin duplicar, orden de aparición) de ingredientes sin grupo SMAE ('grupo_smae: None')
+    con 'equivalentes: 0' dentro de 'ingredientes'. 'sumar_por_grupo()' ignora estos ingredientes
+    para la aritmética por grupo (nunca cuentan), pero 'nutriguia/cantidades.py::cantidad_real()'
+    SÍ usa 'equivalentes' para escalar cuánto mostrar de ese alimento en "Lista del súper"/"Menú
+    semanal" -- un 0 ahí se ve como "0 cucharadita" en una lista de compras real (KC-003 en
+    BUGS.md, detectado 2026-08-30, resuelto 2026-09-04 tras confirmar con el usuario que
+    'equivalentes' SÍ debe seguir escalando la cantidad -- el problema real era dato con 0 puesto
+    por descuido, no el diseño de escalar).
+    """
+
+def corregir_alimentos_libres_en_cero(ingredientes: list[dict]) -> list[dict]:
+    """
+    Lista NUEVA con 'equivalentes' puesto a 1 (mínimo sensible -- "aparece una vez") en todo
+    ingrediente detectado por 'alimentos_libres_en_cero()'. No muta la lista original. No afecta
+    la aritmética de equivalentes por grupo (sigue sin contar para ningún grupo), solo la cantidad
+    mostrada. Usada en `views/configuracion.py` (chequeos "Ingredientes libres con cantidad en
+    cero", banco de recetas y días ya guardados).
+    """
 ```
 
 ## Regla de prueba de regresión (obligatoria antes de tocar la UI)

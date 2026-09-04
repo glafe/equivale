@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.29.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.30.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -254,6 +254,20 @@ kernel que ya no aplica sin Mongo) se cerró como Resolved en `BUGS.md`. Nueva c
 paso: `nutriguia/db.py` se puede probar con `sqlite3.connect(":memory:")` (`tests/test_db.py`) --
 con Mongo esto no era practicable sin una instancia viva, así que la capa de persistencia pasó de
 0% de cobertura a tenerla completa.
+
+**`KC-003` resuelto (0.30.0, 2026-09-04)**: revisando los Known Caveats de nuevo con el usuario
+(ya con una semana de uso real), se investigó por qué "Lista del súper" mostraba "0 cucharadita"
+para algunos alimentos libres (sin grupo SMAE, ej. Canela). La causa era una contradicción de
+diseño: el Editor de recetas trataba `equivalentes: 0` en un ingrediente libre como legítimo
+(nunca cuenta para ningún grupo), pero "Lista del súper"/"Menú semanal" sí usan ese número para
+escalar la cantidad a comprar. Se le preguntó al usuario qué esperaba ver ahí -- confirmó que
+`equivalentes` SÍ debe seguir sumando la cantidad real (ej. una receta con `equivalentes: 3` de
+Mermelada debe contar triple), lo que descarta "no escalar nunca" como solución y confirma que el
+problema real eran datos con `equivalentes: 0` puestos por descuido. `views/editor_recetas.py` ya
+no permite 0 para ningún ingrediente (antes sí, para los libres); nuevas
+`alimentos_libres_en_cero()`/`corregir_alimentos_libres_en_cero()` en `nutriguia/validation.py` +
+dos chequeos nuevos en Configuración (banco de recetas y días ya guardados, mismo patrón desde
+`BUG-013`) corrigieron las 12 + 6 apariciones ya afectadas en producción.
 
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,

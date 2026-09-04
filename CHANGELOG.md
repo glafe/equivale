@@ -20,6 +20,19 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.30.0] - 2026-09-04
+
+### Fixed
+- **KC-003**: "Lista del súper" ya no muestra "0 cucharadita" (o similar) para alimentos libres
+  (sin grupo SMAE) -- causa real: el Editor de recetas permitía `equivalentes: 0` en un
+  ingrediente libre como "válido" aunque "Lista del súper"/"Menú semanal" sí usan ese número para
+  escalar la cantidad a comprar. Confirmado con el usuario que el diseño correcto es seguir
+  sumando por `equivalentes` (no mostrar siempre la cantidad fija del catálogo), así que la
+  corrección es a los datos/UI, no al diseño de la lista. `views/editor_recetas.py` ya exige
+  mínimo 1 para cualquier ingrediente; nuevas `alimentos_libres_en_cero()` /
+  `corregir_alimentos_libres_en_cero()` en `nutriguia/validation.py` + dos chequeos nuevos en
+  Configuración detectan y corrigen los casos existentes (banco de recetas y días ya guardados).
+
 ## [0.29.0] - 2026-09-04
 
 ### Changed

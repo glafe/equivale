@@ -143,6 +143,33 @@ def fusionar_ingredientes_duplicados(ingredientes: list[dict]) -> list[dict]:
     return resultado
 
 
+def alimentos_libres_en_cero(ingredientes: list[dict]) -> list[str]:
+    """[alimento, ...] -- nombres (sin duplicar, orden de aparición) de ingredientes SIN grupo
+    SMAE (`grupo_smae: None`) con `equivalentes: 0` dentro de `ingredientes`. `sumar_por_grupo()`
+    ignora estos ingredientes para la aritmética de equivalentes (no cuentan para ningún grupo),
+    pero `nutriguia/cantidades.py::cantidad_real()` sí usa `equivalentes` para escalar cuánto
+    mostrar de ese alimento en "Lista del súper"/"Menú semanal" -- un 0 ahí se ve como "0
+    cucharadita" en una lista de compras real (KC-003 en BUGS.md, detectado 2026-09-04 tras una
+    semana de uso)."""
+    vistos: list[str] = []
+    for ing in ingredientes:
+        if ing.get("grupo_smae") is None and ing["equivalentes"] == 0 and ing["alimento"] not in vistos:
+            vistos.append(ing["alimento"])
+    return vistos
+
+
+def corregir_alimentos_libres_en_cero(ingredientes: list[dict]) -> list[dict]:
+    """Nueva lista con `equivalentes` puesto a 1 (mínimo sensible -- "aparece una vez") en todo
+    ingrediente libre que estaba en 0 (ver `alimentos_libres_en_cero()`). No afecta la aritmética
+    de equivalentes por grupo (sigue sin contar para ningún grupo), solo la cantidad mostrada."""
+    resultado = []
+    for ing in ingredientes:
+        if ing.get("grupo_smae") is None and ing["equivalentes"] == 0:
+            ing = dict(ing, equivalentes=1)
+        resultado.append(ing)
+    return resultado
+
+
 def renombrar_ingrediente_en_menu_guardado(documento: dict, nombre_viejo: str, nombre_nuevo: str) -> bool:
     """Renombra `nombre_viejo` -> `nombre_nuevo` dentro de un `menus_construidos` YA GUARDADO
     (mutado in place) -- necesario porque limpiar/fusionar el catálogo (`views/editor_ingredientes

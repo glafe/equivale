@@ -22,6 +22,7 @@ from nutriguia.streamlit_data import (
     invalidar_cache_recetas,
 )
 from nutriguia.validation import (
+    corregir_alimentos_libres_en_cero,
     fusionar_duplicados_en_menu_guardado,
     fusionar_ingredientes_duplicados,
     renombrar_ingrediente_en_menu_guardado,
@@ -346,6 +347,52 @@ def _check_ingredientes_duplicados_en_receta():
                     st.rerun()
 
 
+def _check_ingredientes_libres_en_cero():
+    with st.expander("🧂 Ingredientes libres con cantidad en cero"):
+        st.caption(
+            "Un ingrediente sin grupo SMAE (ej. una especia, \"al gusto\") con `equivalentes: 0` "
+            "no afecta la aritmética de equivalentes por grupo (nunca contó para ninguno), pero "
+            "\"Lista del súper\"/\"Menú semanal\" sí usan ese número para escalar cuánto mostrar "
+            "de ese alimento -- un 0 ahí se ve como \"0 cucharadita\" en una lista de compras real "
+            "(KC-003 en BUGS.md, detectado 2026-09-04 tras una semana de uso). Corregir pone el "
+            "mínimo sensible (1 -- \"aparece una vez\") sin tocar nada más de la receta/día."
+        )
+        problemas_recetas = chequeos.ingredientes_libres_en_cero_en_recetas()
+        problemas_dias = chequeos.ingredientes_libres_en_cero_en_dias()
+
+        if not problemas_recetas and not problemas_dias:
+            st.success("Sin ingredientes libres en cero.")
+            return
+
+        st.warning(
+            f"{len(problemas_recetas)} receta(s) y {len(problemas_dias)} día(s) guardado(s) con "
+            "algún ingrediente libre en cero."
+        )
+        for r, afectados in problemas_recetas:
+            with st.container(border=True):
+                st.markdown(f"**{r['nombre']}** (receta del banco) — en cero: " + ", ".join(f"'{n}'" for n in afectados))
+                if st.button("Corregir a 1", key=f"corregir_libre_cero_{r['receta_id']}"):
+                    r["ingredientes"] = corregir_alimentos_libres_en_cero(r["ingredientes"])
+                    bd.guardar_receta(db(), r)
+                    invalidar_cache_recetas()
+                    chequeos.invalidar_cache_alertas()
+                    st.session_state["_flash_config"] = f"Ingredientes libres de '{r['nombre']}' corregidos a 1."
+                    st.rerun()
+        for doc, tiempo, indice, inst, afectados in problemas_dias:
+            with st.container(border=True):
+                etiqueta_dia = f"{doc['persona']} · {doc.get('nombre') or doc['fecha']}"
+                st.markdown(
+                    f"**{inst['nombre']}** (día guardado: {etiqueta_dia}, {TIEMPO_LABEL.get(tiempo, tiempo)}) "
+                    "— en cero: " + ", ".join(f"'{n}'" for n in afectados)
+                )
+                if st.button("Corregir a 1", key=f"corregir_libre_cero_dia_{doc['persona']}_{doc['fecha']}_{tiempo}_{indice}"):
+                    inst["ingredientes"] = corregir_alimentos_libres_en_cero(inst["ingredientes"])
+                    bd.guardar_dia(db(), doc["persona"], doc["fecha"], doc.get("nombre"), doc)
+                    chequeos.invalidar_cache_alertas()
+                    st.session_state["_flash_config"] = f"Ingredientes libres de '{inst['nombre']}' corregidos a 1."
+                    st.rerun()
+
+
 def _check_duplicados_catalogo():
     with st.expander("🔎 Posibles duplicados en el catálogo de ingredientes"):
         st.caption(
@@ -485,6 +532,7 @@ def render() -> None:
     _check_recetas_huerfanas()
     _check_vector_desincronizado()
     _check_ingredientes_duplicados_en_receta()
+    _check_ingredientes_libres_en_cero()
     _check_duplicados_catalogo()
     _check_personas_sin_objetivo()
     _check_asignacion_rota()

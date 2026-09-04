@@ -477,6 +477,13 @@ la app, en el peor caso el badge simplemente no aparece esa vez.
     **"Son diferentes"** guarda el par en `duplicados_descartados` (2026-08-29, a pedido del
     usuario) para que no se vuelva a sugerir — reversible desde un expander "Pares marcados como
     diferentes" en la misma sección.
+  - **Ingredientes libres con cantidad en cero** (nuevo 2026-09-04, ver `KC-003` en `BUGS.md`):
+    un ingrediente sin grupo SMAE (ej. una especia, "al gusto") con `equivalentes: 0` en una
+    receta del banco o en un día ya guardado. No afecta la aritmética por grupo (nunca contó),
+    pero "Lista del súper"/"Menú semanal" sí usan `equivalentes` para escalar cuánto mostrar de
+    ese alimento -- un 0 ahí se ve como "0 cucharadita" en una lista de compras real. Botón
+    "Corregir a 1" (mínimo sensible, "aparece una vez") usa `corregir_alimentos_libres_en_cero()`
+    de `nutriguia/validation.py`, mismo patrón banco+días guardados que el resto desde `BUG-013`.
   - **Personas sin objetivo diario** y **asignación semanal apuntando a un menú eliminado** —
     chequeos más chicos, mismo patrón de aviso + acción corta.
   - **Días guardados con estado desactualizado** (nuevo 2026-08-31, a pedido del usuario -- red de

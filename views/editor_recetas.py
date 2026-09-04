@@ -193,12 +193,13 @@ def render() -> None:
             )
             fila["grupo_smae"] = None if grupo_sel == LIBRE else grupo_sel
 
-            # Un ingrediente "libre" (grupo_smae None, ej. "Canela", "Salsa casera al gusto")
-            # legítimamente no cuenta ningún equivalente -> 0. sumar_por_grupo() los ignora de
-            # todas formas (ver VALIDATION.md), así que min_value=1 aquí solo aplicaba a
-            # ingredientes con grupo real; forzarlo siempre tronaba el editor en cuanto cargaba
-            # una receta con un ingrediente libre ya guardado en equivalentes=0.
-            min_equivalentes = 0 if fila["grupo_smae"] is None else 1
+            # Un ingrediente "libre" (grupo_smae None, ej. "Canela", "Salsa casera al gusto") no
+            # cuenta para ningún grupo (sumar_por_grupo() lo ignora, ver VALIDATION.md), pero
+            # "Lista del súper"/"Menú semanal" SÍ usan `equivalentes` para escalar cuánto mostrar
+            # de ese alimento -- un 0 ahí se ve como "0 cucharadita" en una lista de compras real
+            # (KC-003 en BUGS.md, detectado 2026-09-04 tras una semana de uso). Por eso el mínimo
+            # es 1 para cualquier ingrediente, tenga grupo o no.
+            min_equivalentes = 1
             equiv_key = f"equiv_{fila['fila_id']}"
             # Si el usuario acaba de cambiar el Grupo de "libre" a uno real en esta misma sesión,
             # el valor ya guardado en session_state para este widget puede seguir en 0 -> subirlo
