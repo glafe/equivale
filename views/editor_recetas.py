@@ -8,6 +8,7 @@ import uuid
 
 import streamlit as st
 
+from nutriguia import db as bd
 from nutriguia.cantidades import escalar_cantidad
 from nutriguia.colores import GRUPO_ETIQUETA, chip_html
 from nutriguia.streamlit_data import (
@@ -99,7 +100,7 @@ def render() -> None:
     recetas = cargar_recetas()
     personas = cargar_personas()
     alimentos_catalogo = cargar_nombres_alimentos()
-    catalogo_por_nombre = {d["alimento"]: d for d in db().catalogo_alimentos.find({}, {"_id": 0})}
+    catalogo_por_nombre = {d["alimento"]: d for d in bd.listar_catalogo(db())}
 
     recetas_por_id = {r["receta_id"]: r for r in recetas}
     if "_flash" in st.session_state:
@@ -295,7 +296,7 @@ def render() -> None:
                 "veces_visto": draft["veces_visto"],
                 "origen": draft["origen"],
             }
-            db().recetas.replace_one({"receta_id": receta_id}, documento, upsert=True)
+            bd.guardar_receta(db(), documento)
             invalidar_cache_recetas()
             draft["receta_id"] = receta_id
             if elegido == NUEVA_RECETA:
@@ -314,7 +315,7 @@ def render() -> None:
         if draft["receta_id"] is not None:
             confirmar = st.checkbox("Confirmo que quiero eliminar esta receta")
             if st.button("🗑️ Eliminar receta", disabled=not confirmar):
-                db().recetas.delete_one({"receta_id": draft["receta_id"]})
+                bd.eliminar_receta(db(), draft["receta_id"])
                 invalidar_cache_recetas()
                 st.session_state["_seleccionar_tras_guardar"] = NUEVA_RECETA
                 st.session_state["_editor_actual"] = NUEVA_RECETA

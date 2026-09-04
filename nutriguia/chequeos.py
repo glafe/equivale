@@ -16,6 +16,7 @@ import difflib
 
 import streamlit as st
 
+from nutriguia import db as bd
 from nutriguia.streamlit_data import cargar_catalogo, cargar_objetivo, cargar_personas, cargar_recetas, db
 from nutriguia.texto import normalizar_busqueda
 from nutriguia.validation import ajustar_delta_por_intercambios, delta_objetivo, sumar_por_grupo
@@ -38,7 +39,7 @@ def ingredientes_huerfanos() -> dict[str, dict]:
                     ing["alimento"], {"grupo": ing.get("grupo_smae"), "recetas": set(), "dias": set()}
                 )
                 entry["recetas"].add(r["nombre"])
-    for doc in db().menus_construidos.find({}):
+    for doc in bd.listar_todos_los_dias(db()):
         for tiempo, datos in doc.get("tiempos", {}).items():
             for inst in datos.get("seleccion", []):
                 for ing in inst["ingredientes"]:
@@ -56,7 +57,7 @@ def recetas_huerfanas() -> list[tuple[dict, str, dict]]:
     recetas_ids = {r["receta_id"] for r in cargar_recetas()}
     return [
         (doc, tiempo, inst)
-        for doc in db().menus_construidos.find({}, {"_id": 0})
+        for doc in bd.listar_todos_los_dias(db())
         for tiempo, datos in doc.get("tiempos", {}).items()
         for inst in datos.get("seleccion", [])
         if inst["receta_id"] is not None and inst["receta_id"] not in recetas_ids
@@ -96,7 +97,7 @@ def ingredientes_duplicados_en_dias() -> list[tuple[dict, str, int, dict, list[s
     receta original en el banco ya esté corregida). `indice` es la posición de la instancia dentro
     de `seleccion` -- un día guardado no tiene `instancia_id` (ver schema.md)."""
     problemas = []
-    for doc in db().menus_construidos.find({}):
+    for doc in bd.listar_todos_los_dias(db()):
         for tiempo, datos in doc.get("tiempos", {}).items():
             for indice, inst in enumerate(datos.get("seleccion", [])):
                 vistos: dict[str, int] = {}
@@ -113,7 +114,7 @@ def normalizar_par(a: str, b: str) -> tuple[str, str]:
 
 
 def pares_descartados() -> set[tuple[str, str]]:
-    return {normalizar_par(d["a"], d["b"]) for d in db().duplicados_descartados.find({}, {"_id": 0})}
+    return {normalizar_par(a, b) for a, b in bd.listar_pares_descartados(db())}
 
 
 def pares_similares_en_catalogo(umbral: float = UMBRAL_SIMILITUD_CATALOGO) -> list[tuple[str, str, float]]:
@@ -144,12 +145,11 @@ def asignacion_rota() -> list[tuple[str, str, str]]:
     """[(persona, dia, nombre_eliminado), ...] -- un día de `asignacion_semanal` que apunta a un
     nombre que ya no existe en `menus_construidos` de esa persona."""
     problemas = []
-    for doc in db().asignacion_semanal.find({}, {"_id": 0}):
+    for doc in bd.listar_todas_las_asignaciones(db()):
         nombres_persona = {
             m["nombre"]
-            for m in db().menus_construidos.find(
-                {"persona": doc["persona"], "nombre": {"$ne": None}}, {"nombre": 1}
-            )
+            for m in bd.listar_dias(db(), doc["persona"])
+            if m["nombre"] is not None
         }
         for dia, nombre in doc.get("dias", {}).items():
             if nombre and nombre not in nombres_persona:
@@ -166,7 +166,7 @@ def dias_con_estado_desactualizado() -> list[tuple[dict, dict, str]]:
     2026-08-31, revisión de "Chequeos automáticos" tras esa misma limpieza -- pensado como red de
     seguridad general para cualquier cambio futuro de este tipo, no solo este caso puntual."""
     problemas = []
-    for doc in db().menus_construidos.find({}):
+    for doc in bd.listar_todos_los_dias(db()):
         delta_nuevo = ajustar_delta_por_intercambios(
             delta_objetivo(doc.get("objetivo_diario", {}), doc.get("actual_diario", {}))
         )

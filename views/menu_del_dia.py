@@ -9,6 +9,7 @@ from datetime import date
 
 import streamlit as st
 
+from nutriguia import db as bd
 from nutriguia.cantidades import escalar_cantidad
 from nutriguia.colores import GRUPO_ETIQUETA, chip_html, chip_muted_html
 from nutriguia.streamlit_data import (
@@ -133,15 +134,18 @@ def _cargar_plan_guardado(doc: dict) -> dict:
 
 def _nombre_en_uso_por_otra_fecha(persona: str, nombre: str, fecha_iso: str) -> str | None:
     """Un nombre debe identificar UN solo menú por persona (para poder elegirlo sin ambigüedad
-    en "Menú semanal") -- si ya lo usa otra fecha, regresa esa fecha para poder avisar."""
-    otro = db().menus_construidos.find_one(
-        {"persona": persona, "nombre": nombre, "fecha": {"$ne": fecha_iso}}, {"fecha": 1}
-    )
-    return otro["fecha"] if otro else None
+    en "Menú semanal") -- si ya lo usa otra fecha, regresa esa fecha para poder avisar.
+
+    `bd.nombre_en_uso()` solo devuelve un bool -- para poder seguir mostrando la fecha en
+    conflicto en el mensaje de aviso, se busca directo sobre `bd.listar_dias()` en vez de usarla."""
+    for doc in bd.listar_dias(db(), persona):
+        if doc.get("nombre") == nombre and doc["fecha"] != fecha_iso:
+            return doc["fecha"]
+    return None
 
 
 def _cargar_historial(persona: str) -> list[dict]:
-    return list(db().menus_construidos.find({"persona": persona}, {"_id": 0}).sort("fecha", -1))
+    return bd.listar_dias(db(), persona)
 
 
 def _clonar_a_persona(doc: dict, persona_destino: str, fecha_destino: date) -> str | None:
@@ -200,10 +204,7 @@ def _clonar_a_persona(doc: dict, persona_destino: str, fecha_destino: date) -> s
         "delta_diario": delta_diario,
         "tiempos": tiempos_clonados,
     }
-    db().menus_construidos.create_index([("persona", 1), ("fecha", 1)], unique=True)
-    db().menus_construidos.replace_one(
-        {"persona": persona_destino, "fecha": fecha_iso}, documento, upsert=True
-    )
+    bd.guardar_dia(db(), persona_destino, fecha_iso, nombre_final, documento)
     return conflicto
 
 
@@ -499,10 +500,7 @@ def render() -> None:
                     # diferencia de "Guardar" (donde el usuario ve en pantalla lo que va a
                     # reemplazar) aquí el plan de destino no es visible antes de confirmar, así
                     # que sí vale la pena avisar explícitamente.
-                    existente = db().menus_construidos.find_one(
-                        {"persona": destino, "fecha": fecha_destino.isoformat()},
-                        {"nombre": 1},
-                    )
+                    existente = bd.obtener_dia(db(), destino, fecha_destino.isoformat())
                     if existente:
                         etiqueta_existente = f" ('{existente['nombre']}')" if existente.get("nombre") else ""
                         st.warning(
@@ -613,8 +611,7 @@ def render() -> None:
                 if instancias
             },
         }
-        db().menus_construidos.create_index([("persona", 1), ("fecha", 1)], unique=True)
-        db().menus_construidos.replace_one({"persona": persona, "fecha": fecha_iso}, documento, upsert=True)
+        bd.guardar_dia(db(), persona, fecha_iso, documento["nombre"], documento)
         mensaje = f"Guardado: plan de {persona} para {fecha_iso} ({documento['estado']})."
         if nombre_final:
             mensaje += f" Guardado también como '{nombre_final}' -- ya se puede asignar en \"Menú semanal\"."

@@ -16,8 +16,9 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
   [BUG-012](#bug-012--status-rv), [BUG-013](#bug-013--status-rv), [BUG-014](#bug-014--status-rv)
 
 ### Known Caveats
-- Activos: [KC-002](#kc-002), [KC-003](#kc-003), [KC-004](#kc-004)
+- Activos: [KC-003](#kc-003), [KC-004](#kc-004)
 - Históricos: [KC-001](#kc-001)
+- Resueltos: [KC-002](#kc-002)
 
 ### Feature Requests
 - Propuestos: [FR-001](#fr-001), [FR-005](#fr-005), [FR-006](#fr-006), [FR-009](#fr-009)
@@ -519,23 +520,40 @@ cual del catálogo sin escalar cuando `grupo_smae` es `null` -- no se hizo todav
 claro cuál de las dos es la corrección correcta sin uso real de la lista.
 
 #### KC-002
-**Title:** Kernels Linux 6.19–7.0.13 crashean MongoDB 8.0.x (bug de TCMalloc/rseq)
+**Title:** Kernels Linux ≥6.19 crashean MongoDB 8.0.x (bug de TCMalloc/rseq) -- ya no aplica, se
+migró de MongoDB a SQLite
 **Date Identified:** 2026-08-24
-**Status:** Active (mientras el servidor corra un kernel en ese rango)
+**Status:** Resolved 2026-09-04 (migración a SQLite, no un fix del bug en sí)
 
 ##### Exec Description
 MongoDB no arrancaba en el servidor de producción hasta aplicar un workaround de compatibilidad
-de kernel — no es un bug de este proyecto.
+de kernel — no era un bug de este proyecto, sino de MongoDB/TCMalloc. Investigando este caveat de
+nuevo el 2026-09-04 (revisión de Known Caveats a pedido del usuario) se confirmó que **el rango
+documentado originalmente (6.19–7.0.13) estaba desactualizado**: el servidor ya corría
+`7.0.0-30-generic` (por encima de ese rango) y el bug seguía presente -- el rango real es
+"≥6.19, sin límite superior conocido", según `google/tcmalloc#292` y `SERVER-121912` de MongoDB.
+Tampoco había arreglo disponible por ningún lado: ni un kernel más nuevo lo resuelve (el problema
+es que TCMalloc viola el ABI de `rseq`, según los propios mantenedores del kernel, no algo a
+corregir del lado del kernel) ni una versión más nueva de MongoDB (hasta la 8.2 seguía con el
+mismo TCMalloc sin parchar). El usuario decidió resolverlo de raíz migrando de MongoDB a SQLite en
+vez de seguir dependiendo de un workaround sobre un bug sin fecha de fix -- ver `CHANGELOG.md`
+0.29.0 y `ARCHITECTURE.md` para el detalle completo de la migración.
 
 ##### Eng Description
-Bug conocido de glibc/TCMalloc con la syscall `rseq` en esa ventana de versiones de kernel.
-Workaround: override de systemd con `Environment=GLIBC_TUNABLES=glibc.pthread.rseq=1` (ver
-`SETUP.md`). No requiere cambios de código, solo de configuración del servicio.
+Bug conocido de glibc/TCMalloc con la syscall `rseq`. El workaround que se usó mientras corrió
+Mongo: override de systemd con `Environment=GLIBC_TUNABLES=glibc.pthread.rseq=1`. Desde la
+migración, `nutriguia/db.py` usa `sqlite3` (librería estándar de Python) -- sin servicio de base
+de datos, sin ninguna dependencia de comportamiento del kernel. Mongo se detuvo/deshabilitó
+(`systemctl stop mongod && systemctl disable mongod`) como red de seguridad temporal antes de
+desinstalarse por completo.
 
-##### Alternative Solutions
-1. **Elegido** — override de systemd (`GLIBC_TUNABLES`), no invasivo, documentado en `SETUP.md`.
-2. Downgrade de kernel — descartado, complica actualizaciones de seguridad del SO.
-3. Downgrade de MongoDB — descartado, no atacaba la causa raíz.
+##### Alternative Solutions (evaluadas en la revisión de 2026-09-04, antes de decidir migrar)
+1. Actualizar el kernel — descartado: no hay una versión que resuelva el bug, la incompatibilidad
+   sigue sin fecha de fix y el servidor ya estaba en un kernel más nuevo que el rango documentado.
+2. Actualizar MongoDB — descartado: el mismo TCMalloc sin parchar seguía vendorizado hasta la 8.2.
+3. **Elegido** — migrar a SQLite, resuelve el problema de raíz y además habilita el objetivo del
+   usuario de distribuir EquiVale como app instalable sin depender de un servicio de base de datos
+   aparte.
 
 #### KC-001
 **Title:** Ingredientes con el mismo alimento real pero ortografía distinta quedaron como

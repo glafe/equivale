@@ -1,18 +1,21 @@
 # Schema — Nutri-guía
 
 Forma de los documentos usados en este proyecto. Basado en los archivos ya entregados en
-`Json-outputs-sin-notas/`. Los tipos son JSON/Mongo (string, int, bool, array, object). Para las
+`Json-outputs-sin-notas/`. Los tipos son JSON (string, int, bool, array, object) -- desde
+2026-09-04 (SQLite, ver `ARCHITECTURE.md`) cada tabla guarda columnas reales solo para lo que se
+usa como clave/filtro, más el resto del documento tal cual en una columna `datos` como JSON; las
+formas de documento de abajo describen ese JSON lógico, no cambiaron con la migración. Para las
 reglas de construcción del proyecto (arquitectura, instalación, UI), ver `ARCHITECTURE.md`,
 `SETUP.md`, `VALIDATION.md`, `UI-BUILD-YOUR-MENU.md`, `BUILD-PLAN.md`.
 
-## Colección `catalogo_alimentos` — un documento por alimento (aplanado en Mongo)
+## Tabla `catalogo_alimentos` — un documento por alimento (aplanado al importar)
 
 Fuente del archivo: `catalogo-alimentos.json` (anidado por grupo). **Decisión ya tomada**: al
-importar a Mongo se aplana a un documento por alimento — más fácil de indexar/buscar por nombre,
+importar se aplana a un documento por alimento — más fácil de indexar/buscar por nombre,
 y es lo que usa `paso_equivalente()` (ver `VALIDATION.md`) para saber cuánto vale un paso del
 stepper en la UI.
 
-Forma del documento en Mongo (colección `catalogo_alimentos`):
+Forma del documento (tabla `catalogo_alimentos`):
 ```
 {
   "alimento": string,                  // nombre canónico, ej. "Pollo"
@@ -27,7 +30,7 @@ Forma del documento en Mongo (colección `catalogo_alimentos`):
 solo traía alimentos CON grupo — los "libres" (agua, especias, alimentos sin equivalente) vivían
 separados, fuera de esta colección, según el archivo fuente `catalogo-alimentos.json`. El editor
 de ingredientes (`views/editor_ingredientes.py`) permite agregar/editar alimentos con
-`grupo: null` directamente en Mongo (ej. al importar uno de los 213 "Alimentos libres en energía"
+`grupo: null` directamente en la base de datos (ej. al importar uno de los 213 "Alimentos libres en energía"
 de `SMAE_CONSULTA.csv`) — esto es válido y no rompe nada: `sumar_por_grupo()` ya ignora items sin
 grupo (ver `VALIDATION.md`), y tenerlos en el catálogo simplemente les da un
 `cantidad_por_equivalente` para que el stepper +/- funcione y el editor de recetas auto-llene
@@ -60,7 +63,13 @@ Los 7 nombres de `grupos` son fijos y canónicos — no crear grupos nuevos sin 
 usuario: `AOA`, `Cereal`, `Verdura`, `Fruta`, `Aceite s/p`, `Aceite c/p`, `Leguminosa`.
 `"Leguminosa"` es el nombre correcto (no usar `"Legumin"`).
 
-## Colección `menus` — histórico, de solo lectura (un documento por persona + periodo)
+## `menus` — histórico, de solo lectura (un documento por persona + periodo) -- NO migrado a SQLite
+
+**No forma parte de `data/equivale.db`** (migración de 2026-09-04, ver `ARCHITECTURE.md`): nada en
+la app lo leía (ni siquiera `test_validation.py`, que valida estos menús históricos leyendo
+directo de `data/Json-outputs-sin-notas/*.json`) -- se dejó fuera a propósito, un dato menos que
+cargar. La forma de abajo queda documentada porque sigue siendo la forma real de esos archivos
+JSON de origen, útiles para auditoría/referencia.
 
 ```
 {
@@ -141,7 +150,7 @@ Se agregó específicamente para poder fusionar recetas casi idénticas que solo
 ingrediente extra (ver limpieza del banco de "filete de pescado" en el historial de commits) en vez
 de mantenerlas como documentos separados.
 
-## Colección `recetas` — banco de platillos reutilizables (para generación y para la UI)
+## Tabla `recetas` — banco de platillos reutilizables (para generación y para la UI)
 
 Fuente: `recetas.json`, extraído automáticamente el 2026-08-24 de los 17 menús ya reconciliados en
 `Json-outputs-sin-notas/`. Son 159 platillos reales (ya cocinados, con equivalentes validados) —
@@ -185,7 +194,7 @@ haga la suma. El LLM entra para: elegir entre varias recetas que califican (vari
 repetido últimamente), redactar el resultado final legible, y proponer recetas nuevas cuando el
 banco no tiene ninguna combinación que cuadre con el objetivo.
 
-## Colección `objetivos` — objetivo diario vigente, por persona
+## Tabla `objetivos` — objetivo diario vigente, por persona
 
 **No viene de un archivo fuente** — se construyó en Fase 1 de `BUILD-PLAN.md`, confirmado con el
 usuario el 2026-08-24 para el periodo Agosto-Septiembre 2026 a partir de
@@ -216,9 +225,9 @@ una comparación contra un objetivo fijo de esa comida en particular. `validar_t
 
 **Pendiente futuro** (ver `BUILD-PLAN.md` → "Ideas para más adelante"): que el objetivo de cada
 persona sea editable desde la propia UI, con perfiles por persona — hoy solo se puede cambiar
-insertando un nuevo documento con `vigente_desde` más reciente directamente en Mongo.
+insertando un nuevo documento con `vigente_desde` más reciente directamente en la base de datos.
 
-## Colección `menus_construidos` — lo que arma el usuario en la UI
+## Tabla `menus_construidos` — lo que arma el usuario en la UI
 
 **Actualizado en Fase 4 (2026-08-27)** respecto al diseño original de este documento — ver notas
 inline abajo de qué cambió y por qué (priorizando que el round-trip guardar→volver a abrir sea
@@ -233,10 +242,14 @@ exacto, criterio de "hecho" explícito de `BUILD-PLAN.md` → Fase 4).
   "nombre": string | null,          // opcional (2026-08-29) -- si se le pone un nombre (ej.
                                      // "Menú 1"), este día se vuelve reutilizable/asignable desde
                                      // "Menú semanal" (ver más abajo). Único por persona entre
-                                     // los documentos CON nombre (validado en la app, no con un
-                                     // índice de Mongo -- ver views/menu_del_dia.py
-                                     // `_nombre_en_uso_por_otra_fecha()`). null = solo bitácora
-                                     // de esa fecha, no aparece en "Menú semanal".
+                                     // los documentos CON nombre -- desde la migración a SQLite
+                                     // (2026-09-04) esto es un UNIQUE INDEX real y parcial
+                                     // (`ux_dia_nombre`, `WHERE nombre IS NOT NULL`), no solo
+                                     // validación de la app (ver views/menu_del_dia.py
+                                     // `_nombre_en_uso_por_otra_fecha()`, que sigue existiendo
+                                     // para poder mostrar la fecha en conflicto en el aviso).
+                                     // null = solo bitácora de esa fecha, no aparece en "Menú
+                                     // semanal".
   "estado": string,                 // "completo" si delta_diario da todo cero, si no "en_progreso"
   "objetivo_diario": { grupo: int, ... },  // snapshot del objetivo vigente al momento de guardar
                                             // (por si el objetivo de la persona cambia después)
@@ -276,7 +289,7 @@ segundo picker de recetas más pobre en paralelo. Se quitó esta colección por 
 ningún dato real en ella (se detectó y corrigió antes de que el usuario llegara a usarla). Ver
 `menus_construidos.nombre` (arriba) y `asignacion_semanal` (abajo) para el diseño vigente.
 
-## Colección `asignacion_semanal` — qué día con nombre aplica a cada día de la semana (2026-08-29)
+## Tabla `asignacion_semanal` — qué día con nombre aplica a cada día de la semana (2026-08-29)
 
 Un documento por persona (se sobreescribe, no se versiona por ahora).
 
@@ -330,7 +343,7 @@ Ajustar un ingrediente con el stepper +/- SIEMPRE se hace en pasos de 1 equivale
 ingredientes compuestos como "Nopal y Pimiento") no es ajustable por stepper — se agrega/quita
 completo.
 
-## Colección `duplicados_descartados` — pares de alimentos marcados "son diferentes" (2026-08-29)
+## Tabla `duplicados_descartados` — pares de alimentos marcados "son diferentes" (2026-08-29)
 
 Usada por la página "Configuración" → "Posibles duplicados en el catálogo": cuando el usuario
 revisa un par sugerido por similitud de texto y decide que en realidad son alimentos distintos
@@ -359,5 +372,6 @@ Para cada `menu` (variante): `sum(tiempo.equivalentes de todos los tiempos, agru
 Mismo schema exacto, la única diferencia es que `Json-outputs/` incluye `"nota"` en cada
 ingrediente/entrada donde hubo una decisión editorial, y campos top-level `_nota*` con contexto de
 por qué se resolvió así. `Json-outputs-sin-notas/` quita TODOS los campos `nota` y `_nota*`
-recursivamente — mismo dato estructurado, sin la prosa. Usar `-sin-notas` para poblar Mongo y como
-contexto de trabajo; usar la versión con notas solo si se necesita auditar una decisión específica.
+recursivamente — mismo dato estructurado, sin la prosa. Usar `-sin-notas` para poblar la base de
+datos y como contexto de trabajo; usar la versión con notas solo si se necesita auditar una
+decisión específica.

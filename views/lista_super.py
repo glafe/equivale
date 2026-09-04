@@ -14,6 +14,7 @@ Ver UI-BUILD-YOUR-MENU.md → "Lista del súper" para la especificación complet
 
 import streamlit as st
 
+from nutriguia import db as bd
 from nutriguia.colores import GRUPO_ETIQUETA, chip_html
 from nutriguia.html_lista_super import SIN_CATALOGAR, agrupar_alimentos_por_grupo, generar_html_lista_super
 from nutriguia.streamlit_data import cargar_catalogo, cargar_personas, db
@@ -27,14 +28,13 @@ DIA_LABEL = {
 
 
 def _cargar_asignacion(persona: str) -> dict[str, str | None]:
-    doc = db().asignacion_semanal.find_one({"persona": persona}, {"_id": 0})
+    doc = bd.obtener_asignacion(db(), persona)
     dias_guardados = doc.get("dias", {}) if doc else {}
     return {d: dias_guardados.get(d) for d in DIAS}
 
 
 def _cargar_menus_nombrados(persona: str) -> dict[str, dict]:
-    docs = db().menus_construidos.find({"persona": persona, "nombre": {"$ne": None}}, {"_id": 0})
-    return {d["nombre"]: d for d in docs}
+    return {d["nombre"]: d for d in bd.listar_dias(db(), persona) if d.get("nombre")}
 
 
 def _ingredientes_de_la_semana(persona: str) -> tuple[list[dict], list[tuple[str, str]]]:

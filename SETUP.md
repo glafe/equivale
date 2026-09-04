@@ -1,97 +1,25 @@
 # Setup — instalación en la máquina Linux (para Claude Code)
 
-Instrucciones para dejar corriendo MongoDB + el entorno Python en la máquina Linux a la que se
-accede por SSH. Ejecutar en orden. Si algún paso falla, diagnosticar antes de continuar — no
-saltarse pasos de verificación.
+Instrucciones para dejar corriendo el entorno Python en la máquina Linux a la que se accede por
+SSH. Ejecutar en orden. Si algún paso falla, diagnosticar antes de continuar — no saltarse pasos
+de verificación.
 
-**Ya ejecutado una vez** (2026-08-24) — este documento ahora sirve doble propósito: la receta
-original de instalación, Y la referencia de cómo quedó configurado el servidor real (pasos 1 y 8
-incluyen notas de gotchas/decisiones ya resueltas). Si el servidor ya existe y solo se necesita
-redesplegar código nuevo, ir directo a la sección "Redesplegar cambios de código" en el paso 8.
+**Ya ejecutado una vez** (2026-08-24, migrado de MongoDB a SQLite el 2026-09-04 — ver
+`BUGS.md` `KC-002` y `CHANGELOG.md` para el porqué) — este documento ahora sirve doble propósito:
+la receta original de instalación, Y la referencia de cómo quedó configurado el servidor real. Si
+el servidor ya existe y solo se necesita redesplegar código nuevo, ir directo a la sección
+"Redesplegar cambios de código" al final.
 
-## 0. Detectar la distro antes de instalar nada
+**No hay una base de datos que instalar.** EquiVale usa SQLite (`sqlite3`, incluido en la
+librería estándar de Python) — un archivo único en `data/equivale.db`, sin servicio ni
+dependencia del sistema operativo. Esto es justo lo que hace posible instalar EquiVale igual en
+Windows/Linux/Mac sin las fricciones que sí tenía MongoDB (ver nota histórica al final de este
+documento).
 
-```bash
-cat /etc/os-release
-```
-
-Los comandos de abajo son para **Debian/Ubuntu** (`apt`). Si la distro es RHEL/Fedora/Rocky
-(`dnf`/`yum`) o Arch (`pacman`), traducir los mismos pasos al gestor de paquetes correspondiente y
-a la guía oficial de instalación de MongoDB para esa distro — no asumir `apt` sin haber
-confirmado la distro primero.
-
-## 1. Instalar MongoDB Community Edition (Debian/Ubuntu)
+## 1. Entorno Python
 
 ```bash
-# Importar la llave GPG oficial de MongoDB
-curl -fsSL https://pgp.mongodb.com/server-8.0.asc | \
-  sudo gpg -o /usr/share/keyrings/mongodb-server-8.0.gpg --dearmor
-
-# Agregar el repo (ajustar 'jammy'/'noble'/etc. según $VERSION_CODENAME de /etc/os-release)
-echo "deb [ arch=amd64,arm64 signed-by=/usr/share/keyrings/mongodb-server-8.0.gpg ] \
-  https://repo.mongodb.org/apt/ubuntu $(lsb_release -cs)/mongodb-org/8.0 multiverse" | \
-  sudo tee /etc/apt/sources.list.d/mongodb-org-8.0.list
-
-sudo apt update
-sudo apt install -y mongodb-org
-
-# Levantar el servicio y dejarlo persistente entre reinicios
-sudo systemctl start mongod
-sudo systemctl enable mongod
-sudo systemctl status mongod   # confirmar "active (running)" antes de seguir
-```
-
-Si `apt install` falla por falta de `gnupg`/`curl`, instalar esos dos primero
-(`sudo apt install -y gnupg curl`) y reintentar.
-
-**Gotcha real encontrado (2026-08-24)**: en kernels Linux 6.19 a 7.0.13, `mongod` se niega a
-arrancar (`MongoDB cannot start: Linux kernel versions 6.19 and newer has a known incompatibility`)
-por un bug de TCMalloc/rseq — afecta a MongoDB 8.0.x en cualquier instalación (paquete, Docker,
-etc.), no es específico de esta máquina. Verificar con `uname -r` si el kernel cae en ese rango. Si
-`systemctl status mongod` muestra `Failed with result 'exit-code'` después de instalar, revisar
-`journalctl -u mongod` — si aparece ese mensaje, el workaround (sin necesitar tocar el kernel) es:
-
-```bash
-sudo mkdir -p /etc/systemd/system/mongod.service.d
-sudo tee /etc/systemd/system/mongod.service.d/override.conf <<'EOF'
-[Service]
-Environment=GLIBC_TUNABLES=glibc.pthread.rseq=1
-EOF
-sudo systemctl daemon-reload
-sudo systemctl restart mongod
-```
-
-(Ya aplicado en el servidor actual — dejarlo documentado por si se reinstala Mongo o se migra a otra
-máquina con un kernel en ese rango. Kernel 7.0.14+ ya no lo necesita.)
-
-## 2. Verificar que Mongo responde
-
-```bash
-mongosh --eval "db.runCommand({ ping: 1 })"
-```
-
-Debe regresar `{ ok: 1 }`. Si `mongosh` no está instalado, viene en el paquete
-`mongodb-mongosh` — `sudo apt install -y mongodb-mongosh`.
-
-## 3. Crear usuario de aplicación (no usar el admin/sin auth en producción-personal tampoco)
-
-```bash
-mongosh <<'EOF'
-use nutriguia
-db.createUser({
-  user: "nutriguia_app",
-  pwd: "CAMBIAR_ESTO",   // generar un password real, no dejar el placeholder
-  roles: [ { role: "readWrite", db: "nutriguia" } ]
-})
-EOF
-```
-
-Guardar el password generado en `.env` (paso 5) — nunca en un archivo commiteado a git.
-
-## 4. Entorno Python
-
-```bash
-cd nutri-guia   # o el nombre que tenga el repo clonado
+cd equivale   # o el nombre que tenga el repo clonado
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
@@ -100,29 +28,30 @@ pip install -r requirements.txt
 
 `requirements.txt` (crear si no existe):
 ```
-pymongo>=4.8
 streamlit>=1.38
 python-dotenv>=1.0
 pytest>=8.0
 ```
 
-## 5. `.env` (nunca commitear — agregar a `.gitignore`)
+## 2. `.env` (opcional — solo si se quiere una ruta distinta a la default)
 
-Crear `.env` en la raíz del repo:
 ```
-MONGO_URI=mongodb://nutriguia_app:CAMBIAR_ESTO@localhost:27017/nutriguia
-MONGO_DB=nutriguia
+SQLITE_PATH=data/equivale.db
 ```
 
-Confirmar que `.gitignore` incluye `.env` y `.venv/` antes del primer commit.
+Si se omite `.env` por completo, `nutriguia/db.py` usa `data/equivale.db` por default —
+suficiente para la mayoría de los casos. Confirmar que `.gitignore` incluye `.env`, `.venv/` y
+`data/*` antes del primer commit (ya están, si se clonó el repo tal cual).
 
-## 6. Cargar los datos iniciales
+## 3. Cargar los datos iniciales
 
 **El repo es público desde 2026-08-27 — `data/` está en `.gitignore` y NO se trae con
-`git clone`.** Hay que conseguir estos archivos aparte (fuera de git, ej. una copia local o un
-respaldo privado) y ponerlos en `data/` antes de este paso:
+`git clone`.** Para arrancar con datos propios ya reconciliados (no es necesario para una
+instalación nueva desde cero — sin estos archivos, `import_data.py` simplemente no encuentra nada
+que cargar y la app arranca con catálogo/recetas vacíos, listos para construirse desde "Editor de
+ingredientes"/"Editor de recetas"), conseguir estos archivos aparte (fuera de git) y ponerlos en
+`data/`:
 - `Json-outputs-sin-notas/catalogo-alimentos.json`
-- `Json-outputs-sin-notas/*.json` (17 archivos de menús históricos)
 - `recetas.json`
 - `personas_y_objetivos.json` — `{"vigente_desde": "YYYY-MM-DD", "personas": [{"persona": ...,
   "equivalentes_diarios": [{"grupo": ..., "cantidad": ...}, ...]}, ...]}` (ver
@@ -132,33 +61,32 @@ respaldo privado) y ponerlos en `data/` antes de este paso:
 python -m nutriguia.import_data
 ```
 
-Imprime un resumen de conteos por colección al terminar (17 menús, 159 recetas, ~80 alimentos, 2
-personas, 2 objetivos) — usarlo para confirmar que la carga fue completa. Si falta
-`personas_y_objetivos.json` no truena, solo avisa y deja esas dos colecciones como estaban. **Ojo**:
-desde que existe el Editor de recetas, este comando se niega a sobreescribir `recetas` si ya tiene
-datos (para no borrar ediciones hechas en vivo) — solo lo hace con `--force-recetas` explícito. Ver
-`ARCHITECTURE.md` → decisión 3.
+Imprime un resumen de conteos al terminar (catalogo_alimentos, recetas, personas, objetivos) —
+usarlo para confirmar que la carga fue completa. Si falta `personas_y_objetivos.json` no truena,
+solo avisa y deja personas/objetivos como estaban. **Ojo**: desde que existe el Editor de recetas,
+este comando se niega a sobreescribir `recetas` si ya tiene datos (para no borrar ediciones hechas
+en vivo) — solo lo hace con `--force-recetas` explícito. Ver `ARCHITECTURE.md` → decisión 3.
 
-## 7. Correr los tests de validación
+## 4. Correr los tests
 
 ```bash
 pytest tests/ -v
 ```
 
-Todos los menús históricos deben validar en verde (ver `VALIDATION.md`). Si alguno falla, es una
-señal de bug en `validation.py` o en el import — NO en los datos (los datos ya se validaron
-manualmente antes de llegar aquí, ver `agosto26-dan-notas.md` en el Project).
+`nutriguia/validation.py` corre contra los menús históricos si `data/Json-outputs-sin-notas/`
+existe (se salta si no); todo lo demás (incluida `nutriguia/db.py`, contra
+`sqlite3.connect(":memory:")`) corre siempre, en cualquier clon del repo público, sin datos reales.
 
-## 8. Correr la app como servicio systemd (así quedó desplegada, no a mano)
+## 5. Correr la app como servicio systemd (así quedó desplegada, no a mano)
 
 `streamlit run app.py` a mano funciona para probar, pero no sobrevive un reinicio del servidor ni
-se reinicia solo si truena. Se dejó como servicio systemd, igual patrón que `mongod`:
+se reinicia solo si truena. Se dejó como servicio systemd:
 
 ```bash
 sudo tee /etc/systemd/system/equivale.service <<'EOF'
 [Unit]
 Description=EquiVale Streamlit App
-After=network.target mongod.service
+After=network.target
 
 [Service]
 Type=simple
@@ -214,3 +142,18 @@ Si se reinstala el servidor desde cero, agregar de nuevo algo como:
 ```
 `journalctl -u equivale` (sin sudo) también funciona para ver logs/warnings de la app sin pedir
 contraseña, salvo que el sistema tenga journald configurado para requerir privilegios de lectura.
+
+## Nota histórica: de MongoDB a SQLite (2026-09-04)
+
+Hasta el 2026-09-04, EquiVale corría sobre MongoDB Community Edition instalado en el mismo
+servidor, con un workaround de kernel necesario (`GLIBC_TUNABLES=glibc.pthread.rseq=1`, ver
+`BUGS.md` `KC-002`) porque MongoDB 8.x tiene una incompatibilidad sin resolver con kernels Linux
+≥6.19 (bug de TCMalloc/rseq, sin fecha de fix por parte de Google/MongoDB). Se migró a SQLite
+para poder eventualmente distribuir EquiVale como app instalable en Windows/Linux sin depender de
+un servicio de base de datos aparte en cada máquina.
+
+El corte de producción se hizo con `scripts/migraciones/2026-09-04-mongo-a-sqlite.py` (no
+destructivo, solo lee de Mongo) — reporta conteos por tabla antes/después para verificar que la
+copia fue 1:1. Después de verificar la app funcionando sobre SQLite, Mongo se detuvo/deshabilitó
+(`sudo systemctl stop mongod && sudo systemctl disable mongod`, reversible) como red de seguridad
+temporal antes de desinstalarlo por completo.

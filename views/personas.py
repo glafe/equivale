@@ -8,6 +8,7 @@ from datetime import date
 
 import streamlit as st
 
+from nutriguia import db as bd
 from nutriguia.colores import GRUPO_ETIQUETA, chip_html
 from nutriguia.streamlit_data import cargar_objetivo, cargar_personas, db, invalidar_cache_personas
 
@@ -83,19 +84,10 @@ def render() -> None:
 
     if st.button("💾 Guardar", disabled=not puede_guardar, type="primary"):
         equivalentes_diarios = [{"grupo": g, "cantidad": c} for g, c in resumen.items()]
-        db().personas.update_one(
-            {"persona": nombre}, {"$setOnInsert": {"persona": nombre}}, upsert=True
-        )
+        bd.crear_persona(db(), nombre)
         # Un solo objetivo vigente por persona en esta fase (no se lleva historial de versiones
         # anteriores -- ver "Ideas para más adelante" en BUILD-PLAN.md).
-        db().objetivos.delete_many({"persona": nombre})
-        db().objetivos.insert_one(
-            {
-                "persona": nombre,
-                "vigente_desde": date.today().isoformat(),
-                "equivalentes_diarios": equivalentes_diarios,
-            }
-        )
+        bd.guardar_objetivo(db(), nombre, date.today().isoformat(), equivalentes_diarios)
         invalidar_cache_personas()
         if es_nueva:
             # Necesita rerun para que el selectbox deje de mostrar "Nueva persona" y apunte a la

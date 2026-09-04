@@ -1,27 +1,27 @@
-"""Acceso a Mongo cacheado, compartido entre las páginas de Streamlit (menu_del_dia,
+"""Acceso a SQLite cacheado, compartido entre las páginas de Streamlit (menu_del_dia,
 editor_recetas). No contiene lógica de negocio — eso vive en nutriguia/validation.py.
 """
 
 import streamlit as st
 
-from nutriguia.db import get_db
+from nutriguia import db as bd
 from nutriguia.smae_csv import cargar_filas_smae as _cargar_filas_smae
 from nutriguia.validation import sumar_por_grupo
 
 
 @st.cache_resource
 def db():
-    return get_db()
+    return bd.get_conn()
 
 
 @st.cache_data(ttl=300)
 def cargar_personas() -> list[str]:
-    return sorted(p["persona"] for p in db().personas.find({}, {"persona": 1}))
+    return bd.listar_personas(db())
 
 
 @st.cache_data(ttl=300)
 def cargar_objetivo(persona: str) -> dict[str, int]:
-    doc = db().objetivos.find_one({"persona": persona}, sort=[("vigente_desde", -1)])
+    doc = bd.obtener_objetivo(db(), persona)
     if doc is None:
         return {}
     return sumar_por_grupo(doc["equivalentes_diarios"], "grupo", "cantidad")
@@ -29,14 +29,12 @@ def cargar_objetivo(persona: str) -> dict[str, int]:
 
 @st.cache_data(ttl=300)
 def cargar_recetas(tiempo: str | None = None) -> list[dict]:
-    filtro = {"tiempo_tipico": tiempo} if tiempo else {}
-    return list(db().recetas.find(filtro, {"_id": 0}))
+    return bd.listar_recetas(db(), tiempo)
 
 
 @st.cache_data(ttl=300)
 def cargar_catalogo() -> dict[str, dict]:
-    docs = db().catalogo_alimentos.find({}, {"_id": 0})
-    return {d["alimento"]: d for d in docs}
+    return {d["alimento"]: d for d in bd.listar_catalogo(db())}
 
 
 @st.cache_data(ttl=300)

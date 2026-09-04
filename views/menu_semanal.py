@@ -15,6 +15,7 @@ Ver UI-BUILD-YOUR-MENU.md -> "Menú semanal" para la especificación completa.
 
 import streamlit as st
 
+from nutriguia import db as bd
 from nutriguia.colores import GRUPO_ETIQUETA, chip_html
 from nutriguia.html_semanal import generar_html_semanal
 from nutriguia.streamlit_data import cargar_catalogo, cargar_objetivo, cargar_personas, db
@@ -45,15 +46,12 @@ def _chips(vector: dict) -> str:
 def _cargar_menus_nombrados(persona: str) -> list[dict]:
     """Los "menús" que se pueden asignar a un día de la semana son simplemente días de "Menú del
     día" que se guardaron con un nombre -- no hay una colección aparte."""
-    return list(
-        db().menus_construidos.find(
-            {"persona": persona, "nombre": {"$ne": None}}, {"_id": 0}
-        ).sort("nombre", 1)
-    )
+    dias = [d for d in bd.listar_dias(db(), persona) if d.get("nombre")]
+    return sorted(dias, key=lambda d: d["nombre"])
 
 
 def _cargar_asignacion(persona: str) -> dict[str, str | None]:
-    doc = db().asignacion_semanal.find_one({"persona": persona}, {"_id": 0})
+    doc = bd.obtener_asignacion(db(), persona)
     dias_guardados = doc.get("dias", {}) if doc else {}
     return {d: dias_guardados.get(d) for d in DIAS}
 
@@ -121,10 +119,7 @@ def render() -> None:
             )
             nueva_asignacion[dia] = None if sel == LIBRE else sel
         if st.button("💾 Guardar asignación", type="primary", key="guardar_asignacion"):
-            db().asignacion_semanal.create_index([("persona", 1)], unique=True)
-            db().asignacion_semanal.update_one(
-                {"persona": persona}, {"$set": {"dias": nueva_asignacion}}, upsert=True
-            )
+            bd.guardar_asignacion(db(), persona, nueva_asignacion)
             st.session_state["_flash_semanal"] = "Asignación semanal guardada."
             st.rerun()
 

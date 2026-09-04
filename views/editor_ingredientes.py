@@ -7,6 +7,7 @@ Ver UI-BUILD-YOUR-MENU.md -> "Editor de ingredientes" para la especificación co
 
 import streamlit as st
 
+from nutriguia import db as bd
 from nutriguia.colores import GRUPO_ETIQUETA
 from nutriguia.streamlit_data import (
     cargar_catalogo,
@@ -53,7 +54,7 @@ def _renombrar_en_recetas(nombre_viejo: str, nombre_nuevo: str) -> int:
     nombre nuevo -- si no, quedaban dos filas con el mismo `alimento` en vez de una sola (BUG-009
     en BUGS.md, detectado 2026-08-30)."""
     tocadas = 0
-    for receta in db().recetas.find({"ingredientes.alimento": nombre_viejo}):
+    for receta in bd.buscar_recetas_con_ingrediente(db(), nombre_viejo):
         ingredientes = receta["ingredientes"]
         cambio = False
         for ing in ingredientes:
@@ -63,10 +64,9 @@ def _renombrar_en_recetas(nombre_viejo: str, nombre_nuevo: str) -> int:
         if cambio:
             ingredientes = fusionar_ingredientes_duplicados(ingredientes)
             vector = sumar_por_grupo(ingredientes, "grupo_smae", "equivalentes")
-            db().recetas.update_one(
-                {"receta_id": receta["receta_id"]},
-                {"$set": {"ingredientes": ingredientes, "vector_equivalentes": vector}},
-            )
+            receta["ingredientes"] = ingredientes
+            receta["vector_equivalentes"] = vector
+            bd.guardar_receta(db(), receta)
             tocadas += 1
     if tocadas:
         invalidar_cache_recetas()
@@ -80,18 +80,10 @@ def _renombrar_en_menus_construidos(nombre_viejo: str, nombre_nuevo: str) -> int
     guardado que lo usara, aunque el banco ya esté limpio (BUG-013, detectado 2026-08-30 -- "Lista
     del súper" mostraba "Leche"/"Leche semi" huérfanas como "Sin grupo / libre" en vez de AOA)."""
     tocados = 0
-    for documento in db().menus_construidos.find({}):
+    for documento in bd.listar_todos_los_dias(db()):
         if renombrar_ingrediente_en_menu_guardado(documento, nombre_viejo, nombre_nuevo):
-            db().menus_construidos.update_one(
-                {"persona": documento["persona"], "fecha": documento["fecha"]},
-                {
-                    "$set": {
-                        "tiempos": documento["tiempos"],
-                        "actual_diario": documento["actual_diario"],
-                        "delta_diario": documento["delta_diario"],
-                        "estado": documento["estado"],
-                    }
-                },
+            bd.guardar_dia(
+                db(), documento["persona"], documento["fecha"], documento.get("nombre"), documento
             )
             tocados += 1
     return tocados
@@ -104,15 +96,14 @@ def _quitar_de_recetas(nombre: str) -> int:
     UI-BUILD-YOUR-MENU.md) -- útil cuando el alimento de verdad no debería seguir en esas recetas
     (ej. se catalogó por error, o se está limpiando el banco a fondo)."""
     tocadas = 0
-    for receta in db().recetas.find({"ingredientes.alimento": nombre}):
+    for receta in bd.buscar_recetas_con_ingrediente(db(), nombre):
         ingredientes = [ing for ing in receta["ingredientes"] if ing["alimento"] != nombre]
         if len(ingredientes) == len(receta["ingredientes"]):
             continue
         vector = sumar_por_grupo(ingredientes, "grupo_smae", "equivalentes")
-        db().recetas.update_one(
-            {"receta_id": receta["receta_id"]},
-            {"$set": {"ingredientes": ingredientes, "vector_equivalentes": vector}},
-        )
+        receta["ingredientes"] = ingredientes
+        receta["vector_equivalentes"] = vector
+        bd.guardar_receta(db(), receta)
         tocadas += 1
     if tocadas:
         invalidar_cache_recetas()
@@ -224,7 +215,7 @@ def render() -> None:
                 # ese nombre tal cual, se elimina el viejo, y las recetas que usaban el nombre
                 # viejo pasan a usar el nombre que sobrevive -- así no quedan dos entradas del
                 # mismo alimento real con distinta ortografía.
-                db().catalogo_alimentos.delete_one({"alimento": elegido})
+                bd.eliminar_alimento(db(), elegido)
                 tocadas = _renombrar_en_recetas(elegido, nombre_final)
                 tocados_dias = _renombrar_en_menus_construidos(elegido, nombre_final)
                 invalidar_cache_catalogo()
@@ -236,16 +227,18 @@ def render() -> None:
                 st.session_state["_pendiente_ing_editar_selector"] = SIN_SELECCION
                 st.rerun()
             else:
-                db().catalogo_alimentos.update_one(
-                    {"alimento": elegido},
-                    {
-                        "$set": {
-                            "alimento": nombre_final,
-                            "grupo": grupo_final,
-                            "cantidad_por_equivalente": nueva_cantidad.strip(),
-                        }
-                    },
-                )
+                # Mongo hacía un $set parcial (solo alimento/grupo/cantidad_por_equivalente),
+                # dejando cualquier otro campo (ej. "asuncion") intacto -- acá se parte del dict
+                # ya cargado (`datos`, del catálogo en caché) para no perder ese campo al
+                # reemplazar la fila entera. Si el nombre cambió, es un rename real de la clave
+                # primaria -- hay que borrar la fila vieja además de guardar la nueva.
+                documento_actualizado = dict(datos)
+                documento_actualizado["alimento"] = nombre_final
+                documento_actualizado["grupo"] = grupo_final
+                documento_actualizado["cantidad_por_equivalente"] = nueva_cantidad.strip()
+                bd.guardar_alimento(db(), documento_actualizado)
+                if nombre_final != elegido:
+                    bd.eliminar_alimento(db(), elegido)
                 tocadas = 0
                 tocados_dias = 0
                 if nombre_final != elegido:
@@ -262,7 +255,7 @@ def render() -> None:
                 st.rerun()
 
         if eliminar:
-            db().catalogo_alimentos.delete_one({"alimento": elegido})
+            bd.eliminar_alimento(db(), elegido)
             invalidar_cache_catalogo()
             mensaje = f"'{elegido}' eliminado del catálogo."
             if usos and quitar_de_recetas:
@@ -307,12 +300,13 @@ def render() -> None:
                         "duplicarlo."
                     )
                 elif st.button("+ Agregar al catálogo", type="primary"):
-                    db().catalogo_alimentos.insert_one(
+                    bd.guardar_alimento(
+                        db(),
                         {
                             "alimento": fila["alimento"],
                             "grupo": fila["grupo_smae"],
                             "cantidad_por_equivalente": fila["cantidad_por_equivalente"],
-                        }
+                        },
                     )
                     invalidar_cache_catalogo()
                     st.session_state["_flash_ingredientes"] = f"'{fila['alimento']}' agregado desde SMAE."

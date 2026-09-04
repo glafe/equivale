@@ -1,6 +1,6 @@
 # EquiVale
 
-**Versión actual: `0.28.0`** (ver [`CHANGELOG.md`](CHANGELOG.md) — [Versionado Semántico](https://semver.org/lang/es/))
+**Versión actual: `0.29.0`** (ver [`CHANGELOG.md`](CHANGELOG.md) — [Versionado Semántico](https://semver.org/lang/es/))
 
 Sistema personal de planeación de menús basado en **Equivalentes SMAE** (Sistema Mexicano de
 Alimentos Equivalentes), para dos personas. La app ("Menú del día") arma el día eligiendo
@@ -14,7 +14,8 @@ la nota de privacidad en `CLAUDE.md`.
 
 ## Estado actual
 
-**Fases 0 a 4 completas** — Mongo corriendo, datos importados, `nutriguia/validation.py` con
+**Fases 0 a 4 completas** — base de datos corriendo (SQLite desde 2026-09-04, ver "Stack"
+abajo), datos importados, `nutriguia/validation.py` con
 35/35 tests en verde (más suites adicionales sobre datos sintéticos/públicos que corren en
 cualquier clon del repo, ver `tests/`), app Streamlit multipágina ("Guía", "Menú del día", "Menú
 semanal", "Lista del súper", "Recetas", "Ingredientes", "Personas", "Configuración", agrupada en
@@ -38,8 +39,8 @@ noche. Sigue el resto de la Fase 5 (pulido, solo tras uso real). Ver el checklis
 |---|---|
 | [`CLAUDE.md`](CLAUDE.md) | Contexto de dominio: personas, grupos SMAE, convenciones, reglas para construir/validar platillos |
 | [`ARCHITECTURE.md`](ARCHITECTURE.md) | Componentes del sistema, stack elegido y por qué, estructura de carpetas |
-| [`SETUP.md`](SETUP.md) | Instalación paso a paso (MongoDB, Python, `.env`) y despliegue en el servidor |
-| [`schema.md`](schema.md) | Forma exacta de cada colección de Mongo |
+| [`SETUP.md`](SETUP.md) | Instalación paso a paso (Python, `.env` opcional) y despliegue en el servidor |
+| [`schema.md`](schema.md) | Forma exacta de cada tabla de SQLite |
 | [`VALIDATION.md`](VALIDATION.md) | Contrato exacto de `nutriguia/validation.py` (toda la aritmética de equivalentes) |
 | [`UI-BUILD-YOUR-MENU.md`](UI-BUILD-YOUR-MENU.md) | Especificación de interacción de la app Streamlit |
 | [`BUILD-PLAN.md`](BUILD-PLAN.md) | Orden de ejecución por fases, con criterio de "hecho" en cada una |
@@ -48,25 +49,27 @@ noche. Sigue el resto de la Fase 5 (pulido, solo tras uso real). Ver el checklis
 
 ## Stack
 
-MongoDB + Python (pymongo) + Streamlit + pytest. Toda la aritmética de equivalentes vive en un
-solo módulo puro (`nutriguia/validation.py`), reutilizado por el import, los tests y la UI — ver
-el razonamiento completo en `ARCHITECTURE.md`.
+SQLite (vía `sqlite3` de la librería estándar) + Python + Streamlit + pytest. Un solo archivo de
+base de datos (`data/equivale.db`), sin servicio que instalar — reemplaza a MongoDB desde
+2026-09-04 (ver `BUGS.md` `KC-002`: MongoDB seguía roto en kernels Linux recientes, y el objetivo
+de poder instalar EquiVale en Windows/Linux sin depender de un servicio de base de datos aparte
+hacía que SQLite fuera la opción correcta). Toda la aritmética de equivalentes vive en un solo
+módulo puro (`nutriguia/validation.py`), reutilizado por el import, los tests y la UI — ver el
+razonamiento completo en `ARCHITECTURE.md`.
 
 ## Quick start
 
-Instalación completa (incluye instalar MongoDB y dejar la app como servicio systemd) en
-`SETUP.md`. Resumen para entorno ya instalado:
+Instalación completa (incluye dejar la app como servicio systemd) en `SETUP.md`. Resumen para
+entorno ya instalado:
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-cp .env.example .env   # editar MONGO_URI con las credenciales reales
-
-python -m nutriguia.import_data   # carga catálogo, recetas, menús históricos y objetivos
-pytest tests/ -v                  # 35/35 en verde con datos reales; sin ellos, test_validation.py
-                                   # se salta y solo corre test_validation_samples.py (datos ficticios)
+python -m nutriguia.import_data   # carga catálogo, recetas y objetivos a data/equivale.db
+pytest tests/ -v                  # en verde en cualquier clon; test_validation.py se salta sin
+                                   # datos reales (usa test_validation_samples.py, datos ficticios)
 
 streamlit run app.py
 ```

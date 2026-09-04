@@ -12,6 +12,7 @@ Ver UI-BUILD-YOUR-MENU.md -> "Configuración" para la especificación completa.
 import streamlit as st
 
 from nutriguia import chequeos
+from nutriguia import db as bd
 from nutriguia.colores import GRUPO_ETIQUETA, chip_html
 from nutriguia.streamlit_data import (
     cargar_catalogo,
@@ -57,7 +58,7 @@ def _renombrar_en_recetas(nombre_viejo: str, nombre_nuevo: str) -> int:
     dos filas con el mismo `alimento` en vez de una sola (BUG-009 en BUGS.md, detectado
     2026-08-30)."""
     tocadas = 0
-    for receta in db().recetas.find({"ingredientes.alimento": nombre_viejo}):
+    for receta in bd.buscar_recetas_con_ingrediente(db(), nombre_viejo):
         ingredientes = receta["ingredientes"]
         cambio = False
         for ing in ingredientes:
@@ -67,10 +68,9 @@ def _renombrar_en_recetas(nombre_viejo: str, nombre_nuevo: str) -> int:
         if cambio:
             ingredientes = fusionar_ingredientes_duplicados(ingredientes)
             vector = sumar_por_grupo(ingredientes, "grupo_smae", "equivalentes")
-            db().recetas.update_one(
-                {"receta_id": receta["receta_id"]},
-                {"$set": {"ingredientes": ingredientes, "vector_equivalentes": vector}},
-            )
+            receta["ingredientes"] = ingredientes
+            receta["vector_equivalentes"] = vector
+            bd.guardar_receta(db(), receta)
             tocadas += 1
     if tocadas:
         invalidar_cache_recetas()
@@ -84,18 +84,10 @@ def _renombrar_en_menus_construidos(nombre_viejo: str, nombre_nuevo: str) -> int
     guardado que lo usara, aunque el banco ya esté limpio (BUG-013, detectado 2026-08-30 -- "Lista
     del súper" mostraba "Leche"/"Leche semi" huérfanas como "Sin grupo / libre" en vez de AOA)."""
     tocados = 0
-    for documento in db().menus_construidos.find({}):
+    for documento in bd.listar_todos_los_dias(db()):
         if renombrar_ingrediente_en_menu_guardado(documento, nombre_viejo, nombre_nuevo):
-            db().menus_construidos.update_one(
-                {"persona": documento["persona"], "fecha": documento["fecha"]},
-                {
-                    "$set": {
-                        "tiempos": documento["tiempos"],
-                        "actual_diario": documento["actual_diario"],
-                        "delta_diario": documento["delta_diario"],
-                        "estado": documento["estado"],
-                    }
-                },
+            bd.guardar_dia(
+                db(), documento["persona"], documento["fecha"], documento.get("nombre"), documento
             )
             tocados += 1
     return tocados
@@ -122,11 +114,7 @@ def _buscar_recetas_de_ingrediente():
     # vive en `recetas`, solo aquí -- la búsqueda de recetas sola no lo encontraría.
     en_dias = [
         (doc, tiempo, inst, ing)
-        for doc in db().menus_construidos.find({})
-        for tiempo, datos in doc.get("tiempos", {}).items()
-        for inst in datos.get("seleccion", [])
-        for ing in inst["ingredientes"]
-        if ing["alimento"] == elegido
+        for doc, tiempo, indice, inst, ing in bd.buscar_dias_con_ingrediente(db(), elegido)
     ]
 
     if not usos and not en_dias:
@@ -168,7 +156,7 @@ def _buscar_uso_de_receta():
     if elegido == SIN_SELECCION:
         return
 
-    dias = list(db().menus_construidos.find({}, {"_id": 0}))
+    dias = bd.listar_todos_los_dias(db())
     en_dias = [
         (doc["persona"], doc["fecha"], doc.get("nombre"), tiempo)
         for doc in dias
@@ -224,7 +212,7 @@ def _check_ingredientes_huerfanos():
                     placeholder="ej. 1/2 taza, 30 g", label_visibility="collapsed",
                 )
                 if c2.button("+ Catalogar nuevo", key=f"catalogar_{alimento}", disabled=not cantidad.strip()):
-                    db().catalogo_alimentos.insert_one({
+                    bd.guardar_alimento(db(), {
                         "alimento": alimento, "grupo": info["grupo"],
                         "cantidad_por_equivalente": cantidad.strip(),
                     })
@@ -300,7 +288,8 @@ def _check_vector_desincronizado():
                 st.markdown("Guardado: " + _chips(r.get("vector_equivalentes", {})), unsafe_allow_html=True)
                 st.markdown("Real (según ingredientes): " + _chips(real), unsafe_allow_html=True)
                 if st.button("Recalcular y guardar", key=f"recalc_{r['receta_id']}"):
-                    db().recetas.update_one({"receta_id": r["receta_id"]}, {"$set": {"vector_equivalentes": real}})
+                    r["vector_equivalentes"] = real
+                    bd.guardar_receta(db(), r)
                     invalidar_cache_recetas()
                     chequeos.invalidar_cache_alertas()
                     st.session_state["_flash_config"] = f"Vector de '{r['nombre']}' recalculado."
@@ -335,10 +324,9 @@ def _check_ingredientes_duplicados_en_receta():
                 if st.button("Fusionar", key=f"fusionar_dup_{r['receta_id']}"):
                     ingredientes = fusionar_ingredientes_duplicados(r["ingredientes"])
                     vector = sumar_por_grupo(ingredientes, "grupo_smae", "equivalentes")
-                    db().recetas.update_one(
-                        {"receta_id": r["receta_id"]},
-                        {"$set": {"ingredientes": ingredientes, "vector_equivalentes": vector}},
-                    )
+                    r["ingredientes"] = ingredientes
+                    r["vector_equivalentes"] = vector
+                    bd.guardar_receta(db(), r)
                     invalidar_cache_recetas()
                     chequeos.invalidar_cache_alertas()
                     st.session_state["_flash_config"] = f"Ingredientes duplicados de '{r['nombre']}' fusionados."
@@ -352,17 +340,7 @@ def _check_ingredientes_duplicados_en_receta():
                 )
                 if st.button("Fusionar", key=f"fusionar_dup_dia_{doc['persona']}_{doc['fecha']}_{tiempo}_{indice}"):
                     fusionar_duplicados_en_menu_guardado(doc, tiempo, indice)
-                    db().menus_construidos.update_one(
-                        {"persona": doc["persona"], "fecha": doc["fecha"]},
-                        {
-                            "$set": {
-                                "tiempos": doc["tiempos"],
-                                "actual_diario": doc["actual_diario"],
-                                "delta_diario": doc["delta_diario"],
-                                "estado": doc["estado"],
-                            }
-                        },
-                    )
+                    bd.guardar_dia(db(), doc["persona"], doc["fecha"], doc.get("nombre"), doc)
                     chequeos.invalidar_cache_alertas()
                     st.session_state["_flash_config"] = f"Ingredientes duplicados de '{inst['nombre']}' fusionados."
                     st.rerun()
@@ -396,25 +374,21 @@ def _check_duplicados_catalogo():
                     st.session_state["_pendiente_ing_editar_selector"] = a
                     st.switch_page("views/editor_ingredientes.py")
                 if c3.button("Son diferentes", key=f"descartar_{a}_{b}"):
-                    x, y = chequeos.normalizar_par(a, b)
-                    db().duplicados_descartados.create_index([("a", 1), ("b", 1)], unique=True)
-                    db().duplicados_descartados.update_one(
-                        {"a": x, "b": y}, {"$setOnInsert": {"a": x, "b": y}}, upsert=True
-                    )
+                    bd.descartar_par(db(), a, b)
                     chequeos.invalidar_cache_alertas()
                     st.session_state["_flash_config"] = f"'{a}' y '{b}' marcados como diferentes -- no se vuelven a sugerir."
                     st.rerun()
 
-        descartados_docs = list(db().duplicados_descartados.find({}, {"_id": 0}))
-        if descartados_docs:
-            with st.expander(f"Pares marcados como diferentes ({len(descartados_docs)})"):
-                for d in descartados_docs:
+        descartados_pares = sorted(bd.listar_pares_descartados(db()))
+        if descartados_pares:
+            with st.expander(f"Pares marcados como diferentes ({len(descartados_pares)})"):
+                for a, b in descartados_pares:
                     c1, c2 = st.columns([3, 1])
-                    c1.markdown(f"{d['a']} ↔ {d['b']}")
-                    if c2.button("Deshacer", key=f"deshacer_desc_{d['a']}_{d['b']}"):
-                        db().duplicados_descartados.delete_one({"a": d["a"], "b": d["b"]})
+                    c1.markdown(f"{a} ↔ {b}")
+                    if c2.button("Deshacer", key=f"deshacer_desc_{a}_{b}"):
+                        bd.deshacer_descarte(db(), a, b)
                         chequeos.invalidar_cache_alertas()
-                        st.session_state["_flash_config"] = f"Se vuelve a sugerir: {d['a']} ↔ {d['b']}."
+                        st.session_state["_flash_config"] = f"Se vuelve a sugerir: {a} ↔ {b}."
                         st.rerun()
 
 
@@ -443,7 +417,10 @@ def _check_asignacion_rota():
             c1, c2 = st.columns([3, 1])
             c1.markdown(f"**{persona}** — {dia.capitalize()}: '{nombre}' _(eliminado)_")
             if c2.button("Marcar como libre", key=f"limpiar_asig_{persona}_{dia}"):
-                db().asignacion_semanal.update_one({"persona": persona}, {"$set": {f"dias.{dia}": None}})
+                asignacion = bd.obtener_asignacion(db(), persona)
+                dias_dict = asignacion.get("dias", {}) if asignacion else {}
+                dias_dict[dia] = None
+                bd.guardar_asignacion(db(), persona, dias_dict)
                 chequeos.invalidar_cache_alertas()
                 st.session_state["_flash_config"] = f"{dia.capitalize()} de {persona} marcado como libre."
                 st.rerun()
@@ -474,10 +451,9 @@ def _check_dias_con_estado_desactualizado():
                 st.markdown("Delta guardado: " + _chips(doc.get("delta_diario", {})), unsafe_allow_html=True)
                 st.markdown("Delta recalculado: " + _chips(delta_nuevo), unsafe_allow_html=True)
                 if st.button("Recalcular y guardar", key=f"recalc_estado_{doc['persona']}_{doc['fecha']}"):
-                    db().menus_construidos.update_one(
-                        {"persona": doc["persona"], "fecha": doc["fecha"]},
-                        {"$set": {"delta_diario": delta_nuevo, "estado": estado_nuevo}},
-                    )
+                    doc["delta_diario"] = delta_nuevo
+                    doc["estado"] = estado_nuevo
+                    bd.guardar_dia(db(), doc["persona"], doc["fecha"], doc.get("nombre"), doc)
                     chequeos.invalidar_cache_alertas()
                     st.session_state["_flash_config"] = f"Estado de '{etiqueta}' recalculado a '{estado_nuevo}'."
                     st.rerun()

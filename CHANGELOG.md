@@ -20,6 +20,23 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.29.0] - 2026-09-04
+
+### Changed
+- **Migración de MongoDB a SQLite** (a pedido del usuario, de cara a distribuir EquiVale como app
+  instalable en Windows/Linux): reemplaza por completo a MongoDB. Cierra `KC-002` (bug de
+  kernel/TCMalloc sin fecha de fix -- investigado de nuevo antes de migrar: ni un kernel nuevo ni
+  una versión más reciente de MongoDB lo resuelven). `nutriguia/db.py` se reescribió con funciones
+  nombradas por caso de uso (`obtener_dia`, `guardar_receta`, ...) sobre tablas SQLite con columnas
+  reales solo para claves/filtros y el resto del documento como JSON -- sin ORM ni shim genérico.
+  Los ~70 sitios que llamaban a pymongo directo (todas las vistas, `chequeos.py`,
+  `import_data.py`) se migraron sin cambiar lógica de negocio. La colección histórica `menus`
+  (nada la leía) no se migró. Corte de datos de producción con un script de un solo uso, no
+  destructivo (`scripts/migraciones/2026-09-04-mongo-a-sqlite.py`), verificado con conteos 1:1 por
+  tabla. Nueva `tests/test_db.py` (persistencia probada con `sqlite3.connect(":memory:")` --
+  imposible de cubrir así con Mongo). Ver `ARCHITECTURE.md` para el detalle de diseño y `BUGS.md`
+  `KC-002` para el porqué.
+
 ## [0.28.0] - 2026-09-04
 
 ### Fixed

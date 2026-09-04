@@ -4,11 +4,11 @@ Sistema de planes de alimentación basado en equivalentes nutricionales SMAE (Si
 Alimentos Equivalentes), para dos personas: **Persona A** y **Persona B** (uso personal, 1-2
 usuarios concurrentes como máximo — no se está construyendo para escalar a muchos usuarios).
 Nombre del proyecto: **EquiVale** (repo `glafe/equivale` en GitHub — el código es público, los
-datos reales de nutrición/menús viven solo en Mongo y fuera de git, ver `.gitignore` y `SETUP.md`).
-Esta fase del proyecto es: instalar MongoDB, cargar los menús ya reconciliados, y construir una app
-Streamlit ("build your menu") donde el usuario arma su día eligiendo recetas de un banco y
-ajustando porciones en pasos de equivalente completo, con validación en vivo de qué le falta o le
-sobra.
+datos reales de nutrición/menús viven solo en la base de datos local (SQLite, `data/equivale.db`)
+y fuera de git, ver `.gitignore` y `SETUP.md`). El proyecto ya pasó por su fase de instalación y
+carga inicial (ver "Estado actual" abajo) — la app Streamlit ("Menú del día") deja que el usuario
+arme su día eligiendo recetas de un banco y ajustando porciones en pasos de equivalente completo,
+con validación en vivo de qué le falta o le sobra.
 
 La fase anterior (parsear Excels/ODS desordenados hacia JSON) ya terminó — este documento y los de
 abajo son contexto de generación/DB/UI, no el historial de esa reconciliación (esas notas viven
@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.28.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.29.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -232,6 +232,29 @@ etiqueta de `nutriguia/html_semanal.py` (`_tabla_receta_html()`) -- puramente co
 filtraban los no incluidos antes de llegar ahí. "Menú del día"/"Recetas" no cambiaron, ahí
 `opcional` sigue siendo información útil porque es donde se decide.
 
+**Migración de MongoDB a SQLite (0.29.0, 2026-09-04, a pedido del usuario)**: el usuario planea
+eventualmente distribuir EquiVale como app instalable en equipos Windows y Linux de otras personas
+-- depender de un servicio de MongoDB aparte en cada máquina era la fricción equivocada para eso,
+sobre todo tras confirmar (investigando `KC-002`) que el bug de kernel/TCMalloc que ya había
+mordido una vez a este mismo servidor sigue sin fecha de fix real ni en MongoDB ni en el kernel.
+SQLite (`data/equivale.db`, vía `sqlite3` de la librería estándar) reemplaza a Mongo por completo:
+sin servicio que instalar/mantener, igual en cualquier sistema operativo. `nutriguia/db.py` se
+reescribió desde cero -- cada tabla tiene columnas reales solo para las claves/filtros usados, más
+una columna `datos` con el resto del documento como JSON (`validation.py` ya trabaja con esos
+dicts anidados tal cual, así que normalizar todo a tablas relacionales no habría dado ningún
+beneficio real); expone funciones nombradas por caso de uso (`obtener_dia`, `guardar_receta`, ...)
+en vez de un ORM/shim genérico. Los ~70 sitios de código que llamaban a pymongo directo (todas las
+vistas, `chequeos.py`, `import_data.py`) se migraron uno por uno sin cambiar ninguna lógica de
+negocio -- ver `ARCHITECTURE.md` para el detalle de diseño. La colección `menus` (histórica, de
+solo escritura -- nada la leía, ni siquiera los tests) se dejó fuera a propósito, un dato menos
+que cargar. El corte de datos de producción se hizo con un script de un solo uso, no destructivo
+(`scripts/migraciones/2026-09-04-mongo-a-sqlite.py`, solo lee de Mongo, nunca escribe ahí),
+verificado con conteos 1:1 por tabla antes de apuntar la app al archivo nuevo. `KC-002` (bug de
+kernel que ya no aplica sin Mongo) se cerró como Resolved en `BUGS.md`. Nueva cobertura real de
+paso: `nutriguia/db.py` se puede probar con `sqlite3.connect(":memory:")` (`tests/test_db.py`) --
+con Mongo esto no era practicable sin una instancia viva, así que la capa de persistencia pasó de
+0% de cobertura a tenerla completa.
+
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,
 templates en `Prompt-Coding_Best_Practices-main/practices-and-principles.md` — carpeta de
@@ -250,22 +273,21 @@ reales (ver nota de privacidad arriba); `data/` y `scripts/migraciones/` ya no v
 El banco de `recetas` ya no tiene 159 documentos como en la importación original — se dedupicó por
 nombre el 2026-08-25 y quedó en 97 (ver regla 9 abajo y `scripts/migraciones/`), y una segunda
 pasada el mismo día (nombres solo parecidos, no exactos — ver regla 9 nivel 2) la dejó en 86. Es
-normal y esperado que el conteo en vivo de Mongo no coincida con el de `recetas.json`;
+normal y esperado que el conteo en vivo de la base de datos no coincida con el de `recetas.json`;
 `import_data.py` protege contra que un re-import accidental lo revierta (ver `ARCHITECTURE.md`).
 
 **La app YA está desplegada y corriendo** en un servidor Linux (Ubuntu 24.04) en la red local del
 usuario, como servicio systemd — no hay que "levantarla" de cero. Ver `SETUP.md` sección final para
-la IP, cómo redesplegar cambios (`git pull` + `systemctl restart`), y gotchas ya resueltos (una
-incompatibilidad de kernel que le impedía arrancar a Mongo). Antes de asumir que hay que reinstalar
-algo desde cero, revisar si ya existe y solo necesita un redeploy.
+la IP y cómo redesplegar cambios (`git pull` + `systemctl restart`). Antes de asumir que hay que
+reinstalar algo desde cero, revisar si ya existe y solo necesita un redeploy.
 
 ## Índice de documentos — leer en este orden
 
 1. **Este archivo (`CLAUDE.md`)** — contexto de dominio: personas, grupos SMAE, convenciones.
 2. **`ARCHITECTURE.md`** — componentes del sistema, stack elegido y por qué, estructura de carpetas.
-3. **`SETUP.md`** — pasos concretos de instalación (MongoDB, Python, `.env`) en la máquina Linux.
-4. **`schema.md`** — forma exacta de cada colección de Mongo (`catalogo_alimentos`, `menus`,
-   `recetas`, `objetivos`, `menus_construidos`, `plantillas_semana`, `asignacion_semanal`).
+3. **`SETUP.md`** — pasos concretos de instalación (Python, `.env` opcional) en la máquina Linux.
+4. **`schema.md`** — forma exacta de cada tabla de SQLite (`catalogo_alimentos`, `recetas`,
+   `objetivos`, `menus_construidos`, `asignacion_semanal`, `personas`, `duplicados_descartados`).
 5. **`VALIDATION.md`** — contrato exacto del módulo `nutriguia/validation.py` (toda la aritmética
    de equivalentes vive ahí, en un solo lugar).
 6. **`UI-BUILD-YOUR-MENU.md`** — especificación de interacción de la app Streamlit.
@@ -277,9 +299,9 @@ algo desde cero, revisar si ya existe y solo necesita un redeploy.
 
 ## Personas (canónico)
 
-Los nombres reales de las dos personas viven solo en Mongo (`personas.persona`, y como valor de
-`persona`/`personas_vistas` en `menus`/`recetas`/`objetivos`) y fuera de este repo público — acá se
-habla de **Persona A** y **Persona B** como placeholders genéricos.
+Los nombres reales de las dos personas viven solo en la base de datos local (`personas.persona`, y
+como valor de `persona`/`personas_vistas` en `recetas`/`objetivos`/`menus_construidos`) y fuera de
+este repo público — acá se habla de **Persona A** y **Persona B** como placeholders genéricos.
 
 - **Persona A** — un solo persona_id. Los archivos de origen usaban a veces una variante del nombre
   como tab de Excel, pero el campo `persona` en TODO el JSON ya está normalizado a un solo valor.
@@ -291,10 +313,10 @@ No hay terceras personas. No inventar un persona_id nuevo sin que el usuario lo 
 
 **Nota de privacidad (repo público desde 2026-08-27)**: los nombres reales, valores concretos de
 objetivos/porciones, y cualquier dato nutricional específico de cada persona NO se escriben en
-estos documentos de diseño — viven solo en Mongo (privado) y en archivos fuera de git (ver
-`.gitignore`). Estos documentos hablan en términos genéricos (Persona A/Persona B, "el objetivo de
-esa persona") a propósito. Si haces un cambio que involucre valores reales, ponlos en Mongo/el
-`.env`/un archivo ignorado — no en un `.md` que se commitea.
+estos documentos de diseño — viven solo en `data/equivale.db` (privado, fuera de git) y en
+archivos fuera de git (ver `.gitignore`). Estos documentos hablan en términos genéricos (Persona
+A/Persona B, "el objetivo de esa persona") a propósito. Si haces un cambio que involucre valores
+reales, ponlos en la base de datos/un archivo ignorado — no en un `.md` que se commitea.
 
 **Excepción explícita — `SMAE_CONSULTA.csv`**: es la tabla oficial pública del sistema SMAE
 (equivalentes nutricionales genéricos por alimento), sin ningún dato de las personas que usan
@@ -404,23 +426,29 @@ generar un platillo nuevo desde el catálogo — y ahí sí aplican las reglas d
 - `data/recetas.json` — banco de 159 platillos reutilizables extraídos de los menús históricos,
   cada uno con su vector de equivalentes ya calculado. Punto de partida para generar menús nuevos.
 - `schema.md` — forma exacta de cada colección/documento. Leer antes de generar o validar un menú.
-- `scripts/migraciones/` — registro histórico de cambios hechos directo en Mongo (ej. fusiones de
-  recetas duplicadas) — Mongo no tiene git, así que estos scripts documentan qué cambió y por qué.
-  No están diseñados para volver a correrse.
+- `scripts/migraciones/` — registro histórico de cambios hechos directo en la base de datos (ej.
+  fusiones de recetas duplicadas, o el corte de Mongo a SQLite) — no viaja con `git clone` (ver
+  `.gitignore`), así que estos scripts documentan qué cambió y por qué para quien tenga acceso al
+  repo real. No están diseñados para volver a correrse.
 
-## Convenciones para la base de datos (MongoDB)
+## Convenciones para la base de datos (SQLite, desde 2026-09-04)
 
-Colecciones: `personas`, `catalogo_alimentos`, `recetas`, `menus`, `objetivos`,
-`menus_construidos`, `plantillas_semana`, `asignacion_semanal`. Ver `schema.md` para la forma
-exacta de cada documento. Índices recomendados: `menus` → compuesto `(persona, periodo, menu_id)`;
-`recetas` → `tiempo_tipico` y `vector_equivalentes.<grupo>`; `catalogo_alimentos` → único sobre
-`alimento`; `menus_construidos` → único compuesto `(persona, fecha)` (una persona no puede tener
-dos planes guardados para la misma fecha — se sobreescribe, no se duplica; el índice se crea
-perezosamente desde `views/menu_del_dia.py` al primer guardado, no desde `import_data.py`);
-`plantillas_semana` → único compuesto `(persona, nombre)`; `asignacion_semanal` → único sobre
-`persona` (ambos índices creados perezosamente desde `views/menu_semanal.py`, mismo patrón).
+Un solo archivo (`data/equivale.db`, ruta configurable con `SQLITE_PATH` en `.env`, default
+`data/equivale.db`) con 7 tablas: `personas`, `objetivos`, `catalogo_alimentos`, `recetas`,
+`menus_construidos`, `asignacion_semanal`, `duplicados_descartados`. Ver `schema.md` para la forma
+exacta de cada una y `nutriguia/db.py` para las funciones de acceso (una por caso de uso real, ej.
+`obtener_dia`, `guardar_receta` — no un ORM genérico, ver `ARCHITECTURE.md`). Cada tabla tiene
+columnas reales solo para lo que se usa como clave/filtro, más una columna `datos` con el resto
+del documento como JSON. Constraints reales: `catalogo_alimentos` único sobre `alimento`;
+`recetas` único sobre `receta_id`; `menus_construidos` único compuesto `(persona, fecha)` (una
+persona no puede tener dos planes guardados para la misma fecha) y además único parcial sobre
+`(persona, nombre)` cuando `nombre` no es null (un nombre identifica un solo menú por persona);
+`asignacion_semanal` único sobre `persona`; `duplicados_descartados` único compuesto `(a, b)`. El
+esquema se crea automáticamente la primera vez que se abre la conexión (`nutriguia.db.get_conn()`)
+— no hace falta correr nada aparte.
 
-No commitear credenciales de conexión a Mongo — usar `.env` fuera de git (ver `SETUP.md`).
+No commitear el archivo `equivale.db` (ya cubierto por `data/*` en `.gitignore` — contiene datos
+reales de personas reales) ni credenciales en `.env` si algún día vuelve a hacer falta alguna.
 
 ## Empezar a trabajar
 
