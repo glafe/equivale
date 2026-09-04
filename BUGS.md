@@ -16,7 +16,8 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
   [BUG-012](#bug-012--status-rv), [BUG-013](#bug-013--status-rv), [BUG-014](#bug-014--status-rv)
 
 ### Known Caveats
-- Abiertos: [KC-001](#kc-001), [KC-002](#kc-002), [KC-003](#kc-003), [KC-004](#kc-004)
+- Activos: [KC-002](#kc-002), [KC-003](#kc-003), [KC-004](#kc-004)
+- Históricos: [KC-001](#kc-001)
 
 ### Feature Requests
 - Propuestos: [FR-001](#fr-001), [FR-005](#fr-005), [FR-006](#fr-006), [FR-009](#fr-009)
@@ -537,30 +538,46 @@ Workaround: override de systemd con `Environment=GLIBC_TUNABLES=glibc.pthread.rs
 3. Downgrade de MongoDB — descartado, no atacaba la causa raíz.
 
 #### KC-001
-**Title:** Ingredientes con el mismo alimento real pero ortografía distinta quedan como
-opcionales separados tras la fusión mecánica de recetas
+**Title:** Ingredientes con el mismo alimento real pero ortografía distinta quedaron como
+opcionales separados tras la fusión mecánica de recetas (2026-08-25)
 **Date Identified:** 2026-08-25
-**Status:** Active
+**Status:** Historical (reclasificado 2026-09-04, ver nota abajo)
 
 ##### Exec Description
-Al fusionar recetas duplicadas por nombre exacto, si el mismo alimento aparecía escrito distinto
-entre variantes (ej. "Atún" vs "Atún en agua", "Proteína" vs "Proteína en polvo"), el script de
-fusión no los reconoció como el mismo ingrediente y quedaron como dos ingredientes opcionales
-separados en la receta fusionada, en vez de uno solo.
+Al fusionar recetas duplicadas por nombre exacto (limpieza puntual del 2026-08-25, 159→86
+recetas), si el mismo alimento aparecía escrito distinto entre variantes (ej. "Atún" vs "Atún en
+agua", "Proteína" vs "Proteína en polvo"), el script no los reconoció como el mismo ingrediente y
+quedaron como dos ingredientes opcionales separados en la receta fusionada, en vez de uno solo.
 
 ##### Eng Description
 `scripts/migraciones/2026-08-25-fusionar-recetas-por-nombre.py` compara nombres de ingrediente de
 forma exacta (normalizado solo en mayúsculas/espacios) para decidir "está en todas las variantes"
 vs. "solo en algunas" → opcional. No hay matching difuso. La pasada del 2026-08-25 (nombres
-parecidos) corrigió ~16 casos detectados a mano, pero no se persiguió exhaustivamente en el resto
-del banco (86 recetas).
+parecidos) corrigió ~16 casos detectados a mano.
+
+##### Reclasificado a Historical (2026-09-04)
+Al revisar los Known Caveats contra el estado real de datos, se encontró una instancia viva de
+este patrón que había sobrevivido a la limpieza original: `"Huevo"` (2 equiv.) y `"Huevo cocido"`
+(2 equiv.), ambos opcionales, en la receta **"Huevos duros con zanahoria"**. El usuario la corrigió
+a mano desde el Editor de recetas el mismo día -- verificado en vivo, ya solo queda `"Huevo
+cocido"`. Un escaneo (substring + similitud difusa con `difflib`) sobre las 86 recetas del banco no
+encontró ningún otro caso: 0 instancias vivas hoy.
+
+Sin embargo, el usuario señaló el punto correcto sobre el riesgo real de este caveat: el script que
+lo causó (`scripts/migraciones/2026-08-25-fusionar-recetas-por-nombre.py`) **no es parte del
+deployment normal** -- es un script de migración de un solo uso, ya corrido, documentado solo como
+registro histórico de qué cambió y por qué (ver `scripts/migraciones/`, no diseñado para volver a
+correrse). Un usuario nuevo desplegando la app desde cero arma sus propias recetas a mano o con
+ayuda de un LLM -- nunca pasa por ese script, así que nunca puede producir este patrón de
+duplicidad por esa vía. Por eso se reclasifica de `Active` a `Historical`: describe algo que pasó
+una vez durante una migración puntual, no un riesgo vigente del flujo normal de la app.
 
 ##### Alternative Solutions
-1. **Elegido (por ahora)** — corregir a mano desde el Editor de recetas si se nota al usar la
-   app; bajo impacto (duplica un ingrediente opcional, no rompe la aritmética de equivalentes).
-2. Matching difuso de nombres en el script de fusión — no implementado, riesgo de falsos
-   positivos (fusionar alimentos que en realidad son distintos) mayor que el beneficio para un
-   banco de 86 recetas.
+1. **Elegido** — corregir a mano desde el Editor de recetas si se nota al usar la app (bajo
+   impacto: duplica un ingrediente opcional, no rompe la aritmética de equivalentes); no vale la
+   pena invertir en matching difuso para un script que ya no vuelve a correr.
+2. Matching difuso de nombres en el script de fusión — descartado definitivamente: el script no es
+   parte del deployment normal, así que arreglarlo no previene casos futuros.
 
 ---
 
