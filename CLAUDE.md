@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.27.1` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.28.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -220,6 +220,17 @@ en `recetas`). Aclarado en la UI: cambiar `cantidad_por_equivalente` NO desincro
 solo -- `equivalentes` en cada receta/día es un conteo entero independiente del valor en
 gramos/taza, así que la cantidad real se recalcula sola en toda la app sin tocar ningún
 documento ni disparar ningún chequeo.
+
+**`BUG-014` corregido (0.28.0, 2026-09-04)**: tras usar los menús impresos una semana en la vida
+real, el usuario reportó que el HTML de "Menú semanal" mostraba "(opcional)" junto a ingredientes
+que ya formaban parte del día guardado (con carga calórica real) -- podía hacerle pensar al
+dietista que el ingrediente era optativo, cuando la decisión de incluirlo ya se tomó al armar el
+día en "Menú del día". `opcional` es un flag del banco de `recetas` (variantes posibles de un
+mismo platillo, ver regla 9 más abajo); una vez que el ingrediente queda `incluido: true` en un
+día guardado, ese flag ya no aporta información para quien solo lee el impreso. Quitada la
+etiqueta de `nutriguia/html_semanal.py` (`_tabla_receta_html()`) -- puramente cosmético, ya se
+filtraban los no incluidos antes de llegar ahí. "Menú del día"/"Recetas" no cambiaron, ahí
+`opcional` sigue siendo información útil porque es donde se decide.
 
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,

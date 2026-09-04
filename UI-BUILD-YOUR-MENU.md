@@ -260,7 +260,12 @@ pasó a ser puramente una herramienta de **asignación y consulta**, no de const
       chip. Ingredientes `opcional` no incluidos (`incluido: false`) no aparecen, igual que en el
       resto de la app. La cantidad real se calcula con `paso_equivalente()` + `escalar_cantidad()`
       (mismas funciones que "Menú del día") -- si el alimento ya no está en el catálogo, cae a un
-      fallback "`N` equiv." en vez de tronar.
+      fallback "`N` equiv." en vez de tronar. Un ingrediente `opcional` que sí quedó incluido NO
+      lleva la etiqueta "(opcional)" en este HTML (`BUG-014`, 2026-09-04, a pedido del usuario) --
+      ese flag describe una variante posible del banco de recetas, pero a esta altura la decisión
+      ya se tomó al armar el día, y la etiqueta solo confundía al dietista sobre si contarlo. En
+      "Menú del día"/"Recetas" sí se sigue mostrando -- ahí es donde tiene sentido, porque ahí es
+      donde se decide.
     - Chips de "Objetivo diario" (una sola vez, arriba de todo) y "Total real de este menú" (al
       final de cada bloque, con `actual_diario` de ese `menus_construidos`) -- **colores
       estandarizados de EquiVale, no una paleta nueva para el PDF**: mismos `GRUPO_COLOR` que se

@@ -13,7 +13,7 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
   [BUG-003](#bug-003--status-rv), [BUG-004](#bug-004--status-rv), [BUG-005](#bug-005--status-rv),
   [BUG-006](#bug-006--status-rv), [BUG-007](#bug-007--status-rv), [BUG-008](#bug-008--status-c),
   [BUG-009](#bug-009--status-rv), [BUG-010](#bug-010--status-rv), [BUG-011](#bug-011--status-rv),
-  [BUG-012](#bug-012--status-rv), [BUG-013](#bug-013--status-rv)
+  [BUG-012](#bug-012--status-rv), [BUG-013](#bug-013--status-rv), [BUG-014](#bug-014--status-rv)
 
 ### Known Caveats
 - Abiertos: [KC-001](#kc-001), [KC-002](#kc-002), [KC-003](#kc-003), [KC-004](#kc-004)
@@ -39,6 +39,44 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 ## Bugs
 
 ### Detailed Entries
+
+#### BUG-014 · [STATUS: RV]
+**Title:** El HTML de "Menú semanal" imprimía "(opcional)" junto a ingredientes que ya estaban
+decididos como incluidos en ese día
+**Severity:** Low
+**Reported Date:** 2026-09-04
+**Release Fixed:** 0.28.0
+
+##### Observable Problem
+El usuario reportó, tras una semana usando los menús impresos en la vida real, que el HTML/PDF de
+"Menú semanal" mostraba "(opcional)" junto a algunos ingredientes -- pero ese ingrediente ya forma
+parte del día guardado, con una cantidad de equivalentes real (carga calórica real). La etiqueta
+podía hacerle pensar al dietista que el ingrediente era optativo y quizás no debía contarse, cuando
+en realidad la decisión de incluirlo ya se tomó al armar el menú.
+
+##### Fix Explanation (Exec Level — No Code)
+`opcional` es un flag del **banco de recetas** (`recetas`): marca que, en la receta genérica, ese
+ingrediente puede o no aparecer según la variante (ej. "papa" en una versión, "arroz" en otra --
+ver regla 9 de `CLAUDE.md`). Al agregar esa receta a un día en "Menú del día", la persona palomea o
+despalomea cada ingrediente opcional -- esa decisión queda grabada en el día guardado como
+`incluido: true/false` por ingrediente, y el HTML semanal ya solo imprime los que quedaron
+`incluido`. El flag `opcional` seguía viajando en el dato aunque ya no aportaba información en ese
+punto (todo lo que se imprime ya está decidido) -- solo servía para confundir. Se quitó la etiqueta
+del HTML impreso; "Menú del día" (donde `opcional` sí es información útil, porque ahí es donde se
+decide) no cambió.
+
+##### Fix Details (Technical)
+`nutriguia/html_semanal.py` → `_tabla_receta_html()`: se quitó el sufijo
+`" <i>(opcional)</i>"` de `nombre` -- ya no depende de `ing.get("opcional")`. `_agrupar_por_grupo()`
+(línea previa) ya filtraba por `ing.get("incluido", True)` antes de que la lista llegara a esta
+función, así que ningún ingrediente descartado se imprimía de todos modos; el cambio es solo
+cosmético/de claridad, no afecta qué se cuenta. No se tocó `nutriguia/html_lista_super.py` (no
+imprime ese sufijo) ni las vistas de "Menú del día"/"Recetas" (`opcional` sigue mostrándose ahí, es
+donde tiene sentido).
+
+##### Workaround
+Ninguno necesario tras el fix -- antes, el dietista debía preguntar o el usuario aclarar a mano
+cuáles "(opcional)" ya estaban decididos.
 
 #### BUG-013 · [STATUS: RV]
 **Title:** Ingredientes fusionados/renombrados en el catálogo quedaban huérfanos en días ya

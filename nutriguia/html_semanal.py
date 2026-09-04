@@ -109,7 +109,7 @@ def _tabla_receta_html(receta: dict, catalogo: dict) -> str:
         n = len(ings)
         for i, ing in enumerate(ings):
             cantidad = cantidad_real(ing["alimento"], ing["equivalentes"], catalogo)
-            nombre = _esc(ing["alimento"]) + (" <i>(opcional)</i>" if ing.get("opcional") else "")
+            nombre = _esc(ing["alimento"])
             celda_grupo = (
                 f'<td class="celda-grupo" rowspan="{n}" style="background:{color};color:{color_texto};">'
                 f"{_esc(texto_chip)}</td>"

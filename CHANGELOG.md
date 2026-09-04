@@ -20,6 +20,15 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.28.0] - 2026-09-04
+
+### Fixed
+- **BUG-014**: el HTML de "Menú semanal" ya no imprime "(opcional)" junto a un ingrediente --
+  ese flag es del banco de recetas (variantes posibles); al guardar el día en "Menú del día" la
+  persona ya decidió si el ingrediente va o no, y a esa altura la etiqueta solo podía confundir al
+  dietista sobre si contarlo o no. "Menú del día"/"Recetas" no cambiaron -- ahí `opcional` sigue
+  siendo información útil, porque es donde se decide.
+
 ## [0.27.1] - 2026-08-31
 
 ### Changed
