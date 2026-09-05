@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.30.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.31.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -268,6 +268,21 @@ no permite 0 para ningún ingrediente (antes sí, para los libres); nuevas
 `alimentos_libres_en_cero()`/`corregir_alimentos_libres_en_cero()` en `nutriguia/validation.py` +
 dos chequeos nuevos en Configuración (banco de recetas y días ya guardados, mismo patrón desde
 `BUG-013`) corrigieron las 12 + 6 apariciones ya afectadas en producción.
+
+**Revisión de Feature Requests + `FR-005` shipped (0.31.0, 2026-09-04, a pedido del usuario)**:
+al revisar los 9 feature requests de `BUGS.md` uno por uno para ver cuáles seguían aplicando,
+salió una corrección de documentación (`FR-006`, detector de duplicados del catálogo, en realidad
+ya estaba shipped desde 0.7.0 -- quedó mal etiquetado como "Proposed") y un candidato barato para
+construir de inmediato: `FR-005` ("duplicar un día guardado como punto de partida" para la MISMA
+persona) resultó ser una extensión trivial de `FR-008` (clonar a otra persona, ya shipped) --
+`_clonar_a_persona()` ya era genérica sobre la persona destino, así que solo hizo falta que el
+popover "🧬 Clonar" (renombrado a "📄 Duplicar") deje de excluir a la persona actual de su
+selector, con ella como default. Efecto colateral bueno: alguien con una sola persona registrada
+ya puede usar el botón (antes lo escondía por completo si no había "otra persona"). Quedan
+abiertos sin construir, por baja urgencia detectada en el uso real: `FR-001` (historial de
+objetivos por persona), las dos piezas restantes de `FR-003`/Fase 5 (repetir semana completa --
+parcialmente cubierta ya por "Menú semanal"; sugerencia automática de hueco -- la más compleja,
+necesita un solver), y `FR-009` (EquiVale ChefBOT/Supercook, dejado a propósito solo como idea).
 
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,

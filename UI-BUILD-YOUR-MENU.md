@@ -150,23 +150,32 @@ Ajustes       -> Configuración
    orden de renderizado no le importa a la lógica de `_fecha_pendiente`/`_nombre_pendiente` (ver
    comentario en `render()`): esos se aplican a `session_state` antes de instanciar los widgets de
    fecha/nombre sin importar dónde en la página viva el botón "Abrir" que los dispara.
-6.1. **"🧬 Clonar" a otra persona** (2026-08-30, a pedido del usuario -- cierra `FR-008`): junto a
-   "Abrir", en cada fila del historial, un `st.popover` con un selector de persona destino y una
-   fecha (default hoy). Al confirmar, `_clonar_a_persona()` copia ese día (recetas + ingredientes
-   + ajustes tal como quedaron) directo a Mongo para la persona destino, **sin** cargarlo en el
-   editor actual (la persona que se está editando no cambia) -- el flujo es clonar, luego cambiar
-   el selector de "Persona" arriba de todo a la destino y abrirlo desde su propio historial para
-   ajustar cantidades con los steppers de siempre. `objetivo_diario`/`actual_diario`/`delta_diario`/
-   `estado` se recalculan contra el objetivo de la persona destino (no se copian los de origen) --
-   los equivalentes clonados casi seguro no cuadran exacto con el nuevo objetivo, y ajustar eso es
-   justo la parte que se espera hacer después. Si el `nombre` original ya está en uso por otra
-   fecha de la persona destino, se guarda **sin nombre** (para no violar "nombre único por
+6.1. **"📄 Duplicar"** (2026-08-30, a pedido del usuario -- cierra `FR-008`; renombrado y
+   extendido 2026-09-04 para también cerrar `FR-005`): junto a "Abrir", en cada fila del
+   historial, un `st.popover` con un selector "Para quién" (incluye a la persona actual, como
+   default, además de las demás -- antes de 0.31.0 se llamaba "🧬 Clonar" y excluía a la persona
+   actual del selector) y una fecha (default hoy). Al confirmar, `_clonar_a_persona()` copia ese
+   día (recetas + ingredientes + ajustes tal como quedaron) directo a la base de datos para la
+   persona destino, **sin** cargarlo en el editor actual (la persona que se está editando no
+   cambia) -- el flujo es duplicar/clonar, luego cambiar el selector de "Persona" arriba de todo a
+   la destino (si es otra) y abrirlo desde su propio historial para ajustar cantidades con los
+   steppers de siempre. `_clonar_a_persona()` es genérica sobre quién es el destino -- "duplicar
+   para uno mismo en otra fecha" (FR-005) y "clonar a otra persona" (FR-008) son la misma función,
+   sin lógica nueva; el mensaje de éxito dice "Duplicado" en vez de "Clonado a {persona}" cuando
+   el destino es la persona actual. Efecto colateral bueno: alguien con una sola persona
+   registrada ya puede usar el botón (antes lo escondía por completo si no había "otra persona").
+   `objetivo_diario`/`actual_diario`/`delta_diario`/`estado` se recalculan contra el objetivo de
+   la persona destino (no se copian los de origen) -- los equivalentes duplicados/clonados casi
+   seguro no cuadran exacto con el nuevo objetivo, y ajustar eso es justo la parte que se espera
+   hacer después. Si el `nombre` original ya está en uso por otra fecha de la persona destino
+   (algo casi garantizado al duplicar para uno mismo, ya que el nombre original sigue "en uso" por
+   su propia fecha de origen), se guarda **sin nombre** (para no violar "nombre único por
    persona") y el mensaje de éxito lo avisa explícitamente. Funciona sobre cualquier día del
    historial, tenga nombre o no. **Corregido `BUG-011` (0.21.0)**: si la persona destino ya tiene
    un plan guardado para la fecha elegida, el popover lo avisa con `st.warning()` (nombre del
-   plan existente incluido, si tiene) ANTES de mostrar el botón "Clonar" -- antes clonar
-   sobreescribía ese plan sin ningún aviso, a diferencia de "Guardar" (donde lo que se
-   sobreescribe siempre está a la vista en pantalla).
+   plan existente incluido, si tiene) ANTES de mostrar el botón "Duplicar" -- antes sobreescribía
+   ese plan sin ningún aviso, a diferencia de "Guardar" (donde lo que se sobreescribe siempre está
+   a la vista en pantalla).
 6.2. **Ingrediente suelto sin receta** (2026-08-30, a pedido del usuario -- cierra `FR-007`): un
    `st.expander("➕ Agregar un ingrediente suelto (sin receta)")` colapsado, debajo del picker de
    recetas de cada tiempo -- para alimentos que conviene comer directo (ej. una fruta) sin crear

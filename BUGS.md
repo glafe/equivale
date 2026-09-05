@@ -21,9 +21,10 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 - Resueltos: [KC-002](#kc-002), [KC-003](#kc-003)
 
 ### Feature Requests
-- Propuestos: [FR-001](#fr-001), [FR-005](#fr-005), [FR-006](#fr-006), [FR-009](#fr-009)
+- Propuestos: [FR-001](#fr-001), [FR-009](#fr-009)
 - Parcialmente Shipped: [FR-003](#fr-003)
-- Shipped: [FR-002](#fr-002), [FR-004](#fr-004), [FR-007](#fr-007), [FR-008](#fr-008)
+- Shipped: [FR-002](#fr-002), [FR-004](#fr-004), [FR-005](#fr-005), [FR-006](#fr-006),
+  [FR-007](#fr-007), [FR-008](#fr-008)
 
 ## Severity guide
 
@@ -760,7 +761,13 @@ sin `receta_id` real.
 ##### Dependencies
 Ninguna.
 
-#### FR-006
+#### FR-006 · [STATUS: Shipped 0.7.0]
+> **Shipped en 0.7.0 (2026-08-29, mismo día que se pidió)** — "Posibles duplicados en el
+> catálogo" en Configuración (`chequeos.pares_similares_en_catalogo()`, `difflib` sobre nombres
+> normalizados, umbral 0.82). Quedó marcado "Proposed" en este archivo por descuido de
+> documentación -- corregido el 2026-09-04 al revisar feature requests con el usuario; la
+> funcionalidad en sí llevaba semanas en producción.
+
 **Title:** Detector de posibles duplicados en el catálogo de ingredientes
 **Date Requested:** 2026-08-29
 **Status:** Proposed
@@ -779,7 +786,17 @@ automatiza encontrar los candidatos, probablemente con una distancia de edición
 ##### Dependencies
 Editor de ingredientes (Shipped en `FR-002`).
 
-#### FR-005
+#### FR-005 · [STATUS: Shipped 0.31.0]
+> **Shipped en 0.31.0 (2026-09-04)** — resultó ser una extensión trivial de `FR-008` (ya
+> shipped): `_clonar_a_persona()` ya era genérica sobre la persona destino, así que "duplicar
+> para uno mismo" es exactamente el mismo mecanismo con `persona_destino == persona actual`. El
+> popover "🧬 Clonar" se renombró a "📄 Duplicar" y su selector de persona ahora incluye a la
+> persona actual (antes la excluía, `otras_personas`), con la persona actual como default -- esto
+> también destrabó "Clonar" para quien solo tiene una persona registrada, que antes no podía
+> usarlo en absoluto. El mensaje de confirmación dice "Duplicado" en vez de "Clonado a Dan" cuando
+> el destino es la misma persona. Analizado el 2026-09-04 al revisar feature requests con el
+> usuario -- viabilidad alta porque toda la infraestructura ya existía, sin función nueva.
+
 **Title:** Duplicar un día ya guardado como punto de partida
 **Date Requested:** 2026-08-29
 **Status:** Proposed

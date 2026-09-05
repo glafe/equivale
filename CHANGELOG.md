@@ -20,6 +20,17 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.31.0] - 2026-09-04
+
+### Added
+- **FR-005**: botón "📄 Duplicar" (antes "🧬 Clonar") en el historial de "Menú del día" -- el
+  selector de persona ahora incluye a la persona actual (default) además de las demás, así que
+  "duplicar un día para uno mismo en otra fecha" usa el mismo mecanismo que ya existía para clonar
+  a otra persona (`FR-008`), sin función nueva. De paso, alguien con una sola persona registrada
+  ya puede usar el botón (antes lo escondía por completo si no había "otra persona").
+- **FR-006** (docs): corregido su status a Shipped -- ya estaba construido desde 0.7.0
+  (2026-08-29), quedó mal etiquetado como "Proposed" por descuido de documentación.
+
 ## [0.30.0] - 2026-09-04
 
 ### Fixed
