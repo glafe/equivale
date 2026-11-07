@@ -464,6 +464,7 @@ def render() -> None:
         st.session_state["dia"] = _dia_vacio(persona)
         st.session_state["fecha_input"] = date.today()
         st.session_state["nombre_input"] = ""
+        st.session_state["_dia_origen_fecha"] = None
 
     # Historial justo debajo del selector de persona (2026-08-30, a pedido del usuario -- antes
     # vivía hasta el final de la página; abrir/editar un día ya guardado es de lo que más se usa,
@@ -473,7 +474,7 @@ def render() -> None:
         if not historial:
             st.caption("Todavía no hay planes guardados para esta persona.")
         for doc in historial:
-            c1, c2, c3, c4 = st.columns([2, 2, 1, 1])
+            c1, c2, c3, c4, c5 = st.columns([2, 2, 1, 1, 1])
             etiqueta_fecha = doc["fecha"] + (f" · **{doc['nombre']}**" if doc.get("nombre") else "")
             c1.markdown(etiqueta_fecha)
             c2.write("✅ completo" if doc["estado"] == "completo" else "🔺 en progreso")
@@ -482,6 +483,7 @@ def render() -> None:
                 st.session_state["dia"] = plan
                 st.session_state["_fecha_pendiente"] = date.fromisoformat(doc["fecha"])
                 st.session_state["_nombre_pendiente"] = plan["nombre"]
+                st.session_state["_dia_origen_fecha"] = doc["fecha"]
                 st.rerun()
             # Duplicar/Clonar (FR-005 y FR-008, 2026-08-30 y 2026-09-04, a pedido del usuario) --
             # punto de partida para armar un día nuevo sin empezar de cero, en vez de tener que
@@ -527,6 +529,25 @@ def render() -> None:
                             'reutilizarlo en "Menú semanal".'
                         )
                     st.session_state["_flash_dia"] = mensaje
+                    st.rerun()
+
+            # Eliminar (FR-010, 2026-11-06, a pedido del usuario) -- `bd.eliminar_dia()` ya
+            # existía (con tests) pero ninguna vista la llamaba. Si el día tenía `nombre` y
+            # estaba asignado a algún día en "Menú semanal", esa asignación queda rota (ya
+            # detectada por Configuración y mostrada como "⚠️ '...' ya no existe" en Menú
+            # semanal) -- se avisa aquí para no sorprender, en vez de limpiarla sola, porque
+            # reasignar qué va en su lugar es decisión del usuario.
+            with c5.popover("🗑️"):
+                etiqueta = f"'{doc['nombre']}'" if doc.get("nombre") else f"el {doc['fecha']}"
+                st.warning(f"¿Eliminar el plan de {persona} para {etiqueta}? No se puede deshacer.")
+                if doc.get("nombre"):
+                    st.caption(
+                        "Si este nombre está asignado a algún día en \"Menú semanal\", quedará "
+                        "sin asignar -- tendrás que elegir otro ahí."
+                    )
+                if st.button("Sí, eliminar", key=f"eliminar_btn_{doc['fecha']}", type="primary"):
+                    bd.eliminar_dia(db(), persona, doc["fecha"])
+                    st.session_state["_flash_dia"] = f"Eliminado: plan de {persona} para {doc['fecha']}."
                     st.rerun()
 
     dia = st.session_state["dia"]
@@ -580,8 +601,36 @@ def render() -> None:
         )
         st.warning(f"Todavía sin cuadrar: {faltantes}. Se puede guardar en progreso de todas formas.")
 
-    if st.button("💾 Guardar menú del día", type="primary"):
-        fecha_iso = dia["fecha"].isoformat()
+    # Aviso de sobreescritura (BUG-016, 2026-11-06, a pedido del usuario) -- "Guardar" hacía
+    # upsert silencioso por (persona, fecha); si la fecha elegida coincidía con OTRO plan ya
+    # guardado (uno que esta sesión no abrió desde el historial), se perdía sin aviso. Se compara
+    # contra `_dia_origen_fecha` (la fecha de la que viene este plan en edición -- None si es
+    # nuevo/recién vaciado) para no mostrar esto en el flujo normal de editar un día ya abierto y
+    # volver a guardarlo en la misma fecha.
+    fecha_iso_actual = dia["fecha"].isoformat()
+    _plan_existente = bd.obtener_dia(db(), persona, fecha_iso_actual)
+    if _plan_existente and fecha_iso_actual != st.session_state.get("_dia_origen_fecha"):
+        _etiqueta_existente = f" ('{_plan_existente['nombre']}')" if _plan_existente.get("nombre") else ""
+        st.warning(
+            f"⚠️ {persona} ya tiene un plan guardado para el {fecha_iso_actual}"
+            f"{_etiqueta_existente} -- guardar ahora lo reemplaza. Si no es intencional, cambia "
+            "la fecha o ábrelo desde el historial para editarlo en vez de crear otro."
+        )
+
+    c_guardar, c_nuevo = st.columns([3, 1])
+    guardar_clic = c_guardar.button("💾 Guardar menú del día", type="primary")
+    # Botón "Nuevo" (FR-011, 2026-11-06, a pedido del usuario) -- antes, tras guardar, no había
+    # forma de limpiar el plan en edición sin recargar la página a mano.
+    if c_nuevo.button("🆕 Nuevo"):
+        st.session_state["dia"] = _dia_vacio(persona)
+        st.session_state["_fecha_pendiente"] = date.today()
+        st.session_state["_nombre_pendiente"] = ""
+        st.session_state["_dia_origen_fecha"] = None
+        st.session_state["_flash_dia"] = "Plan en blanco listo -- empieza a armar uno nuevo."
+        st.rerun()
+
+    if guardar_clic:
+        fecha_iso = fecha_iso_actual
         nombre_final = dia["nombre"].strip()
         fecha_en_conflicto = (
             _nombre_en_uso_por_otra_fecha(persona, nombre_final, fecha_iso) if nombre_final else None
@@ -618,6 +667,7 @@ def render() -> None:
             },
         }
         bd.guardar_dia(db(), persona, fecha_iso, documento["nombre"], documento)
+        st.session_state["_dia_origen_fecha"] = fecha_iso
         mensaje = f"Guardado: plan de {persona} para {fecha_iso} ({documento['estado']})."
         if nombre_final:
             mensaje += f" Guardado también como '{nombre_final}' -- ya se puede asignar en \"Menú semanal\"."

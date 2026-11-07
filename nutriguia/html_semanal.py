@@ -224,9 +224,11 @@ def generar_html_semanal(
     para resolver la cantidad real de cada ingrediente. Devuelve un documento HTML completo y
     autocontenido (CSS embebido, sin dependencias externas) -- se descarga como `.html` y el
     usuario lo abre en su navegador para imprimirlo o guardarlo como PDF (Ctrl/Cmd+P) con el
-    control de márgenes/escala que le dé su propio navegador. Un bloque por cada menú en
-    `menus_por_nombre` (aunque no esté asignado a ningún día -- así también sirve como referencia
-    completa del banco de menús con nombre de esta persona), en orden alfabético."""
+    control de márgenes/escala que le dé su propio navegador. Un bloque por cada menú que esté
+    ASIGNADO a algún día de la semana (BUG-015) -- un menú con nombre pero sin asignar no se
+    imprime, así se puede guardar un banco de menús "legacy" como referencia dentro de la app (ver
+    "Tus menús" en `views/menu_semanal.py`) sin que se cuele en cada impresión mensual; antes esta
+    función imprimía TODO `menus_por_nombre` sin filtrar. Orden alfabético por nombre."""
     dias_por_nombre: dict[str, list[str]] = {}
     for dia in DIAS:
         nombre = asignacion.get(dia)
@@ -235,19 +237,20 @@ def generar_html_semanal(
     dias_libres = [d for d in DIAS if asignacion.get(d) is None]
     dias_rotos = {d: n for d, n in asignacion.items() if n is not None and n not in menus_por_nombre}
 
-    nombres_ordenados = sorted(menus_por_nombre.keys())
+    nombres_ordenados = sorted(n for n in dias_por_nombre if n in menus_por_nombre)
     bloques_menu: list[str] = []
     if not nombres_ordenados:
-        bloques_menu.append(f'<p class="nota">{_esc(persona)} todavía no tiene ningún día guardado con nombre.</p>')
+        if not menus_por_nombre:
+            bloques_menu.append(f'<p class="nota">{_esc(persona)} todavía no tiene ningún día guardado con nombre.</p>')
+        else:
+            bloques_menu.append(
+                '<p class="nota">Ningún menú está asignado a esta semana todavía -- ve a '
+                '"Menú semanal" y asigna uno o más días antes de imprimir.</p>'
+            )
 
     for nombre in nombres_ordenados:
         menu = menus_por_nombre[nombre]
-        dias_aplica = dias_por_nombre.get(nombre)
-        etiqueta_dias = (
-            "Aplica: " + ", ".join(DIA_LABEL[d] for d in dias_aplica)
-            if dias_aplica
-            else "Sin día asignado en Menú semanal todavía"
-        )
+        etiqueta_dias = "Aplica: " + ", ".join(DIA_LABEL[d] for d in dias_por_nombre[nombre])
         secciones_tiempo = []
         for tiempo in TIEMPOS:
             recetas = menu.get("tiempos", {}).get(tiempo, {}).get("seleccion", [])

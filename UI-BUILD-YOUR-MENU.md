@@ -132,6 +132,19 @@ Ajustes       -> Configuración
    `menus_construidos` (ver `schema.md`) — si ya existe un plan guardado para esa persona+fecha, lo
    sobreescribe (no crea un duplicado). `estado` se infiere solo: `"completo"` si el delta diario
    total es exacto en todos los grupos, si no `"en_progreso"`.
+   - **Corregido `BUG-016` (0.32.0)**: ese upsert silencioso podía sobreescribir sin aviso el plan
+     de OTRA fecha, si el día en edición no venía de abrir esa fecha pero coincidía con ella por
+     casualidad (ej. empezar uno nuevo sin notar que hoy ya tenía un plan guardado). Ahora
+     `st.session_state["_dia_origen_fecha"]` recuerda de qué fecha viene el plan en edición (`None`
+     si es nuevo) y, antes del botón "Guardar", se muestra un `st.warning()` si la fecha elegida ya
+     tiene un plan guardado que no es ese -- mismo criterio que ya usaba "Duplicar" (6.1). Solo
+     informativo, no bloquea guardar.
+5.2. **"🆕 Nuevo"** (2026-11-06, a pedido del usuario -- cierra `FR-011`): botón junto a "Guardar"
+   que reinicia `st.session_state["dia"]` a un día vacío (misma persona, fecha de hoy, sin nombre)
+   -- antes, para empezar un plan nuevo tras guardar uno, había que recargar la página a mano.
+   Usa el mismo mecanismo `_fecha_pendiente`/`_nombre_pendiente` que "Abrir" (6) para poder
+   limpiar los widgets de fecha/nombre, que ya están instanciados antes de llegar a este botón en
+   el mismo `render()`. También resetea `_dia_origen_fecha` a `None` (ver punto 5 arriba).
 5.1. **Nombre opcional** (2026-08-29, a pedido del usuario, junto a la fecha): un `text_input`
    para darle un nombre al día (ej. "Menú 1"). Ponerle nombre es lo que lo vuelve elegible desde
    "Menú semanal" (ver esa sección abajo) — sin nombre, el día se guarda igual pero solo queda
@@ -192,6 +205,17 @@ Ajustes       -> Configuración
    se usa un ingrediente?" de Configuración (esa búsqueda solo mira el banco de recetas) -- no se
    persiguió por ahora, el caso de uso es puntual (un alimento en un día específico), no un patrón
    que se repita entre recetas.
+6.3. **"🗑️ Eliminar"** (2026-11-06, a pedido del usuario -- cierra `FR-010`): junto a "Abrir"/
+   "Duplicar", en cada fila del historial, un `st.popover` con confirmación explícita ("¿Eliminar
+   el plan de {persona} para {fecha/nombre}? No se puede deshacer." + botón "Sí, eliminar") --
+   `nutriguia/db.py::eliminar_dia()` ya existía (con tests) desde la migración a SQLite, pero
+   ninguna vista la llamaba todavía. Si el día tenía `nombre` y estaba asignado a algún día en
+   "Menú semanal", la asignación queda apuntando a un nombre que ya no existe -- el popover avisa
+   de esto (ya detectado por Configuración y mostrado en "Menú semanal" como "⚠️ '...' ya no
+   existe"), pero no limpia la asignación sola -- reasignar qué va en su lugar es decisión del
+   usuario. Habilita, de paso, limpiar menús "legacy" que ya no sirven ni siquiera como
+   referencia (ver `BUG-015` en "Menú semanal" abajo, sobre por qué antes de esto un menú viejo se
+   quedaba para siempre colándose en cada impresión).
 
 ## Página "Personas" (2026-08-27, a pedido del usuario)
 
@@ -257,9 +281,15 @@ pasó a ser puramente una herramienta de **asignación y consulta**, no de const
     día), con una nota de a qué días de la semana aplica cada uno -- el patrón exacto de ese
     Excel. Ahora, un bloque por cada menú con nombre de la persona (orden alfabético), fluyendo
     uno tras otro **sin salto de página forzado** (afinado el mismo día -- ver más abajo):
-    - Encabezado del bloque: nombre del menú + "Aplica: {días}" (o "Sin día asignado en Menú
-      semanal todavía" si ese menú aún no se asignó a ningún día -- así el PDF también sirve como
-      referencia completa del banco de menús con nombre, no solo de la semana ya armada).
+    - **Corregido `BUG-015` (0.32.0, 2026-11-06, a pedido del usuario)**: solo se incluye un
+      bloque por cada menú que SÍ esté asignado a algún día de la semana actual -- antes se
+      imprimía un bloque por cada menú con nombre de la persona, asignado o no (pensado
+      originalmente como "referencia completa del banco"), así que un menú viejo que ya no se
+      usaba se colaba en cada impresión mensual para siempre, sin forma de sacarlo (hasta
+      `FR-010`, tampoco había forma de borrarlo). Un menú sin asignar sigue disponible como
+      referencia dentro de la propia app, en "Tus menús" más abajo -- solo ya no viaja al HTML.
+    - Encabezado del bloque: nombre del menú + "Aplica: {días}" (por construcción, todo lo que
+      llega a imprimirse ya tiene al menos un día asignado).
     - Por cada tiempo con recetas, por cada receta: su nombre, y una tabla con **Grupo | Cantidad
       | Alimento en columnas separadas** (afinado el mismo día a pedido del usuario -- antes
       "cantidad — alimento" iba junto en una sola celda de texto), **una fila por ingrediente**

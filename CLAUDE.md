@@ -16,7 +16,7 @@ fuera del repo, no en control de versiones).
 
 ## Estado actual (actualizar esta sección al final de cada sesión de trabajo)
 
-**Versión:** `0.31.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
+**Versión:** `0.32.0` (ver `nutriguia/__init__.py` y `CHANGELOG.md`) · **Última commit:** correr
 `git log -1 --oneline` para el hash exacto — no se repite aquí para no quedar desactualizado.
 
 Al 2026-08-29: **Fases 0 a 4 completas** (ver checklist en `BUILD-PLAN.md`) — Mongo corriendo,
@@ -283,6 +283,20 @@ abiertos sin construir, por baja urgencia detectada en el uso real: `FR-001` (hi
 objetivos por persona), las dos piezas restantes de `FR-003`/Fase 5 (repetir semana completa --
 parcialmente cubierta ya por "Menú semanal"; sugerencia automática de hueco -- la más compleja,
 necesita un solver), y `FR-009` (EquiVale ChefBOT/Supercook, dejado a propósito solo como idea).
+
+**4 hallazgos de uso real corregidos (0.32.0, 2026-11-06, a pedido del usuario)**: tras usar la
+app un tiempo, el usuario reportó 4 fricciones juntas. `BUG-015`: el HTML de "Menú semanal"
+imprimía TODOS los menús con nombre de la persona, asignados o no -- confirmado con el usuario que
+era una decisión de diseño ya no deseada (pensada como "catálogo completo de referencia"), se
+corrigió para imprimir solo lo asignado a la semana actual; lo no asignado sigue visible como
+referencia en "Tus menús" dentro de la app. `FR-010`: no había forma de borrar un día guardado --
+`nutriguia/db.py::eliminar_dia()` ya existía con tests desde la migración a SQLite, solo faltaba
+conectarla a un botón (con confirmación, por ser irreversible) en el historial de "Menú del día".
+`BUG-016`: "Guardar" podía sobreescribir sin aviso el plan de OTRA fecha si coincidía por
+casualidad con la elegida (mismo patrón de riesgo que ya tenía resuelto "Duplicar" desde
+`BUG-011`) -- ahora avisa antes de guardar. `FR-011`: nuevo botón "🆕 Nuevo" para limpiar el plan
+en edición sin recargar la página. Verificado en vivo con Playwright contra una base SQLite
+aislada de prueba (no `data/equivale.db`), no solo con los tests unitarios.
 
 **Desde 2026-08-27 el proyecto lleva versión (SemVer) y changelog** — ver `CHANGELOG.md` (qué
 cambió y cuándo, por versión) y `BUGS.md` (bugs/caveats/feature requests con detalle técnico,

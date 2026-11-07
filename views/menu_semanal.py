@@ -97,11 +97,14 @@ def render() -> None:
         file_name=f"menu-semanal-{persona}.html",
         mime="text/html",
         help=(
-            "Un bloque por menú (nombre, a qué días aplica, y sus recetas con ingredientes y "
-            "cantidades reales agrupados por grupo SMAE) -- mismo formato que el Excel que "
-            "usabas antes, con los colores estandarizados de EquiVale. Ábrelo en tu navegador y "
-            "usa Ctrl/Cmd+P para imprimirlo o guardarlo como PDF -- con el control de "
-            "márgenes/escala del propio navegador."
+            "Incluye solo los menús que están asignados a algún día de esta semana (ver "
+            "\"Editar asignación de días\" arriba) -- un menú con nombre pero sin asignar no "
+            "sale en la impresión, aunque sigue disponible como referencia en \"Tus menús\" más "
+            "abajo. Un bloque por menú (nombre, a qué días aplica, y sus recetas con "
+            "ingredientes y cantidades reales agrupados por grupo SMAE) -- mismo formato que el "
+            "Excel que usabas antes, con los colores estandarizados de EquiVale. Ábrelo en tu "
+            "navegador y usa Ctrl/Cmd+P para imprimirlo o guardarlo como PDF -- con el control "
+            "de márgenes/escala del propio navegador."
         ),
     )
 

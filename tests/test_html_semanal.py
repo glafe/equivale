@@ -101,9 +101,11 @@ def test_genera_html_sin_objetivo_no_truena():
     assert "Objetivo diario" not in pagina
 
 
-def test_menu_sin_dia_asignado_no_truena():
-    """Un menú guardado con nombre pero que todavía no se asignó a ningún día de la semana debe
-    seguir apareciendo en el HTML (como referencia), solo sin la etiqueta "Aplica: ..."."""
+def test_menu_sin_dia_asignado_no_se_imprime():
+    """BUG-015: un menú guardado con nombre pero que todavía no se asignó a ningún día de la
+    semana NO debe aparecer en el HTML impreso -- solo se imprime lo que de verdad se va a usar
+    esta semana (los no asignados siguen disponibles como referencia dentro de la app, en "Tus
+    menús" de views/menu_semanal.py, pero no en la impresión)."""
     pagina = generar_html_semanal(
         persona="Persona de prueba",
         objetivo_diario={},
@@ -112,7 +114,8 @@ def test_menu_sin_dia_asignado_no_truena():
         catalogo=CATALOGO_EJEMPLO,
     )
     assert _es_html_valido(pagina)
-    assert "Sin día asignado en Menú semanal todavía" in pagina
+    assert "Menú 1" not in pagina
+    assert "Ningún menú está asignado a esta semana todavía" in pagina
 
 
 def test_ingrediente_sin_catalogo_usa_fallback_de_equivalentes():

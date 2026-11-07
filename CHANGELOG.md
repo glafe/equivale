@@ -20,6 +20,23 @@ y un resumen de una línea).
 ### Added
 - (nada pendiente por ahora — próximo trabajo entra aquí)
 
+## [0.32.0] - 2026-11-06
+
+### Added
+- **FR-010**: botón "🗑️" (con confirmación) en el historial de "Menú del día" para eliminar un
+  plan guardado -- `nutriguia/db.py::eliminar_dia()` ya existía con tests, solo faltaba
+  conectarla a la UI.
+- **FR-011**: botón "🆕 Nuevo" junto a "Guardar" en "Menú del día" para empezar un plan en blanco
+  sin recargar la página.
+
+### Fixed
+- **BUG-015**: el HTML de "Menú semanal" imprimía TODOS los menús con nombre de la persona, no
+  solo los asignados a la semana -- un menú viejo sin asignar se colaba en cada impresión. Ahora
+  solo imprime lo asignado; los demás siguen visibles como referencia en "Tus menús".
+- **BUG-016**: "Guardar" en "Menú del día" podía sobreescribir sin aviso el plan de OTRA fecha si
+  coincidía por casualidad con la elegida -- ahora avisa antes de guardar (mismo criterio que ya
+  usaba "Duplicar").
+
 ## [0.31.0] - 2026-09-04
 
 ### Added

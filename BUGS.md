@@ -13,7 +13,8 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
   [BUG-003](#bug-003--status-rv), [BUG-004](#bug-004--status-rv), [BUG-005](#bug-005--status-rv),
   [BUG-006](#bug-006--status-rv), [BUG-007](#bug-007--status-rv), [BUG-008](#bug-008--status-c),
   [BUG-009](#bug-009--status-rv), [BUG-010](#bug-010--status-rv), [BUG-011](#bug-011--status-rv),
-  [BUG-012](#bug-012--status-rv), [BUG-013](#bug-013--status-rv), [BUG-014](#bug-014--status-rv)
+  [BUG-012](#bug-012--status-rv), [BUG-013](#bug-013--status-rv), [BUG-014](#bug-014--status-rv),
+  [BUG-015](#bug-015--status-rv), [BUG-016](#bug-016--status-rv)
 
 ### Known Caveats
 - Activos: [KC-004](#kc-004)
@@ -24,7 +25,7 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 - Propuestos: [FR-001](#fr-001), [FR-009](#fr-009)
 - Parcialmente Shipped: [FR-003](#fr-003)
 - Shipped: [FR-002](#fr-002), [FR-004](#fr-004), [FR-005](#fr-005), [FR-006](#fr-006),
-  [FR-007](#fr-007), [FR-008](#fr-008)
+  [FR-007](#fr-007), [FR-008](#fr-008), [FR-010](#fr-010), [FR-011](#fr-011)
 
 ## Severity guide
 
@@ -42,6 +43,81 @@ IDs son secuenciales y nunca se reutilizan dentro de cada serie.
 ## Bugs
 
 ### Detailed Entries
+
+#### BUG-016 · [STATUS: RV]
+**Title:** "Guardar" en "Menú del día" sobreescribía sin aviso el plan de otra fecha
+**Severity:** High
+**Reported Date:** 2026-11-06
+**Release Fixed:** 0.32.0
+
+##### Observable Problem
+El usuario reportó que, al crear un menú nuevo para una fecha que ya tenía un plan guardado, el
+plan viejo se sobreescribía sin ningún aviso -- se perdía sin darse cuenta hasta volver a abrirlo.
+
+##### Fix Explanation (Exec Level — No Code)
+"Guardar" hace un upsert por `(persona, fecha)` -- guardar dos veces en la misma fecha siempre
+reemplaza al anterior por diseño (es como se edita un día ya guardado). El problema real era que
+no había forma de distinguir, desde la UI, "estoy editando el día que abrí" de "estoy armando algo
+nuevo y la fecha elegida choca por casualidad con otro plan distinto" -- el segundo caso perdía
+trabajo sin que el usuario lo pidiera. El único lugar que sí avisaba de esto era el popover
+"Duplicar" (mismo riesgo, caso distinto). Ahora "Menú del día" recuerda de qué fecha viene el plan
+que se está editando (ninguna si es nuevo/recién vaciado) y, si la fecha elegida para guardar ya
+tiene un plan guardado QUE NO ES el que se abrió, muestra una advertencia antes del botón
+"Guardar" con el nombre del plan que se va a reemplazar -- igual que ya hacía "Duplicar".
+
+##### Fix Details (Technical)
+Nuevo `st.session_state["_dia_origen_fecha"]`: `None` al vaciar el día (cambio de persona o botón
+"Nuevo" de `FR-011`), y se fija a la fecha del documento al abrir uno del historial o justo
+después de un `guardar_dia()` exitoso. En `views/menu_del_dia.py` → `render()`, antes del botón
+"💾 Guardar", `bd.obtener_dia(db(), persona, fecha_iso_actual)` se compara contra ese origen -- si
+hay un plan existente Y la fecha no es la de origen, se muestra `st.warning()` con el nombre del
+plan en conflicto. Es solo informativo (no bloquea guardar) -- mismo criterio que la advertencia ya
+existente en "Duplicar".
+
+##### Workaround
+Ninguno necesario tras el fix -- antes, revisar a mano la fecha antes de guardar, o descubrir la
+pérdida después al abrir el historial.
+
+#### BUG-015 · [STATUS: RV]
+**Title:** El HTML de "Menú semanal" imprimía TODOS los menús con nombre de la persona, no solo
+los asignados a la semana
+**Severity:** Medium
+**Reported Date:** 2026-11-06
+**Release Fixed:** 0.32.0
+
+##### Observable Problem
+El usuario reportó que, al descargar el HTML de "Menú semanal" con solo 2 menús (de noviembre)
+asignados a la semana, el impreso incluía también menús viejos de septiembre que ya no usaba.
+
+##### Fix Explanation (Exec Level — No Code)
+Era una decisión de diseño original (no un descuido): `generar_html_semanal()` imprimía un bloque
+por cada menú con nombre que tuviera la persona, asignado o no, para que el PDF/HTML sirviera
+también como "catálogo completo" de referencia. En la práctica eso significa que un menú viejo que
+ya no se usa (y que, hasta `FR-010`, no se podía borrar) se cuela en cada impresión mensual para
+siempre. Confirmado con el usuario: la impresión debe reflejar únicamente lo que de verdad se va a
+cocinar esa semana -- los menús con nombre que no están asignados siguen disponibles como
+referencia dentro de la propia app (sección "Tus menús" de "Menú semanal"), solo que ya no viajan
+al HTML.
+
+##### Fix Details (Technical)
+`nutriguia/html_semanal.py` → `generar_html_semanal()`: `nombres_ordenados` ahora se calcula como
+la intersección entre los nombres asignados a algún día (`dias_por_nombre`, ya existía) y
+`menus_por_nombre`, en vez de `sorted(menus_por_nombre.keys())` sin filtrar. El mensaje de "sin
+nada que mostrar" ahora distingue dos casos: la persona no tiene ningún día con nombre (mensaje
+igual que antes) vs. sí tiene pero ninguno está asignado a esta semana (mensaje nuevo, invita a ir
+a "Editar asignación de días"). La rama `etiqueta_dias` para "menú sin día asignado" (línea que
+decía "Sin día asignado en Menú semanal todavía") quedó sin uso y se quitó -- por construcción,
+todo lo que llega a imprimirse ahora tiene al menos un día asignado. `views/menu_semanal.py` no
+necesitó cambios (ya pasaba `asignacion` y `menus_por_nombre` completos; el filtro vive en la
+función de generación) -- solo se actualizó el texto de ayuda del botón de descarga para aclarar
+el comportamiento. Verificado en vivo (Playwright, DB SQLite aislada de prueba): un menú nombrado
+y sin asignar aparece en "Tus menús" pero no en el HTML descargado; uno asignado sí aparece en
+ambos. `tests/test_html_semanal.py` actualizado (`test_menu_sin_dia_asignado_no_se_imprime`
+reemplaza el test anterior que afirmaba lo contrario a propósito).
+
+##### Workaround
+Ninguno necesario tras el fix -- antes, ignorar a mano las secciones de menús viejos al imprimir,
+o (ahora que existe `FR-010`) borrar los que ya no sirven.
 
 #### BUG-014 · [STATUS: RV]
 **Title:** El HTML de "Menú semanal" imprimía "(opcional)" junto a ingredientes que ya estaban
@@ -619,6 +695,45 @@ una vez durante una migración puntual, no un riesgo vigente del flujo normal de
 ## Feature Requests
 
 ### Detailed Entries
+
+#### FR-011 · [STATUS: Shipped 0.32.0]
+**Title:** Botón "Nuevo" en "Menú del día" para empezar un plan en blanco sin recargar la página
+**Date Requested:** 2026-11-06
+**Status:** Shipped
+
+##### Exec Description
+El usuario reportó que, tras terminar y guardar un día en "Menú del día", si quería armar uno
+nuevo no había ningún botón para limpiar el formulario -- tenía que recargar la página a mano.
+
+##### Eng Description
+`st.session_state["dia"]` sobrevivía al guardar (no había ninguna razón para limpiarlo solo).
+Nuevo botón "🆕 Nuevo" junto a "💾 Guardar", que reinicia `st.session_state["dia"]` a
+`_dia_vacio(persona)` y limpia fecha (hoy)/nombre -- mismo mecanismo de `_fecha_pendiente`/
+`_nombre_pendiente` que ya usaba "Abrir" del historial, porque los widgets de fecha/nombre ya
+están instanciados antes de llegar al botón en el mismo `render()` y no se puede escribir
+directo en su `session_state` en el mismo ciclo. También resetea `_dia_origen_fecha` (ver
+`BUG-016`) a `None`.
+
+#### FR-010 · [STATUS: Shipped 0.32.0]
+**Title:** Poder eliminar un día guardado desde el historial de "Menú del día"
+**Date Requested:** 2026-11-06
+**Status:** Shipped
+
+##### Exec Description
+El usuario reportó que no había ninguna forma de borrar un plan guardado -- ni uno viejo que ya
+no sirve, ni uno creado por error. El historial solo ofrecía "Abrir" y "Duplicar".
+
+##### Eng Description
+`nutriguia/db.py::eliminar_dia(conn, persona, fecha)` ya existía, con tests (`tests/test_db.py`)
+desde la migración a SQLite -- simplemente ninguna vista la llamaba. Se agregó un popover "🗑️" por
+fila del historial (junto a "Abrir"/"Duplicar") con una confirmación explícita ("¿Eliminar...? No
+se puede deshacer." + botón "Sí, eliminar") antes de borrar -- acción destructiva e irreversible,
+no debía quedar a un solo clic. Si el día tenía `nombre` y estaba asignado a algún día en "Menú
+semanal", la asignación queda apuntando a un nombre que ya no existe -- ya detectado por
+Configuración y mostrado en "Menú semanal" como "⚠️ '...' ya no existe" (no se limpia sola, se
+avisa en el propio popover para no sorprender; reasignar qué va en su lugar es decisión del
+usuario). Sin esto, `BUG-015` tampoco tenía forma de limpiarse del todo (un menú legacy sin
+asignar seguía existiendo para siempre, solo dejaba de imprimirse).
 
 #### FR-009
 **Title:** "EquiVale ChefBOT" — descubrir qué se puede cocinar según los ingredientes que usas
